@@ -1,0 +1,114 @@
+package main.java.hrms.human_resource_system.repository;
+
+import main.java.hrms.human_resource_system.model.EmployeeDisability;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EmployeeDisabilityDAO {
+
+    public EmployeeDisability getById(int id) {
+        String sql = "SELECT * FROM EmployeeDisability WHERE employee_disability_id = ?";
+        EmployeeDisability disability = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                disability = mapResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return disability;
+    }
+
+    public List<EmployeeDisability> getAll() {
+        String sql = "SELECT * FROM EmployeeDisability";
+        List<EmployeeDisability> list = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public void insert(EmployeeDisability d) {
+        String sql = "INSERT INTO EmployeeDisability " +
+                "(employee_id, disability_category_id, official_code, from_date, to_date, description, percentage, is_active) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, d.getEmployeeId());
+            ps.setInt(2, d.getDisabilityCategoryId());
+            ps.setString(3, d.getOfficialCode());
+            ps.setDate(4, Date.valueOf(d.getFromDate()));
+            if (d.getToDate() != null) {
+                ps.setDate(5, Date.valueOf(d.getToDate()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
+            ps.setString(6, d.getDescription());
+            if (d.getPercentage() != null) {
+                ps.setInt(7, d.getPercentage());
+            } else {
+                ps.setNull(7, Types.INTEGER);
+            }
+            ps.setBoolean(8, d.isActive());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(int id) {
+        String sql = "DELETE FROM EmployeeDisability WHERE employee_disability_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private EmployeeDisability mapResultSet(ResultSet rs) throws SQLException {
+        LocalDate fromDate = rs.getDate("from_date").toLocalDate();
+        LocalDate toDate = rs.getDate("to_date") != null ? rs.getDate("to_date").toLocalDate() : null;
+
+        return new EmployeeDisability(
+                rs.getInt("employee_disability_id"),
+                rs.getInt("employee_id"),
+                rs.getInt("disability_category_id"),
+                rs.getString("official_code"),
+                fromDate,
+                toDate,
+                rs.getString("description"),
+                rs.getInt("percentage"),
+                rs.getBoolean("is_active")
+        );
+    }
+}
