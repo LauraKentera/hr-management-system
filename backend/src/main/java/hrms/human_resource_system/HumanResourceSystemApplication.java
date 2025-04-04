@@ -1,4 +1,4 @@
-package hrms.human_resource_system;
+package main.java.hrms.human_resource_system;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
