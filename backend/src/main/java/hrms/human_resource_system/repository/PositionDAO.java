@@ -9,6 +9,23 @@ import java.util.List;
 
 public class PositionDAO {
 
+    public boolean existsById(int positionId) {
+        String sql = "SELECT COUNT(*) FROM Position WHERE position_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            ps.setInt(1, positionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error checking if position exists with ID " + positionId, e);
+        }
+        return false;
+    }
+    
     public Position getById(int id) {
         String sql = "SELECT * FROM Position WHERE position_id = ?";
         Connection conn = null;
