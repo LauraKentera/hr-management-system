@@ -201,3 +201,40 @@ CREATE TABLE IF NOT EXISTS EmployeeBankAccount
     iban           VARCHAR(34),
     FOREIGN KEY (employee_id) REFERENCES Employee (id)
 );
+
+CREATE TABLE IF NOT EXISTS Payroll (
+    payroll_id      INT PRIMARY KEY AUTO_INCREMENT,
+    employee_id     INT NOT NULL,
+    period_start    DATE NOT NULL,
+    period_end      DATE NOT NULL,
+    base_salary     DECIMAL(10, 2) NOT NULL,
+    bonus           DECIMAL(10, 2) DEFAULT 0,
+    deductions      DECIMAL(10, 2) DEFAULT 0,
+    net_pay         DECIMAL(10, 2) NOT NULL,
+    payment_date    DATE,
+    status          ENUM('Pending', 'Processed', 'Paid') DEFAULT 'Pending',
+    FOREIGN KEY (employee_id) REFERENCES Employee(id)
+);
+
+CREATE TABLE IF NOT EXISTS EmploymentContract (
+    contract_id     INT PRIMARY KEY AUTO_INCREMENT,
+    employee_id     INT NOT NULL,
+    start_date      DATE NOT NULL,
+    end_date        DATE,
+    position_id     INT NOT NULL,
+    salary          DECIMAL(10,2) NOT NULL,
+    contract_type   ENUM('Permanent', 'Temporary', 'Internship') NOT NULL,
+    signed_date     DATE,
+    document_path   VARCHAR(255),
+    FOREIGN KEY (employee_id) REFERENCES Employee(id),
+    FOREIGN KEY (position_id) REFERENCES Position(position_id)
+);
+
+CREATE TABLE IF NOT EXISTS ContractAnnex (
+    annex_id        INT PRIMARY KEY AUTO_INCREMENT,
+    contract_id     INT NOT NULL,
+    change_date     DATE NOT NULL,
+    description     VARCHAR(255),
+    document_path   VARCHAR(255),
+    FOREIGN KEY (contract_id) REFERENCES EmploymentContract(contract_id)
+);

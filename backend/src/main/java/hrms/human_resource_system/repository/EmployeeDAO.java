@@ -13,6 +13,23 @@ public class EmployeeDAO {
     private final DepartmentDAO departmentDAO = new DepartmentDAO();
     private final PositionDAO positionDAO = new PositionDAO();
 
+    public boolean existsById(int employeeId) {
+        String sql = "SELECT COUNT(*) FROM Employee WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            ps.setInt(1, employeeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error checking if employee exists with ID " + employeeId, e);
+        }
+        return false;
+    }
+
     public Employee getById(int id) {
         String sql = "SELECT * FROM Employee WHERE id = ?";
         Connection conn = null;
