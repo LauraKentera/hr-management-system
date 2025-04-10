@@ -30,6 +30,11 @@ public class BenefitItemController {
         return service.getAll();
     }
 
+    @GetMapping("/benefit/{id}")
+    public List<BenefitItem> getByBenefitId(@PathVariable int id) {
+        return service.getByBenefitId(id);
+    }
+
     @PostMapping
     public ResponseEntity<String> create(@RequestBody BenefitItem item) {
         service.insert(item);
