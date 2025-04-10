@@ -2,11 +2,13 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Benefit;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class BenefitDAO {
 
     public Benefit getById(int id) {
@@ -106,6 +108,29 @@ public class BenefitDAO {
 
         } catch (SQLException e) {
             throw new DLException("Error deleting benefit with ID " + id, e);
+        } finally {
+            DatabaseConnection.closeResources(conn, ps, null);
+        }
+    }
+
+    public void update(int id, Benefit benefit) {
+        String sql = "UPDATE Benefit SET name = ?, description = ?, is_taxable = ?, is_active = ? WHERE benefit_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, benefit.getName());
+            ps.setString(2, benefit.getDescription());
+            ps.setBoolean(3, benefit.isTaxable());
+            ps.setBoolean(4, benefit.isActive());
+            ps.setInt(5, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating benefit with ID " + id, e);
         } finally {
             DatabaseConnection.closeResources(conn, ps, null);
         }

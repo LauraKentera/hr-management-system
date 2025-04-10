@@ -2,11 +2,13 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Position;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class PositionDAO {
 
     public boolean existsById(int positionId) {
@@ -152,4 +154,38 @@ public class PositionDAO {
             DatabaseConnection.closeResources(conn, ps, null);
         }
     }
+
+    public void update(Position position) {
+        String sql = "UPDATE Position SET parent_id = ?, name = ?, short_name = ?, education_level_id = ?, " +
+                "benefits = ?, requires_licensing = ?, is_active = ? WHERE position_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+
+            if (position.getParentPosition() != null) {
+                ps.setInt(1, position.getParentPosition().getPositionId());
+            } else {
+                ps.setNull(1, Types.INTEGER);
+            }
+
+            ps.setString(2, position.getName());
+            ps.setString(3, position.getShortName());
+            ps.setInt(4, position.getEducationLevelId());
+            ps.setString(5, position.getBenefits());
+            ps.setBoolean(6, position.isRequiresLicensing());
+            ps.setBoolean(7, position.isActive());
+            ps.setInt(8, position.getPositionId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating position with ID " + position.getPositionId(), e);
+        } finally {
+            DatabaseConnection.closeResources(conn, ps, null);
+        }
+    }
+
 }

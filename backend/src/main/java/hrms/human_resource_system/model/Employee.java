@@ -26,14 +26,13 @@ public class Employee {
     private String taxId;
     private String bankAccountNumber;
 
-    public Employee() {}
-
+    // Constructor
     public Employee(int id, String PIN, String lastName, String firstName, LocalDate birthDate,
-                    LocalDate dateOfHire, LocalDate dateOfDismissal, String phoneNumber,
-                    String email, String address, String gender, Nationality nationality,
-                    Department department, Position position, String employmentStatus,
-                    String emergencyContactName, String emergencyContactPhone, String maritalStatus,
-                    String employmentType, Employee manager, String taxId, String bankAccountNumber) {
+                    LocalDate dateOfHire, LocalDate dateOfDismissal, String phoneNumber, String email,
+                    String address, String gender, Nationality nationality, Department department,
+                    Position position, String employmentStatus, String emergencyContactName,
+                    String emergencyContactPhone, String maritalStatus, String employmentType,
+                    Employee manager, String taxId, String bankAccountNumber) {
         this.id = id;
         this.PIN = PIN;
         this.lastName = lastName;

@@ -2,11 +2,13 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.AbsenceType;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class AbsenceTypeDAO {
 
     public AbsenceType getById(int id) {
@@ -110,6 +112,25 @@ public class AbsenceTypeDAO {
             throw new DLException("Error deleting absence type with ID " + id, e);
         } finally {
             DatabaseConnection.closeResources(conn, ps, null);
+        }
+    }
+
+    public void update(AbsenceType absenceType) {
+        String sql = "UPDATE AbsenceType SET name = ?, code = ?, description = ?, is_paid = ?, requires_approval = ?, is_active = ? WHERE absence_type_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, absenceType.getName());
+            ps.setString(2, absenceType.getCode());
+            ps.setString(3, absenceType.getDescription());
+            ps.setBoolean(4, absenceType.isPaid());
+            ps.setBoolean(5, absenceType.isRequiresApproval());
+            ps.setBoolean(6, absenceType.isActive());
+            ps.setInt(7, absenceType.getAbsenceTypeId());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DLException("Error updating absence type with ID " + absenceType.getAbsenceTypeId(), e);
         }
     }
 }

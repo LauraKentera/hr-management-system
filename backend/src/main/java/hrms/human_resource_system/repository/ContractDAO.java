@@ -2,11 +2,13 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.EmploymentContract;
 import main.java.hrms.human_resource_system.exception.DLException;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ContractDAO {
 
     public List<EmploymentContract> getAll() {

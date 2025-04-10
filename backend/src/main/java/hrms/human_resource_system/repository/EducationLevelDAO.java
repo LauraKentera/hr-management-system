@@ -2,12 +2,14 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EducationLevel;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EducationLevelDAO {
 
     public EducationLevel getById(int id) {
@@ -107,4 +109,26 @@ public class EducationLevelDAO {
             DatabaseConnection.closeResources(conn, ps, null);
         }
     }
+
+    public void update(int id, EducationLevel educationLevel) {
+        String sql = "UPDATE EducationLevel SET name = ?, user_id = ?, modification_date = ?, is_active = ? WHERE education_level_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, educationLevel.getName());
+            ps.setInt(2, educationLevel.getUserId());
+            ps.setTimestamp(3, Timestamp.valueOf(educationLevel.getModificationDate()));
+            ps.setBoolean(4, educationLevel.isActive());
+            ps.setInt(5, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DLException("Error updating education level with ID " + id, e);
+        } finally {
+            DatabaseConnection.closeResources(conn, ps, null);
+        }
+    }
+
 }

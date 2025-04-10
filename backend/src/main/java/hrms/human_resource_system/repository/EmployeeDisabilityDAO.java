@@ -1,12 +1,14 @@
 package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.EmployeeDisability;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmployeeDisabilityDAO {
 
     public EmployeeDisability getById(int id) {

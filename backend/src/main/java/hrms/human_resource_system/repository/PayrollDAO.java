@@ -2,11 +2,13 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.Payroll;
 import main.java.hrms.human_resource_system.exception.DLException;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class PayrollDAO {
 
     public List<Payroll> getAll() {
@@ -88,4 +90,36 @@ public class PayrollDAO {
             throw new DLException("Error deleting payroll with ID " + payrollId, e);
         }
     }
+
+    public Payroll getById(int payrollId) {
+        String sql = "SELECT * FROM Payroll WHERE payroll_id = ?";
+        Payroll payroll = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, payrollId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    payroll = new Payroll(
+                            rs.getInt("payroll_id"),
+                            rs.getInt("employee_id"),
+                            rs.getDate("period_start").toLocalDate(),
+                            rs.getDate("period_end").toLocalDate(),
+                            rs.getBigDecimal("base_salary"),
+                            rs.getBigDecimal("bonus"),
+                            rs.getBigDecimal("deductions"),
+                            rs.getBigDecimal("net_pay"),
+                            rs.getDate("payment_date") != null ? rs.getDate("payment_date").toLocalDate() : null,
+                            rs.getString("status")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving payroll with ID " + payrollId, e);
+        }
+
+        return payroll;
+    }
+
 }

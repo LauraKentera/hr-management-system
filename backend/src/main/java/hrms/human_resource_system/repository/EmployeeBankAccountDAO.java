@@ -1,11 +1,14 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeBankAccount;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmployeeBankAccountDAO {
 
     public EmployeeBankAccount getById(int employeeId) {
@@ -93,5 +96,29 @@ public class EmployeeBankAccountDAO {
                 rs.getString("iban")
         );
     }
+
+    public void update(EmployeeBankAccount account) {
+        String sql = "UPDATE EmployeeBankAccount SET bank_name = ?, account_number = ?, iban = ? WHERE employee_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, account.getBankName());
+            ps.setString(2, account.getAccountNumber());
+
+            if (account.getIban() != null)
+                ps.setString(3, account.getIban());
+            else
+                ps.setNull(3, Types.VARCHAR);
+
+            ps.setInt(4, account.getEmployeeId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating bank account for employee ID " + account.getEmployeeId(), e);
+        }
+    }
+
 }
 

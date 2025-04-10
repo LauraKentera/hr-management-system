@@ -1,6 +1,8 @@
 package main.java.hrms.human_resource_system.service;
 
+import main.java.hrms.human_resource_system.model.ContractAnnex;
 import main.java.hrms.human_resource_system.model.EmploymentContract;
+import main.java.hrms.human_resource_system.repository.ContractAnnexDAO;
 import main.java.hrms.human_resource_system.repository.ContractDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
@@ -12,6 +14,7 @@ public class ContractService {
     private final ContractDAO contractDAO;
     private final EmployeeDAO employeeDAO;
     private final PositionDAO positionDAO;
+    private final ContractAnnexDAO contractAnnexDAO = new ContractAnnexDAO();
 
     public ContractService() {
         this.contractDAO = new ContractDAO();
@@ -64,5 +67,9 @@ public class ContractService {
         if (!positionDAO.existsById(contract.getPositionId())) {
             throw new IllegalArgumentException("Position with ID " + contract.getPositionId() + " does not exist.");
         }
+    }
+
+    public List<ContractAnnex> getAnnexesByContractId(int contractId) {
+        return contractAnnexDAO.getAnnexesByContractId(contractId);
     }
 }
