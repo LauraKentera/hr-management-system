@@ -144,4 +144,107 @@ public class UserDAO {
             DatabaseConnection.closeResources(conn, ps, null);
         }
     }
+
+    public void update(int id, User user) {
+        String sql = "UPDATE User SET username = ?, password = ?, role_id = ?, employee_id = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setInt(3, user.getRole().getId());
+            ps.setInt(4, user.getEmployeeId());
+            ps.setInt(5, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating user with ID " + id, e);
+        }
+    }
+
+    public User getByEmployeeId(int employeeId) {
+        String sql = "SELECT * FROM User WHERE employee_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User user = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, employeeId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Role role = roleDAO.getById(rs.getInt("role_id"));
+                user = new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        role,
+                        rs.getInt("employee_id")
+                );
+            }
+
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving user by employee ID: " + employeeId, e);
+        } finally {
+            DatabaseConnection.closeResources(conn, ps, rs);
+        }
+
+        return user;
+    }
+
+    public boolean usernameExists(String username) {
+        String sql = "SELECT COUNT(*) FROM User WHERE username = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new DLException("Error checking username uniqueness", e);
+        }
+    }
+
+    public boolean employeeIdExists(int employeeId) {
+        String sql = "SELECT COUNT(*) FROM User WHERE employee_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new DLException("Error checking employee_id uniqueness", e);
+        }
+    }
+
+    public boolean usernameTakenByOther(String username, int userId) {
+        String sql = "SELECT COUNT(*) FROM User WHERE username = ? AND id != ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setInt(2, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new DLException("Error checking username during update", e);
+        }
+    }
+
+    public boolean employeeIdTakenByOther(int employeeId, int userId) {
+        String sql = "SELECT COUNT(*) FROM User WHERE employee_id = ? AND id != ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, employeeId);
+            ps.setInt(2, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new DLException("Error checking employee_id during update", e);
+        }
+    }
+
+
 }

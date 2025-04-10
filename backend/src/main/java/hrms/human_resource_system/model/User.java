@@ -5,6 +5,7 @@ public class User {
     private String username;
     private String password;
     private Role role;
+    private int employeeId;
 
     public User() {}
 
@@ -13,6 +14,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public User(int id, String username, String password, Role role, int employeeId) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.employeeId = employeeId;
     }
 
     // Getters and Setters
@@ -27,4 +36,8 @@ public class User {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public int getEmployeeId() { return employeeId; }
+    public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
 }
+

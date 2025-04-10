@@ -124,6 +124,8 @@ CREATE TABLE IF NOT EXISTS User
     FOREIGN KEY (employee_id) REFERENCES Employee (id)
 );
 
+ALTER TABLE User ADD CONSTRAINT unique_employee_id UNIQUE (employee_id);
+
 -- ==============================
 -- EMPLOYEE-RELATED DATA
 -- ==============================
