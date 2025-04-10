@@ -9,10 +9,22 @@ public class LoginService {
     private final UserDAO userDAO = new UserDAO();
 
     public User authenticate(String username, String password) {
-        User user = userDAO.getByUsername(username); // we'll create this method next
+        // Validate inputs
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty.");
+        }
+
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty.");
+        }
+
+        User user = userDAO.getByUsername(username);
+
+        // Check if user exists and if password matches
         if (user != null && PasswordUtil.checkPassword(password, user.getPassword())) {
             return user;
         }
-        return null;
+
+        return null;  // Return null if authentication fails
     }
 }

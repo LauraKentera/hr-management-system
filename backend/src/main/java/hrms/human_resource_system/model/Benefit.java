@@ -4,8 +4,8 @@ public class Benefit {
     private int benefitId;
     private String name;
     private String description;
-    private boolean isTaxable;
-    private boolean isActive;
+    private Boolean isTaxable;
+    private Boolean isActive;
 
     public Benefit() {}
 
@@ -42,19 +42,19 @@ public class Benefit {
         this.description = description;
     }
 
-    public boolean isTaxable() {
+    public Boolean isTaxable() {
         return isTaxable;
     }
 
-    public void setTaxable(boolean taxable) {
-        isTaxable = taxable;
+    public void setTaxable(Boolean taxable) {
+        this.isTaxable = taxable;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setActive(Boolean active) {
+        this.isActive = active;
     }
 }

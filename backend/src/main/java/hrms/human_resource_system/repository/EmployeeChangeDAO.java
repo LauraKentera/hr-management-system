@@ -1,6 +1,8 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeChange;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 
+@Repository
 public class EmployeeChangeDAO {
 
     public EmployeeChange getById(int id) {
@@ -109,5 +112,41 @@ public class EmployeeChangeDAO {
                 rs.getBigDecimal("new_salary")
         );
     }
+
+    public void update(int id, EmployeeChange change) {
+        String sql = "UPDATE EmployeeChange SET employee_id = ?, change_date = ?, old_position_id = ?, " +
+                "new_position_id = ?, old_salary = ?, new_salary = ? WHERE change_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, change.getEmployeeId());
+            ps.setDate(2, Date.valueOf(change.getChangeDate()));
+
+            if (change.getOldPositionId() != null) {
+                ps.setInt(3, change.getOldPositionId());
+            } else {
+                ps.setNull(3, Types.INTEGER);
+            }
+
+            ps.setInt(4, change.getNewPositionId());
+
+            if (change.getOldSalary() != null) {
+                ps.setBigDecimal(5, change.getOldSalary());
+            } else {
+                ps.setNull(5, Types.DECIMAL);
+            }
+
+            ps.setBigDecimal(6, change.getNewSalary());
+
+            ps.setInt(7, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating EmployeeChange with ID " + id, e);
+        }
+    }
+
 }
 

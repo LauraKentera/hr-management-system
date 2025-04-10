@@ -1,11 +1,14 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Role;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class RoleDAO {
 
     public List<Role> getAll() {
@@ -26,7 +29,7 @@ public class RoleDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error retrieving roles", e);
         } finally {
             DatabaseConnection.closeResources(conn, ps, rs);
         }
@@ -114,5 +117,23 @@ public class RoleDAO {
             DatabaseConnection.closeResources(conn, ps, null);
         }
     }
+
+    public boolean existsById(int id) {
+        String sql = "SELECT COUNT(*) FROM Role WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error checking if role exists with ID " + id, e);
+        }
+        return false;
+    }
+
 
 }

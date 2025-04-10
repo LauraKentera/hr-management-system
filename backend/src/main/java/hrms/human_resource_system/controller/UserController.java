@@ -2,13 +2,12 @@ package main.java.hrms.human_resource_system.controller;
 
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import main.java.hrms.human_resource_system.model.User;
-import main.java.hrms.human_resource_system.repository.UserDAO;
-import main.resources.util.PasswordUtil;
+import main.java.hrms.human_resource_system.service.UserService;
+import main.java.hrms.human_resource_system.dto.UserCreateRequest;
+import main.java.hrms.human_resource_system.model.Role;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import main.java.hrms.human_resource_system.dto.UserCreateRequest;
-import main.java.hrms.human_resource_system.model.Role;
 
 import java.util.List;
 
@@ -16,42 +15,41 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserService userService; // Inject UserService
+
+    // Constructor Injection for UserService
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
-        if (userDAO.usernameExists(request.getUsername())) {
+        try {
+            // Use UserService to create the user
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());  // Password will be hashed in service
+            user.setRole(new Role(request.getRoleId()));
+            user.setEmployeeId(request.getEmployeeId());
+
+            userService.insert(user);  // Service handles validation and insertion
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("✅ User created.");
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse("Username already exists", 409));
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
         }
-
-        if (userDAO.employeeIdExists(request.getEmployeeId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse("Employee already linked to another user", 409));
-        }
-
-        Role role = new Role();
-        role.setId(request.getRoleId());
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(PasswordUtil.hashPassword(request.getPassword()));
-        user.setRole(role);
-        user.setEmployeeId(request.getEmployeeId());
-
-        userDAO.insert(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("✅ User created.");
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userDAO.getAll();
+        List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
-        User user = userDAO.getById(id);
+        User user = userService.getUserById(id);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -62,34 +60,26 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        userDAO.delete(id);
+        userService.deleteUser(id);  // Delegate to service
         return ResponseEntity.ok("🗑️ User with ID " + id + " deleted.");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody UserCreateRequest request) {
-        if (userDAO.usernameTakenByOther(request.getUsername(), id)) {
+        try {
+            // Use UserService to update the user
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());  // Password will be hashed in service
+            user.setRole(new Role(request.getRoleId()));
+            user.setEmployeeId(request.getEmployeeId());
+
+            userService.update(id, user);  // Service handles validation and update
+
+            return ResponseEntity.ok("✅ User updated.");
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse("Username already taken by another user", 409));
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
         }
-
-        if (userDAO.employeeIdTakenByOther(request.getEmployeeId(), id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse("Employee already linked to another user", 409));
-        }
-
-        Role role = new Role();
-        role.setId(request.getRoleId());
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(PasswordUtil.hashPassword(request.getPassword()));
-        user.setRole(role);
-        user.setEmployeeId(request.getEmployeeId());
-
-        userDAO.update(id, user);
-        return ResponseEntity.ok("✅ User updated.");
     }
-
-
 }

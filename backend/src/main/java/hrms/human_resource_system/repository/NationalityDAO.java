@@ -1,14 +1,16 @@
 package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.Nationality;
+import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NationalityDAOImpl implements NationalityDAO {
+@Repository
+public class NationalityDAO {
 
-    @Override
     public List<Nationality> getAll() {
         String sql = "SELECT * FROM Nationality";
         List<Nationality> nationalities = new ArrayList<>();
@@ -19,12 +21,12 @@ public class NationalityDAOImpl implements NationalityDAO {
 
             while (rs.next()) {
                 Nationality nationality = new Nationality(
-                    rs.getInt("nationality_id"),
-                    rs.getString("name"),
-                    rs.getInt("user_id"),
-                    rs.getTimestamp("modification_date") != null ? 
-                        rs.getTimestamp("modification_date").toLocalDateTime() : null,
-                    rs.getBoolean("is_active")
+                        rs.getInt("nationality_id"),
+                        rs.getString("name"),
+                        rs.getInt("user_id"),
+                        rs.getTimestamp("modification_date") != null ?
+                                rs.getTimestamp("modification_date").toLocalDateTime() : null,
+                        rs.getBoolean("is_active")
                 );
                 nationalities.add(nationality);
             }
@@ -34,7 +36,6 @@ public class NationalityDAOImpl implements NationalityDAO {
         return nationalities;
     }
 
-    @Override
     public Nationality getById(Integer nationalityId) {
         String sql = "SELECT * FROM Nationality WHERE nationality_id = ?";
         Nationality nationality = null;
@@ -46,12 +47,12 @@ public class NationalityDAOImpl implements NationalityDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     nationality = new Nationality(
-                        rs.getInt("nationality_id"),
-                        rs.getString("name"),
-                        rs.getInt("user_id"),
-                        rs.getTimestamp("modification_date") != null ? 
-                            rs.getTimestamp("modification_date").toLocalDateTime() : null,
-                        rs.getBoolean("is_active")
+                            rs.getInt("nationality_id"),
+                            rs.getString("name"),
+                            rs.getInt("user_id"),
+                            rs.getTimestamp("modification_date") != null ?
+                                    rs.getTimestamp("modification_date").toLocalDateTime() : null,
+                            rs.getBoolean("is_active")
                     );
                 }
             }
@@ -61,10 +62,9 @@ public class NationalityDAOImpl implements NationalityDAO {
         return nationality;
     }
 
-    @Override
     public void insert(Nationality nationality) {
         String sql = "INSERT INTO Nationality (name, user_id, modification_date, is_active) " +
-                     "VALUES (?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -76,7 +76,6 @@ public class NationalityDAOImpl implements NationalityDAO {
 
             ps.executeUpdate();
 
-            // Retrieve auto-generated nationality_id
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     nationality.setNationalityId(rs.getInt(1));
@@ -87,10 +86,9 @@ public class NationalityDAOImpl implements NationalityDAO {
         }
     }
 
-    @Override
     public void update(Nationality nationality) {
         String sql = "UPDATE Nationality SET name = ?, user_id = ?, modification_date = ?, is_active = ? " +
-                     "WHERE nationality_id = ?";
+                "WHERE nationality_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -107,7 +105,6 @@ public class NationalityDAOImpl implements NationalityDAO {
         }
     }
 
-    @Override
     public void delete(Integer nationalityId) {
         String sql = "DELETE FROM Nationality WHERE nationality_id = ?";
 

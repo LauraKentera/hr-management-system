@@ -1,7 +1,9 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import  main.java.hrms.human_resource_system.model.BenefitItem;
 import  main.java.hrms.human_resource_system.service.BenefitItemService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +41,16 @@ public class BenefitItemController {
         service.delete(id);
         return ResponseEntity.ok("🗑️ Benefit item deleted.");
     }
+
+    @PostMapping
+    public ResponseEntity<?> createBenefitItem(@RequestBody BenefitItem item) {
+        try {
+            service.insert(item);
+            return ResponseEntity.status(HttpStatus.CREATED).body("BenefitItem created.");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new CustomErrorResponse(ex.getMessage(), 400));
+        }
+    }
+
 }
 

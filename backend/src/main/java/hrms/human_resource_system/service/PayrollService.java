@@ -1,7 +1,6 @@
 package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.Payroll;
-import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PayrollDAO;
 
 import java.util.List;
@@ -9,11 +8,17 @@ import java.util.List;
 public class PayrollService {
 
     private final PayrollDAO payrollDAO;
-    private final EmployeeDAO employeeDAO;
 
     public PayrollService() {
         this.payrollDAO = new PayrollDAO();
-        this.employeeDAO = new EmployeeDAO(); 
+    }
+
+    public Payroll getById(int id) {
+        return payrollDAO.getById(id);
+    }
+
+    public List<Payroll> getAll() {
+        return payrollDAO.getAll();
     }
 
     public List<Payroll> getAllPayrolls() {
@@ -34,15 +39,30 @@ public class PayrollService {
         payrollDAO.delete(payrollId);
     }
 
+    // Validation logic for Payroll fields
     private void validatePayroll(Payroll payroll) {
-        
-        if (payroll.getBaseSalary().compareTo(new java.math.BigDecimal("0")) <= 0) {
-            throw new IllegalArgumentException("Base salary must be greater than 0.");
+        if (payroll.getEmployeeId() <= 0) {
+            throw new IllegalArgumentException("⛔ Invalid employee ID.");
         }
 
-        
-        if (!employeeDAO.existsById(payroll.getEmployeeId())) {
-            throw new IllegalArgumentException("Employee with ID " + payroll.getEmployeeId() + " does not exist.");
+        if (payroll.getBaseSalary() == null || payroll.getBaseSalary().compareTo(new java.math.BigDecimal("0")) <= 0) {
+            throw new IllegalArgumentException("⛔ Salary must be greater than 0.");
         }
+
+        if (payroll.getPeriodStart() == null || payroll.getPeriodEnd() == null) {
+            throw new IllegalArgumentException("⛔ Payroll period start and end dates cannot be null.");
+        }
+
+        if (!isPayrollPeriodValid(payroll)) {
+            throw new IllegalArgumentException("⛔ Payroll start date must be before end date.");
+        }
+
+        // Additional business rule checks (optional)
+        // e.g., if salary should be checked against employee's contract type or position
+    }
+
+    // Optional validation method to check if the payroll period is valid
+    public boolean isPayrollPeriodValid(Payroll payroll) {
+        return payroll.getPeriodStart().isBefore(payroll.getPeriodEnd());
     }
 }

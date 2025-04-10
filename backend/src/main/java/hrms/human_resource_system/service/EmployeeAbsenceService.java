@@ -18,11 +18,31 @@ public class EmployeeAbsenceService {
     }
 
     public void insert(EmployeeAbsence entity) {
+        // Validate before inserting
+        validateEmployeeAbsence(entity);
         dao.insert(entity);
     }
 
     public void delete(int id) {
         dao.delete(id);
     }
-}
 
+    // Validation method for EmployeeAbsence
+    private void validateEmployeeAbsence(EmployeeAbsence entity) {
+        // Validate required fields
+        if (entity.getAbsenceTypeId() <= 0) {
+            throw new IllegalArgumentException("Absence Type ID is required.");
+        }
+        if (entity.getStartDate() == null) {
+            throw new IllegalArgumentException("Start date is required.");
+        }
+        if (entity.getEndDate() == null) {
+            throw new IllegalArgumentException("End date is required.");
+        }
+
+        // Ensure logical condition: start date should be before end date
+        if (entity.getStartDate().isAfter(entity.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+    }
+}

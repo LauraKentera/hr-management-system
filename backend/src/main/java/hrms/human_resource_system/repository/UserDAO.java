@@ -3,11 +3,13 @@ package main.java.hrms.human_resource_system.repository;
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Role;
 import main.java.hrms.human_resource_system.model.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class UserDAO {
 
     private final RoleDAO roleDAO = new RoleDAO();

@@ -1,12 +1,15 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeAbsence;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmployeeAbsenceDAO {
 
     public EmployeeAbsence getById(int id) {
@@ -93,5 +96,26 @@ public class EmployeeAbsenceDAO {
                 rs.getString("notes")
         );
     }
+
+    public void update(int id, EmployeeAbsence absence) {
+        String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ? WHERE absence_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, absence.getEmployeeId());
+            ps.setInt(2, absence.getAbsenceTypeId());
+            ps.setDate(3, Date.valueOf(absence.getStartDate()));
+            ps.setDate(4, Date.valueOf(absence.getEndDate()));
+            ps.setString(5, absence.getNotes());
+            ps.setInt(6, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating employee absence with ID " + id, e);
+        }
+    }
+
 }
 

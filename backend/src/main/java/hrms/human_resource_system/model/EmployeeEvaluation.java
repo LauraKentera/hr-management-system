@@ -10,13 +10,12 @@ public class EmployeeEvaluation {
     private LocalDate evaluationDate;
     private String comment;
     private Double score;
-    private Integer userId;
+    private int userId;
     private LocalDateTime entryDate;
 
-    public EmployeeEvaluation() {}
-
+    // Constructor
     public EmployeeEvaluation(int employeeEvaluationId, Integer evaluationId, LocalDate evaluationDate,
-                              String comment, Double score, Integer userId, LocalDateTime entryDate) {
+                              String comment, Double score, int userId, LocalDateTime entryDate) {
         this.employeeEvaluationId = employeeEvaluationId;
         this.evaluationId = evaluationId;
         this.evaluationDate = evaluationDate;
@@ -26,6 +25,7 @@ public class EmployeeEvaluation {
         this.entryDate = entryDate;
     }
 
+    // Getters and Setters
     public int getEmployeeEvaluationId() {
         return employeeEvaluationId;
     }
@@ -66,11 +66,11 @@ public class EmployeeEvaluation {
         this.score = score;
     }
 
-    public Integer getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

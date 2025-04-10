@@ -1,13 +1,14 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmployeeEvaluationDAO {
 
     public EmployeeEvaluation getById(int id) {
@@ -25,7 +26,7 @@ public class EmployeeEvaluationDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Or throw DLException
+            throw new DLException("Error retrieving employee evaluation with ID " + id, e);
         }
 
         return evaluation;
@@ -44,33 +45,51 @@ public class EmployeeEvaluationDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error fetching all employee evaluations", e);
         }
 
         return list;
     }
 
-    public void insert(EmployeeEvaluation eval) {
-        String sql = "INSERT INTO EmployeeEvaluation (evaluation_id, evaluation_date, comment, score, user_id) " +
-                "VALUES (?, ?, ?, ?, ?)";
+    public void insert(EmployeeEvaluation evaluation) {
+        String sql = "INSERT INTO EmployeeEvaluation (evaluation_id, evaluation_date, comment, score, user_id, entry_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            if (eval.getEvaluationId() != null)
-                ps.setInt(1, eval.getEvaluationId());
-            else
-                ps.setNull(1, Types.INTEGER);
-
-            ps.setDate(2, Date.valueOf(eval.getEvaluationDate()));
-            ps.setString(3, eval.getComment());
-            ps.setDouble(4, eval.getScore());
-            ps.setInt(5, eval.getUserId());
+            ps.setInt(1, evaluation.getEvaluationId());
+            ps.setDate(2, Date.valueOf(evaluation.getEvaluationDate()));
+            ps.setString(3, evaluation.getComment());
+            ps.setDouble(4, evaluation.getScore());
+            ps.setInt(5, evaluation.getUserId());
+            ps.setTimestamp(6, Timestamp.valueOf(evaluation.getEntryDate()));
 
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error inserting employee evaluation", e);
+        }
+    }
+
+    public void update(int id, EmployeeEvaluation evaluation) {
+        String sql = "UPDATE EmployeeEvaluation SET evaluation_id = ?, evaluation_date = ?, comment = ?, score = ?, user_id = ?, entry_date = ? WHERE employee_evaluation_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, evaluation.getEvaluationId());
+            ps.setDate(2, Date.valueOf(evaluation.getEvaluationDate()));
+            ps.setString(3, evaluation.getComment());
+            ps.setDouble(4, evaluation.getScore());
+            ps.setInt(5, evaluation.getUserId());
+            ps.setTimestamp(6, Timestamp.valueOf(evaluation.getEntryDate()));
+            ps.setInt(7, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DLException("Error updating employee evaluation with ID " + id, e);
         }
     }
 
@@ -84,19 +103,19 @@ public class EmployeeEvaluationDAO {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error deleting employee evaluation with ID " + id, e);
         }
     }
 
     private EmployeeEvaluation mapResultSet(ResultSet rs) throws SQLException {
         return new EmployeeEvaluation(
                 rs.getInt("employee_evaluation_id"),
-                rs.getInt("evaluation_id") == 0 ? null : rs.getInt("evaluation_id"),
-                rs.getDate("evaluation_date") != null ? rs.getDate("evaluation_date").toLocalDate() : null,
+                rs.getInt("evaluation_id"),
+                rs.getDate("evaluation_date").toLocalDate(),
                 rs.getString("comment"),
                 rs.getDouble("score"),
                 rs.getInt("user_id"),
-                rs.getTimestamp("entry_date") != null ? rs.getTimestamp("entry_date").toLocalDateTime() : null
+                rs.getTimestamp("entry_date").toLocalDateTime()
         );
     }
 }
