@@ -4,6 +4,7 @@ public class UserCreateRequest {
     private String username;
     private String password;
     private int roleId;
+    private int employeeId;
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -13,4 +14,7 @@ public class UserCreateRequest {
 
     public int getRoleId() { return roleId; }
     public void setRoleId(int roleId) { this.roleId = roleId; }
+
+    public int getEmployeeId() { return employeeId; }
+    public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
 }

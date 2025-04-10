@@ -1,5 +1,6 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import main.java.hrms.human_resource_system.model.User;
 import main.java.hrms.human_resource_system.repository.UserDAO;
 import main.resources.util.PasswordUtil;
@@ -18,16 +19,25 @@ public class UserController {
     private final UserDAO userDAO = new UserDAO();
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody UserCreateRequest request) {
-        String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
+    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
+        if (userDAO.usernameExists(request.getUsername())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse("Username already exists", 409));
+        }
+
+        if (userDAO.employeeIdExists(request.getEmployeeId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse("Employee already linked to another user", 409));
+        }
 
         Role role = new Role();
         role.setId(request.getRoleId());
 
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(hashedPassword);
+        user.setPassword(PasswordUtil.hashPassword(request.getPassword()));
         user.setRole(role);
+        user.setEmployeeId(request.getEmployeeId());
 
         userDAO.insert(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("✅ User created.");
@@ -55,5 +65,31 @@ public class UserController {
         userDAO.delete(id);
         return ResponseEntity.ok("🗑️ User with ID " + id + " deleted.");
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody UserCreateRequest request) {
+        if (userDAO.usernameTakenByOther(request.getUsername(), id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse("Username already taken by another user", 409));
+        }
+
+        if (userDAO.employeeIdTakenByOther(request.getEmployeeId(), id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse("Employee already linked to another user", 409));
+        }
+
+        Role role = new Role();
+        role.setId(request.getRoleId());
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(PasswordUtil.hashPassword(request.getPassword()));
+        user.setRole(role);
+        user.setEmployeeId(request.getEmployeeId());
+
+        userDAO.update(id, user);
+        return ResponseEntity.ok("✅ User updated.");
+    }
+
 
 }

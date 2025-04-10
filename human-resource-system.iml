@@ -3,7 +3,6 @@
   <component name="AdditionalModuleElements">
     <content url="file://$MODULE_DIR$" dumb="true">
       <sourceFolder url="file://$MODULE_DIR$/backend/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/backend/src/test/java/hrms/human_resource_system" />
     </content>
   </component>
 </module>
