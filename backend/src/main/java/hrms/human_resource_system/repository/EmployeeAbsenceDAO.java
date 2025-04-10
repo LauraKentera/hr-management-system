@@ -52,6 +52,28 @@ public class EmployeeAbsenceDAO {
         return list;
     }
 
+    public List<EmployeeAbsence> getByEmployeeId(int employeeId) {
+        String sql = "SELECT * FROM EmployeeAbsence WHERE employee_id = ?";
+        List<EmployeeAbsence> list = new ArrayList<>();
+    
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+    
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+    
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving absences for employee ID " + employeeId, e);
+        }
+    
+        return list;
+    }
+    
+
     public void insert(EmployeeAbsence absence) {
         String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes) " +
                 "VALUES (?, ?, ?, ?, ?)";
