@@ -10,6 +10,11 @@ import java.util.List;
 public class BenefitService {
 
     private final BenefitDAO dao = new BenefitDAO();
+    private final BenefitDAO benefitDAO;
+
+    public BenefitService(BenefitDAO benefitDAO) {
+        this.benefitDAO = benefitDAO;
+    }
 
     public Benefit getById(int id) {
         return dao.getById(id);
@@ -48,5 +53,9 @@ public class BenefitService {
         }
 
         // Add more business rule validation as needed
+    }
+
+    public Benefit getBenefitById(int id) {
+        return benefitDAO.getById(id);
     }
 }

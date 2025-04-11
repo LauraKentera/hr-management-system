@@ -3,8 +3,11 @@ package main.java.hrms.human_resource_system.controller;
 import main.java.hrms.human_resource_system.dto.EmployeeBenefitRequestDTO;
 import main.java.hrms.human_resource_system.dto.EmployeeBenefitResponseDTO;
 import main.java.hrms.human_resource_system.mapper.EmployeeBenefitMapper;
+import main.java.hrms.human_resource_system.model.Benefit;
 import main.java.hrms.human_resource_system.model.EmployeeBenefit;
 import main.java.hrms.human_resource_system.service.EmployeeBenefitService;
+import main.java.hrms.human_resource_system.service.BenefitService;  // Import BenefitService
+import main.java.hrms.human_resource_system.service.BenefitItemService;  // Import BenefitItemService
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +19,16 @@ import java.util.stream.Collectors;
 public class EmployeeBenefitController {
 
     private final EmployeeBenefitService employeeBenefitService;
+    private final BenefitService benefitService;  // Add BenefitService
+    private final BenefitItemService benefitItemService;  // Add BenefitItemService
 
-    public EmployeeBenefitController(EmployeeBenefitService employeeBenefitService) {
+    // Constructor injection
+    public EmployeeBenefitController(EmployeeBenefitService employeeBenefitService,
+                                     BenefitService benefitService,
+                                     BenefitItemService benefitItemService) {
         this.employeeBenefitService = employeeBenefitService;
+        this.benefitService = benefitService;  // Initialize BenefitService
+        this.benefitItemService = benefitItemService;  // Initialize BenefitItemService
     }
 
     @GetMapping
@@ -49,9 +59,18 @@ public class EmployeeBenefitController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateEmployeeBenefit(@PathVariable int id, @RequestBody EmployeeBenefitRequestDTO dto) {
         EmployeeBenefit eb = EmployeeBenefitMapper.toEntity(dto);
-        eb.setBenefit(id);
-        employeeBenefitService.updateEmployeeBenefit(id, eb);
-        return ResponseEntity.ok("✅ Employee Benefit updated.");
+
+        // Retrieve the Benefit object (not BenefitItem)
+        Benefit benefit = benefitService.getBenefitById(id);  // This retrieves a Benefit, not a BenefitItem
+
+        if (benefit != null) {
+            eb.setBenefit(benefit);  // Set the Benefit object
+            employeeBenefitService.updateEmployeeBenefit(id, eb);
+            return ResponseEntity.ok("✅ Employee Benefit updated.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("❌ Benefit not found for the provided ID.");
+        }
     }
 
     @DeleteMapping("/{id}")

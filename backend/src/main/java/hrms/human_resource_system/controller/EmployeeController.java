@@ -41,7 +41,7 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<String> createEmployee(@RequestBody EmployeeCreateRequestDTO dto) {
         try {
-            Employee employee = EmployeeMapper.toEntity(dto);
+            Employee employee = EmployeeMapper.toEntity(dto); // Correct method for creating
             employeeService.addEmployee(employee);
             return ResponseEntity.status(HttpStatus.CREATED).body("✅ Employee created.");
         } catch (IllegalArgumentException e) {
@@ -52,7 +52,7 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateEmployee(@PathVariable int id, @RequestBody EmployeeUpdateRequestDTO dto) {
         try {
-            Employee employee = EmployeeMapper.toEntity(dto);
+            Employee employee = EmployeeMapper.toEntity(dto); // Correct method for updating
             employeeService.updateEmployee(id, employee);
             return ResponseEntity.ok("✅ Employee updated.");
         } catch (IllegalArgumentException e) {

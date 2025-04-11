@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public class EmployeeBenefit {
     private int employeeBenefitId;
     private Employee employee;
-    private Benefit benefit;
+    private Benefit benefit;  // It should be Benefit, not BenefitItem
     private LocalDate fromDate;
     private LocalDate toDate;
     private boolean useStandardAmount;
@@ -19,11 +19,11 @@ public class EmployeeBenefit {
     }
 
     public EmployeeBenefit(int employeeBenefitId, Employee employee, Benefit benefit, LocalDate fromDate,
-            LocalDate toDate, boolean useStandardAmount, BigDecimal amount, BigDecimal coefficient,
-            String description, boolean isActive) {
+                           LocalDate toDate, boolean useStandardAmount, BigDecimal amount, BigDecimal coefficient,
+                           String description, boolean isActive) {
         this.employeeBenefitId = employeeBenefitId;
         this.employee = employee;
-        this.benefit = benefit;
+        this.benefit = benefit;  // It should be Benefit
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.useStandardAmount = useStandardAmount;
@@ -51,10 +51,11 @@ public class EmployeeBenefit {
     }
 
     public Benefit getBenefit() {
-        return benefit;
+        return benefit;  // It should return a Benefit object
     }
 
-    public void setBenefit(BenefitItem benefit) {
+    // Corrected setBenefit method to accept Benefit type instead of BenefitItem
+    public void setBenefit(Benefit benefit) {
         this.benefit = benefit;
     }
 

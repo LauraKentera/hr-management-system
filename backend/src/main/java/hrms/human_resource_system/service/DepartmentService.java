@@ -42,4 +42,9 @@ public class DepartmentService {
             throw new IllegalArgumentException("Manager with ID " + department.getManagerId() + " does not exist.");
         }
     }
+
+    // Implement the missing method to fetch a department by ID
+    public Department getDepartmentById(Integer departmentId) {
+        return dao.getById(departmentId);  // Fetch the department using the departmentId from the DAO
+    }
 }
