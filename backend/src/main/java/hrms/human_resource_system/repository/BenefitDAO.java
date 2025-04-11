@@ -2,6 +2,7 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Benefit;
+import main.java.hrms.human_resource_system.util.AuditLogger;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -74,19 +75,29 @@ public class BenefitDAO {
         return benefits;
     }
 
-    public void insert(Benefit benefit) {
+    public void insert(Benefit benefit, int performedBy) {
         String sql = "INSERT INTO Benefit (name, description, is_taxable, is_active) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
 
         try {
             conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, benefit.getName());
             ps.setString(2, benefit.getDescription());
             ps.setBoolean(3, benefit.isTaxable());
             ps.setBoolean(4, benefit.isActive());
             ps.executeUpdate();
+
+            // Retrieve the generated ID
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    benefit.setBenefitId(generatedKeys.getInt(1));
+                }
+            }
+
+            // Log the change
+            AuditLogger.logChange("Benefit", benefit.getBenefitId(), "INSERT", performedBy, null, benefit);
 
         } catch (SQLException e) {
             throw new DLException("Error inserting benefit", e);
@@ -95,8 +106,9 @@ public class BenefitDAO {
         }
     }
 
-    public void delete(int id) {
+    public void delete(int id, int performedBy) {
         String sql = "DELETE FROM Benefit WHERE benefit_id = ?";
+        Benefit oldBenefit = getById(id); // Fetch old data for logging
         Connection conn = null;
         PreparedStatement ps = null;
 
@@ -106,6 +118,9 @@ public class BenefitDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
 
+            // Log the change
+            AuditLogger.logChange("Benefit", id, "DELETE", performedBy, oldBenefit, null);
+
         } catch (SQLException e) {
             throw new DLException("Error deleting benefit with ID " + id, e);
         } finally {
@@ -113,8 +128,9 @@ public class BenefitDAO {
         }
     }
 
-    public void update(int id, Benefit benefit) {
+    public void update(int id, Benefit benefit, int performedBy) {
         String sql = "UPDATE Benefit SET name = ?, description = ?, is_taxable = ?, is_active = ? WHERE benefit_id = ?";
+        Benefit oldBenefit = getById(id); // Fetch old data for logging
         Connection conn = null;
         PreparedStatement ps = null;
 
@@ -126,8 +142,10 @@ public class BenefitDAO {
             ps.setBoolean(3, benefit.isTaxable());
             ps.setBoolean(4, benefit.isActive());
             ps.setInt(5, id);
-
             ps.executeUpdate();
+
+            // Log the change
+            AuditLogger.logChange("Benefit", id, "UPDATE", performedBy, oldBenefit, benefit);
 
         } catch (SQLException e) {
             throw new DLException("Error updating benefit with ID " + id, e);
