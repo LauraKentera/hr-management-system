@@ -1,6 +1,7 @@
 package main.java.hrms.human_resource_system.controller;
 
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.User;
 import main.java.hrms.human_resource_system.service.UserService;
 import main.java.hrms.human_resource_system.dto.UserCreateRequest;
@@ -15,9 +16,8 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService; // Inject UserService
+    private final UserService userService;
 
-    // Constructor Injection for UserService
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -25,61 +25,100 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
         try {
-            // Use UserService to create the user
-            User user = new User();
-            user.setUsername(request.getUsername());
-            user.setPassword(request.getPassword());  // Password will be hashed in service
-            user.setRole(new Role(request.getRoleId()));
-            user.setEmployeeId(request.getEmployeeId());
-
-            userService.insert(user);  // Service handles validation and insertion
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("✅ User created.");
+            User createdUser = userService.createUser(
+                request.getUsername(),
+                request.getPassword(),
+                request.getRoleId(),
+                request.getEmployeeId()
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse(e.getMessage(), 409));
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating user", 500));
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving users", 500));
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
-        User user = userService.getUserById(id);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
+    public ResponseEntity<?> getUserById(@PathVariable int id) {
+        try {
+            User user = userService.getUserById(id);
+            return user != null
+                    ? ResponseEntity.ok(user)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("User not found with id: " + id, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving user", 500));
         }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);  // Delegate to service
-        return ResponseEntity.ok("🗑️ User with ID " + id + " deleted.");
+    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting user", 500));
+        }
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody UserCreateRequest request) {
         try {
-            // Use UserService to update the user
-            User user = new User();
-            user.setUsername(request.getUsername());
-            user.setPassword(request.getPassword());  // Password will be hashed in service
-            user.setRole(new Role(request.getRoleId()));
-            user.setEmployeeId(request.getEmployeeId());
-
-            userService.update(id, user);  // Service handles validation and update
-
-            return ResponseEntity.ok("✅ User updated.");
+            User updatedUser = userService.updateUser(
+                id,
+                request.getUsername(),
+                request.getPassword(),
+                request.getRoleId(),
+                request.getEmployeeId()
+            );
+            return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse(e.getMessage(), 409));
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating user", 500));
         }
     }
 }

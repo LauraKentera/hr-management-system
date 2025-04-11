@@ -4,34 +4,54 @@ import main.java.hrms.human_resource_system.model.EmployeeChange;
 import main.java.hrms.human_resource_system.repository.EmployeeChangeDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
+@Service
 public class EmployeeChangeService {
 
     private final EmployeeChangeDAO dao = new EmployeeChangeDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final PositionDAO positionDAO = new PositionDAO();
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
     // Get EmployeeChange by ID
     public EmployeeChange getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
     // Get all EmployeeChanges
     public List<EmployeeChange> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
     // Insert new EmployeeChange after validation
     public void insert(EmployeeChange entity) {
-        validateEmployeeChange(entity);  // Validate before inserting
-        dao.insert(entity);
+        wrap(() -> {
+            validateEmployeeChange(entity);  // Validate before inserting
+            dao.insert(entity);
+            return null;
+        });
     }
 
     // Delete an EmployeeChange by ID
     public void delete(int id) {
-        dao.delete(id);
+        wrap(() -> {
+            dao.delete(id);
+            return null;
+        });
     }
 
     // Validation for EmployeeChange

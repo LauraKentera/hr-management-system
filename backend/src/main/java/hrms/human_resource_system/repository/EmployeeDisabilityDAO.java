@@ -83,6 +83,49 @@ public class EmployeeDisabilityDAO {
         }
     }
 
+    public void update(EmployeeDisability d) {
+        String sql = "UPDATE EmployeeDisability SET " +
+                "employee_id = ?, " +
+                "disability_category_id = ?, " +
+                "official_code = ?, " +
+                "from_date = ?, " +
+                "to_date = ?, " +
+                "description = ?, " +
+                "percentage = ?, " +
+                "is_active = ? " +
+                "WHERE employee_disability_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, d.getEmployeeId());
+            ps.setInt(2, d.getDisabilityCategoryId());
+            ps.setString(3, d.getOfficialCode());
+            ps.setDate(4, Date.valueOf(d.getFromDate()));
+            if (d.getToDate() != null) {
+                ps.setDate(5, Date.valueOf(d.getToDate()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
+            ps.setString(6, d.getDescription());
+            if (d.getPercentage() != null) {
+                ps.setInt(7, d.getPercentage());
+            } else {
+                ps.setNull(7, Types.INTEGER);
+            }
+            ps.setBoolean(8, d.isActive());
+            ps.setInt(9, d.getEmployeeDisabilityId());
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Updating EmployeeDisability failed, no rows affected.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void delete(int id) {
         String sql = "DELETE FROM EmployeeDisability WHERE employee_disability_id = ?";
 

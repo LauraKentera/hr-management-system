@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class PayrollService {
@@ -25,30 +26,56 @@ public class PayrollService {
         this.payrollDAO = new PayrollDAO();
     }
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+    // Get Payroll by ID
     public Payroll getById(int id) {
-        return payrollDAO.getById(id);
+        return wrap(() -> payrollDAO.getById(id));
     }
 
+    // Get all Payrolls
     public List<Payroll> getAll() {
-        return payrollDAO.getAll();
+        return wrap(payrollDAO::getAll);
     }
 
+    // Get all Payrolls (duplicate method, consider removing if not needed)
     public List<Payroll> getAllPayrolls() {
-        return payrollDAO.getAll();
+        return wrap(payrollDAO::getAll);
     }
 
+    // Add new Payroll
     public void addPayroll(Payroll payroll) {
-        validatePayroll(payroll);
-        payrollDAO.insert(payroll);
+        wrap(() -> {
+            validatePayroll(payroll);
+            payrollDAO.insert(payroll);
+            return null;  // Return type is Void
+        });
     }
 
+    // Update existing Payroll
     public void updatePayroll(Payroll payroll) {
-        validatePayroll(payroll);
-        payrollDAO.update(payroll);
+        wrap(() -> {
+            validatePayroll(payroll);
+            payrollDAO.update(payroll);
+            return null;  // Return type is Void
+        });
     }
 
+    // Delete Payroll by ID
     public void deletePayroll(int payrollId) {
-        payrollDAO.delete(payrollId);
+        wrap(() -> {
+            payrollDAO.delete(payrollId);
+            return null;  // Return type is Void
+        });
     }
 
     // Validation logic for Payroll fields

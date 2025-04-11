@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class RoleService {
@@ -17,32 +18,56 @@ public class RoleService {
         this.roleDAO = roleDAO;
     }
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+    // Get all roles
     public List<Role> getAllRoles() {
-        return roleDAO.getAll();
+        return wrap(roleDAO::getAll);
     }
 
+    // Get role by ID
     public Role getRoleById(int id) {
-        return roleDAO.getById(id);
+        return wrap(() -> roleDAO.getById(id));
     }
 
+    // Add a new role
     public void addRole(Role role) {
-        // Validate role before adding
-        validateRole(role);
-        roleDAO.insert(role);
+        wrap(() -> {
+            validateRole(role);  // Validate before adding
+            roleDAO.insert(role);
+            return null;  // Return type is Void
+        });
     }
 
+    // Update an existing role
     public void updateRole(Role role) {
-        // Validate role before updating
-        validateRole(role);
-        roleDAO.update(role);
+        wrap(() -> {
+            validateRole(role);  // Validate before updating
+            roleDAO.update(role);
+            return null;  // Return type is Void
+        });
     }
 
+    // Delete role by ID
     public void deleteRole(int id) {
-        roleDAO.delete(id);
+        wrap(() -> {
+            roleDAO.delete(id);
+            return null;  // Return type is Void
+        });
     }
 
+    // Check if role exists by ID
     public boolean roleExistsById(int id) {
-        return roleDAO.existsById(id);
+        return wrap(() -> roleDAO.existsById(id));
     }
 
     // Validation method for Role
@@ -50,6 +75,6 @@ public class RoleService {
         if (role.getName() == null || role.getName().isEmpty()) {
             throw new IllegalArgumentException("Role name is required.");
         }
-        // You can add additional validations if necessary (e.g., name length, uniqueness check)
+        // Add other validations if necessary (e.g., name length, uniqueness check)
     }
 }

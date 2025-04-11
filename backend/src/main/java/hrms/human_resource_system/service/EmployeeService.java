@@ -4,6 +4,7 @@ import main.java.hrms.human_resource_system.model.Employee;
 import main.java.hrms.human_resource_system.repository.DepartmentDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.RoleDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,7 +18,9 @@ public class EmployeeService {
     private final DepartmentDAO departmentDAO;
     private final RoleDAO roleDAO;
 
-    // Constructor injection
+
+    // Constructor injection for DAOs
+    @Autowired
     public EmployeeService(EmployeeDAO employeeDAO, DepartmentDAO departmentDAO, RoleDAO roleDAO) {
         this.employeeDAO = employeeDAO;
         this.departmentDAO = departmentDAO;
@@ -65,9 +68,6 @@ public class EmployeeService {
     }
 
     public void validateEmployee(Employee employee) {
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee cannot be null");
-        }
         if (employee.getPIN() == null || employee.getPIN().isEmpty()) {
             throw new IllegalArgumentException("PIN is required");
         }
@@ -95,12 +95,15 @@ public class EmployeeService {
         }
     }
 
-    public Employee addEmployee(Employee employee) {
+
+    // Add a new employee
+    public void addEmployee(Employee employee) {
         validateEmployee(employee);
         return employeeDAO.insert(employee);
     }
 
-    public Employee updateEmployee(int id, Employee employee) {
+    // Update an existing employee by ID
+    public void updateEmployee(int id, Employee employee) {
         validateEmployee(employee);
         if (getEmployeeById(id) == null) {
             throw new IllegalArgumentException("Employee not found with ID: " + id);
@@ -109,6 +112,7 @@ public class EmployeeService {
         return employeeDAO.update(employee);
     }
 
+    // Delete an employee by ID
     public void deleteEmployee(int id) {
         if (getEmployeeById(id) == null) {
             throw new IllegalArgumentException("Employee not found with ID: " + id);
@@ -116,10 +120,12 @@ public class EmployeeService {
         employeeDAO.delete(id);
     }
 
+    // Retrieve all employees
     public List<Employee> getAllEmployees() {
         return employeeDAO.getAll();
     }
 
+    // Retrieve a specific employee by ID
     public Employee getEmployeeById(int id) {
         return employeeDAO.getById(id);
     }
@@ -131,3 +137,4 @@ public class EmployeeService {
                 .toList();
     }
 }
+

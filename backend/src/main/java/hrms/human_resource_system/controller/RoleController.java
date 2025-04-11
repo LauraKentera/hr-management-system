@@ -1,69 +1,115 @@
 package main.java.hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.model.Role;
-import main.java.hrms.human_resource_system.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
+import main.java.hrms.human_resource_system.model.EmployeeDisability;
+import main.java.hrms.human_resource_system.service.EmployeeDisabilityService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")  // URL path for the Role endpoints
-public class RoleController {
+@RequestMapping("/api/employee-disabilities")
+public class EmployeeDisabilityController {
 
-    private final RoleService roleService;
+    private final EmployeeDisabilityService service;
 
-    @Autowired
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
+    // Constructor injection
+    public EmployeeDisabilityController(EmployeeDisabilityService service) {
+        this.service = service;
     }
 
-    // GET all roles
     @GetMapping
-    public ResponseEntity<List<Role>> getAllRoles() {
-        List<Role> roles = roleService.getAllRoles();
-        return ResponseEntity.ok(roles);
+    public ResponseEntity<?> getAll() {
+        try {
+            List<EmployeeDisability> records = service.getAll();
+            return ResponseEntity.ok(records);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee disability records", 500));
+        }
     }
 
-    // GET role by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Role> getRoleById(@PathVariable int id) {
-        Role role = roleService.getRoleById(id);
-        if (role != null) {
-            return ResponseEntity.ok(role);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getById(@PathVariable int id) {
+        try {
+            EmployeeDisability record = service.getById(id);
+            return record != null
+                    ? ResponseEntity.ok(record)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("Employee disability record not found with id: " + id, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee disability record", 500));
         }
     }
 
-    // POST new role
     @PostMapping
-    public ResponseEntity<String> createRole(@RequestBody Role role) {
-        roleService.addRole(role);
-        return ResponseEntity.status(201).body("Role created successfully.");
-    }
-
-    // PUT update role
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateRole(@PathVariable int id, @RequestBody Role role) {
-        if (roleService.roleExistsById(id)) {
-            role.setId(id);  // Ensure the role ID is correct before updating
-            roleService.updateRole(role);
-            return ResponseEntity.ok("Role updated successfully.");
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> create(@RequestBody EmployeeDisability record) {
+        try {
+            EmployeeDisability createdRecord = service.create(record);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRecord);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating employee disability record", 500));
         }
     }
 
-    // DELETE role by ID
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody EmployeeDisability record) {
+        try {
+            // Ensure path ID matches the entity ID if present in body
+            if (record.getId() != null && record.getId() != id) {
+                return ResponseEntity.badRequest()
+                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
+            }
+            record.setId(id);
+            
+            EmployeeDisability updatedRecord = service.update(record);
+            return ResponseEntity.ok(updatedRecord);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating employee disability record", 500));
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRole(@PathVariable int id) {
-        if (roleService.roleExistsById(id)) {
-            roleService.deleteRole(id);
-            return ResponseEntity.ok("Role deleted successfully.");
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        try {
+            service.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting employee disability record", 500));
         }
     }
 }
