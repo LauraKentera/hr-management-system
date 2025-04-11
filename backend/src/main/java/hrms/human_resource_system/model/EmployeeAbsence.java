@@ -10,8 +10,11 @@ public class EmployeeAbsence {
     private LocalDate startDate;
     private LocalDate endDate;
     private String notes;
+    private AbsenceType absenceType;
+    private Employee employee;
 
-    public EmployeeAbsence() {}
+    public EmployeeAbsence() {
+    }
 
     public EmployeeAbsence(int absenceId, int employeeId, int absenceTypeId,
                            LocalDate startDate, LocalDate endDate, String notes) {
@@ -21,6 +24,14 @@ public class EmployeeAbsence {
         this.startDate = startDate;
         this.endDate = endDate;
         this.notes = notes;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public int getAbsenceId() {
@@ -69,5 +80,13 @@ public class EmployeeAbsence {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public AbsenceType getAbsenceType() {
+        return absenceType;
+    }
+
+    public void setAbsenceType(AbsenceType absenceType) {
+        this.absenceType = absenceType;
     }
 }

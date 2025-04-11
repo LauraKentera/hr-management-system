@@ -4,7 +4,9 @@ import main.java.hrms.human_resource_system.model.EmploymentContract;
 import main.java.hrms.human_resource_system.exception.DLException;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,5 +89,29 @@ public class ContractDAO {
             throw new DLException("Error deleting contract with ID " + contractId, e);
         }
     }
+
+    public BigDecimal getBaseSalary(int employeeId, LocalDate from, LocalDate to) {
+        String sql = "SELECT salary FROM EmploymentContract WHERE employee_id = ? AND start_date <= ? " +
+                "AND (end_date IS NULL OR end_date >= ?) ORDER BY start_date DESC LIMIT 1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, employeeId);
+            ps.setDate(2, Date.valueOf(from));
+            ps.setDate(3, Date.valueOf(to));
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getBigDecimal("salary");
+            }
+
+        } catch (SQLException e) {
+            throw new DLException("Error fetching salary for employee ID " + employeeId, e);
+        }
+
+        return null;
+    }
+
 
 }
