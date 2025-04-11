@@ -2,9 +2,11 @@ package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.Benefit;
 import main.java.hrms.human_resource_system.repository.BenefitDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BenefitService {
 
     private final BenefitDAO dao = new BenefitDAO();

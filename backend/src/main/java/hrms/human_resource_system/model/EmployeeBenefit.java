@@ -54,7 +54,7 @@ public class EmployeeBenefit {
         return benefit;
     }
 
-    public void setBenefit(Benefit benefit) {
+    public void setBenefit(BenefitItem benefit) {
         this.benefit = benefit;
     }
 

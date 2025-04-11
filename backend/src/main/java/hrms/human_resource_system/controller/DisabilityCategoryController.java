@@ -1,27 +1,40 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.DisabilityCategoryResponseDTO;
+import main.java.hrms.human_resource_system.mapper.DisabilityCategoryMapper;
 import main.java.hrms.human_resource_system.model.DisabilityCategory;
 import main.java.hrms.human_resource_system.service.DisabilityCategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/disability-categories")
 public class DisabilityCategoryController {
 
-    private final DisabilityCategoryService service = new DisabilityCategoryService();
+    private final DisabilityCategoryService service;
+
+    public DisabilityCategoryController(DisabilityCategoryService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public ResponseEntity<List<DisabilityCategory>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<DisabilityCategoryResponseDTO>> getAll() {
+        List<DisabilityCategoryResponseDTO> dtoList = service.getAll().stream()
+                .map(DisabilityCategoryMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DisabilityCategory> getById(@PathVariable int id) {
+    public ResponseEntity<DisabilityCategoryResponseDTO> getById(@PathVariable int id) {
         DisabilityCategory category = service.getById(id);
-        return category != null ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
+        if (category == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(DisabilityCategoryMapper.toDTO(category));
     }
 
     @PostMapping

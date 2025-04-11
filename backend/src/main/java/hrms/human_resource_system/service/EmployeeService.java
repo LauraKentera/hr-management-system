@@ -67,5 +67,13 @@ public class EmployeeService {
     public Employee getEmployeeById(int id) {
         return employeeDAO.getById(id);  // Fetch a specific employee by ID
     }
+
+    public String getFullNameById(int employeeId) {
+        Employee employee = getEmployeeById(employeeId);
+        return employee != null
+                ? employee.getFirstName() + " " + employee.getLastName()
+                : "Unknown Employee";
+    }
+
 }
 

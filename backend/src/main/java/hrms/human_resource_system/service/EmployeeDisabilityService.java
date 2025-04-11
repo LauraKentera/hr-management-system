@@ -4,9 +4,10 @@ import main.java.hrms.human_resource_system.model.EmployeeDisability;
 import main.java.hrms.human_resource_system.repository.EmployeeDisabilityDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.DisabilityCategoryDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class EmployeeDisabilityService {
 
     private final EmployeeDisabilityDAO dao = new EmployeeDisabilityDAO();

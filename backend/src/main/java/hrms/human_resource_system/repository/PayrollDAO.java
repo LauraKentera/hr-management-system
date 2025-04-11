@@ -39,7 +39,7 @@ public class PayrollDAO {
         return payrolls;
     }
 
-    public void insert(Payroll payroll, int performedBy) {
+    public void insert(Payroll payroll) {
         String sql = "INSERT INTO Payroll (employee_id, period_start, period_end, base_salary, bonus, deductions, net_pay, payment_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -70,7 +70,7 @@ public class PayrollDAO {
         }
     }
 
-    public void update(Payroll payroll, int performedBy) {
+    public void update(Payroll payroll) {
         String sql = "UPDATE Payroll SET employee_id = ?, period_start = ?, period_end = ?, base_salary = ?, bonus = ?, deductions = ?, net_pay = ?, payment_date = ?, status = ? WHERE payroll_id = ?";
         Payroll oldPayroll = getById(payroll.getPayrollId()); // Fetch old data for logging
 
@@ -97,7 +97,7 @@ public class PayrollDAO {
         }
     }
 
-    public void delete(int payrollId, int performedBy) {
+    public void delete(int payrollId) {
         String sql = "DELETE FROM Payroll WHERE payroll_id = ?";
         Payroll oldPayroll = getById(payrollId); // Fetch old data for logging
 

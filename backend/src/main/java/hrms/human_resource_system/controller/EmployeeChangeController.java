@@ -1,11 +1,15 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.EmployeeChangeRequestDTO;
+import main.java.hrms.human_resource_system.dto.EmployeeChangeResponseDTO;
+import main.java.hrms.human_resource_system.mapper.EmployeeChangeMapper;
 import main.java.hrms.human_resource_system.model.EmployeeChange;
 import main.java.hrms.human_resource_system.service.EmployeeChangeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/employee-changes")
@@ -13,23 +17,31 @@ public class EmployeeChangeController {
 
     private final EmployeeChangeService service;
 
-    public EmployeeChangeController() {
-        this.service = new EmployeeChangeService();
+    public EmployeeChangeController(EmployeeChangeService service) {
+        this.service = service;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeChange> getById(@PathVariable int id) {
+    public ResponseEntity<EmployeeChangeResponseDTO> getById(@PathVariable int id) {
         EmployeeChange change = service.getById(id);
-        return change != null ? ResponseEntity.ok(change) : ResponseEntity.notFound().build();
+        if (change != null) {
+            return ResponseEntity.ok(EmployeeChangeMapper.toDTO(change));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
-    public List<EmployeeChange> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<EmployeeChangeResponseDTO>> getAll() {
+        List<EmployeeChangeResponseDTO> changes = service.getAll().stream()
+                .map(EmployeeChangeMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(changes);
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody EmployeeChange change) {
+    public ResponseEntity<String> create(@RequestBody EmployeeChangeRequestDTO dto) {
+        EmployeeChange change = EmployeeChangeMapper.toEntity(dto);
         service.insert(change);
         return ResponseEntity.ok("✅ Change record inserted.");
     }
@@ -40,4 +52,3 @@ public class EmployeeChangeController {
         return ResponseEntity.ok("🗑️ Change record deleted.");
     }
 }
-

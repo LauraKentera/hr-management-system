@@ -6,9 +6,11 @@ import main.java.hrms.human_resource_system.repository.ContractAnnexDAO;
 import main.java.hrms.human_resource_system.repository.ContractDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ContractService {
 
     private final ContractDAO contractDAO;

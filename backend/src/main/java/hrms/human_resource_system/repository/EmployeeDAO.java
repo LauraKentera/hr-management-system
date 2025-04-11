@@ -7,7 +7,6 @@ import main.java.hrms.human_resource_system.util.AuditLogger;
 
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,9 +101,9 @@ public class EmployeeDAO {
     }
 
     // Insert new employee into the database
-    public void insert(Employee employee, int performedBy) {
+    public void insert(Employee employee) {
         String sql = "INSERT INTO Employee (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        AbsenceType oldEmployee = getById(employee.getId()); 
+        Employee oldEmployee = getById(employee.getId());
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -137,9 +136,9 @@ public class EmployeeDAO {
     }
 
     // Delete employee by ID
-    public void delete(int id, int performedBy) {
+    public void delete(int id) {
         String sql = "DELETE FROM Employee WHERE id = ?";
-        AbsenceType oldAbsenceType = getById(absenceType.getAbsenceTypeId());
+        Employee oldAbsenceType = getById(getById(id).getId());
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -152,7 +151,7 @@ public class EmployeeDAO {
     }
 
     // Update existing employee details
-    public void update(int id, Employee employee, int performedBy) {
+    public void update(int id, Employee employee) {
         String sql = "UPDATE Employee SET PIN = ?, last_name = ?, first_name = ?, birth_date = ?, date_of_hire = ?, " +
                 "date_of_dismissal = ?, phone_number = ?, email = ?, address = ?, gender = ?, nationality_id = ?, " +
                 "department_id = ?, position_id = ?, employment_status = ?, emergency_contact_name = ?, " +

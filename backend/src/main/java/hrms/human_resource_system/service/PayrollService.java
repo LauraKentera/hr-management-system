@@ -3,10 +3,7 @@ package main.java.hrms.human_resource_system.service;
 import main.java.hrms.human_resource_system.model.Employee;
 import main.java.hrms.human_resource_system.model.EmployeeAbsence;
 import main.java.hrms.human_resource_system.model.Payroll;
-import main.java.hrms.human_resource_system.repository.ContractDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeAbsenceDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeChangeDAO;
-import main.java.hrms.human_resource_system.repository.PayrollDAO;
+import main.java.hrms.human_resource_system.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,7 +12,7 @@ import java.util.List;
 
 @Service
 public class PayrollService {
-
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final EmployeeAbsenceDAO employeeAbsenceDAO = new EmployeeAbsenceDAO();
     private final EmployeeChangeDAO employeeChangeDAO = new EmployeeChangeDAO();
     private final ContractDAO contractDAO = new ContractDAO();

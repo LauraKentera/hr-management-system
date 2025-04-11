@@ -110,7 +110,7 @@ public class PositionDAO {
         return positions;
     }
 
-    public void insert(Position position, int performedBy) {
+    public void insert(Position position) {
         String sql = "INSERT INTO Position (parent_id, name, short_name, education_level_id, benefits, requires_licensing, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -149,7 +149,7 @@ public class PositionDAO {
         }
     }
 
-    public void delete(int id, int performedBy) {
+    public void delete(int id) {
         String sql = "DELETE FROM Position WHERE position_id = ?";
         Position oldPosition = getById(id); // Fetch old data for logging
         Connection conn = null;
@@ -171,7 +171,7 @@ public class PositionDAO {
         }
     }
 
-    public void update(Position position, int performedBy) {
+    public void update(Position position) {
         String sql = "UPDATE Position SET parent_id = ?, name = ?, short_name = ?, education_level_id = ?, " +
                 "benefits = ?, requires_licensing = ?, is_active = ? WHERE position_id = ?";
         Position oldPosition = getById(position.getPositionId()); // Fetch old data for logging

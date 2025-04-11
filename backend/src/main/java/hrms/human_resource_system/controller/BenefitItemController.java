@@ -1,13 +1,16 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.BenefitItemRequestDTO;
+import main.java.hrms.human_resource_system.dto.BenefitItemResponseDTO;
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import  main.java.hrms.human_resource_system.model.BenefitItem;
-import  main.java.hrms.human_resource_system.service.BenefitItemService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import main.java.hrms.human_resource_system.mapper.BenefitItemMapper;
+import main.java.hrms.human_resource_system.model.BenefitItem;
+import main.java.hrms.human_resource_system.service.BenefitItemService;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/benefit-items")
@@ -15,30 +18,44 @@ public class BenefitItemController {
 
     private final BenefitItemService service;
 
-    public BenefitItemController() {
-        this.service = new BenefitItemService();
+    public BenefitItemController(BenefitItemService service) {
+        this.service = service;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BenefitItem> getById(@PathVariable int id) {
+    public ResponseEntity<BenefitItemResponseDTO> getById(@PathVariable int id) {
         BenefitItem item = service.getById(id);
-        return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
+        if (item == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(BenefitItemMapper.toDTO(item));
     }
 
     @GetMapping
-    public List<BenefitItem> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<BenefitItemResponseDTO>> getAll() {
+        List<BenefitItemResponseDTO> dtoList = service.getAll().stream()
+                .map(BenefitItemMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/benefit/{id}")
-    public List<BenefitItem> getByBenefitId(@PathVariable int id) {
-        return service.getByBenefitId(id);
+    public ResponseEntity<List<BenefitItemResponseDTO>> getByBenefitId(@PathVariable int id) {
+        List<BenefitItemResponseDTO> dtoList = service.getByBenefitId(id).stream()
+                .map(BenefitItemMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody BenefitItem item) {
-        service.insert(item);
-        return ResponseEntity.ok("✅ Benefit item created.");
+    public ResponseEntity<?> create(@RequestBody BenefitItemRequestDTO dto) {
+        try {
+            BenefitItem item = BenefitItemMapper.toEntity(dto);
+            service.insert(item);
+            return ResponseEntity.status(HttpStatus.CREATED).body("✅ Benefit item created.");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new CustomErrorResponse(ex.getMessage(), 400));
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -46,16 +63,4 @@ public class BenefitItemController {
         service.delete(id);
         return ResponseEntity.ok("🗑️ Benefit item deleted.");
     }
-
-    @PostMapping
-    public ResponseEntity<?> createBenefitItem(@RequestBody BenefitItem item) {
-        try {
-            service.insert(item);
-            return ResponseEntity.status(HttpStatus.CREATED).body("BenefitItem created.");
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(new CustomErrorResponse(ex.getMessage(), 400));
-        }
-    }
-
 }
-

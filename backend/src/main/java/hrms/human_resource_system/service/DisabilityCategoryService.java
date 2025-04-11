@@ -2,9 +2,11 @@ package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.DisabilityCategory;
 import main.java.hrms.human_resource_system.repository.DisabilityCategoryDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DisabilityCategoryService {
 
     private final DisabilityCategoryDAO dao = new DisabilityCategoryDAO();

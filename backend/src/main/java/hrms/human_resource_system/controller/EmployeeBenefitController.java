@@ -1,56 +1,59 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.EmployeeBenefitRequestDTO;
+import main.java.hrms.human_resource_system.dto.EmployeeBenefitResponseDTO;
+import main.java.hrms.human_resource_system.mapper.EmployeeBenefitMapper;
 import main.java.hrms.human_resource_system.model.EmployeeBenefit;
 import main.java.hrms.human_resource_system.service.EmployeeBenefitService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/employeeBenefits")
+@RequestMapping("/api/employee-benefits")
 public class EmployeeBenefitController {
 
     private final EmployeeBenefitService employeeBenefitService;
 
-    // Constructor Injection of EmployeeBenefitService
     public EmployeeBenefitController(EmployeeBenefitService employeeBenefitService) {
         this.employeeBenefitService = employeeBenefitService;
     }
 
-    // GET all employee benefits
     @GetMapping
-    public ResponseEntity<List<EmployeeBenefit>> getAllEmployeeBenefits() {
-        List<EmployeeBenefit> employeeBenefits = employeeBenefitService.getAllEmployeeBenefits();
-        return ResponseEntity.ok(employeeBenefits);
+    public ResponseEntity<List<EmployeeBenefitResponseDTO>> getAllEmployeeBenefits() {
+        List<EmployeeBenefitResponseDTO> dtos = employeeBenefitService.getAllEmployeeBenefits()
+                .stream()
+                .map(EmployeeBenefitMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // GET employee benefit by ID
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeBenefit> getEmployeeBenefitById(@PathVariable int id) {
-        EmployeeBenefit employeeBenefit = employeeBenefitService.getEmployeeBenefitById(id);
-        if (employeeBenefit != null) {
-            return ResponseEntity.ok(employeeBenefit);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<EmployeeBenefitResponseDTO> getEmployeeBenefitById(@PathVariable int id) {
+        EmployeeBenefit eb = employeeBenefitService.getEmployeeBenefitById(id);
+        if (eb != null) {
+            return ResponseEntity.ok(EmployeeBenefitMapper.toDTO(eb));
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    // POST new employee benefit
     @PostMapping
-    public ResponseEntity<String> createEmployeeBenefit(@RequestBody EmployeeBenefit employeeBenefit) {
-        employeeBenefitService.addEmployeeBenefit(employeeBenefit);
+    public ResponseEntity<String> createEmployeeBenefit(@RequestBody EmployeeBenefitRequestDTO dto) {
+        EmployeeBenefit eb = EmployeeBenefitMapper.toEntity(dto);
+        employeeBenefitService.addEmployeeBenefit(eb);
         return ResponseEntity.status(HttpStatus.CREATED).body("✅ Employee Benefit created.");
     }
 
-    // PUT update an existing employee benefit
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateEmployeeBenefit(@PathVariable int id, @RequestBody EmployeeBenefit employeeBenefit) {
-        employeeBenefitService.updateEmployeeBenefit(id, employeeBenefit);
+    public ResponseEntity<String> updateEmployeeBenefit(@PathVariable int id, @RequestBody EmployeeBenefitRequestDTO dto) {
+        EmployeeBenefit eb = EmployeeBenefitMapper.toEntity(dto);
+        eb.setBenefit(id);
+        employeeBenefitService.updateEmployeeBenefit(id, eb);
         return ResponseEntity.ok("✅ Employee Benefit updated.");
     }
 
-    // DELETE employee benefit by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployeeBenefit(@PathVariable int id) {
         employeeBenefitService.deleteEmployeeBenefit(id);

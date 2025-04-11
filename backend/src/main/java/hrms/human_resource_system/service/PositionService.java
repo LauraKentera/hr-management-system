@@ -54,4 +54,12 @@ public class PositionService {
         }
         // Add other validations if needed (e.g., checking for circular references in parent-child positions, etc.)
     }
+
+    public String getPositionNameById(int positionId) {
+        Position position = getPositionById(positionId);
+        return position != null
+                ? position.getName()
+                : "Unknown Position";
+    }
+
 }

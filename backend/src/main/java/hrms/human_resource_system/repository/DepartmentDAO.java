@@ -57,7 +57,7 @@ public class DepartmentDAO {
         return departments;
     }
 
-    public void insert(Department department, int performedBy) {
+    public void insert(Department department) {
         String sql = "INSERT INTO Department (name, manager_id) VALUES (?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -82,7 +82,7 @@ public class DepartmentDAO {
         }
     }
 
-    public void delete(int id, int performedBy) {
+    public void delete(int id) {
         String sql = "DELETE FROM Department WHERE department_id = ?";
         Department oldDepartment = getById(id); // Fetch old data for logging
 

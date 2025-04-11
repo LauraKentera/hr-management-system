@@ -1,12 +1,15 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
+import main.java.hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
+import main.java.hrms.human_resource_system.mapper.EmployeeEvaluationMapper;
 import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
 import main.java.hrms.human_resource_system.service.EmployeeEvaluationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/employee-evaluations")
@@ -14,38 +17,37 @@ public class EmployeeEvaluationController {
 
     private final EmployeeEvaluationService service;
 
-    // Constructor Injection (Spring will handle the service injection)
     public EmployeeEvaluationController(EmployeeEvaluationService service) {
         this.service = service;
     }
 
-    // GET employee evaluation by ID
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeEvaluation> getById(@PathVariable int id) {
+    public ResponseEntity<EmployeeEvaluationResponseDTO> getById(@PathVariable int id) {
         EmployeeEvaluation eval = service.getById(id);
-        return eval != null ? ResponseEntity.ok(eval) : ResponseEntity.notFound().build();
+        return eval != null
+                ? ResponseEntity.ok(EmployeeEvaluationMapper.toDTO(eval))
+                : ResponseEntity.notFound().build();
     }
 
-    // GET all employee evaluations
     @GetMapping
-    public ResponseEntity<List<EmployeeEvaluation>> getAll() {
-        List<EmployeeEvaluation> evaluations = service.getAll();
-        return ResponseEntity.ok(evaluations);
+    public ResponseEntity<List<EmployeeEvaluationResponseDTO>> getAll() {
+        List<EmployeeEvaluationResponseDTO> dtos = service.getAll().stream()
+                .map(EmployeeEvaluationMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // POST create a new employee evaluation
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody EmployeeEvaluation eval) {
+    public ResponseEntity<String> create(@RequestBody EmployeeEvaluationRequestDTO dto) {
         try {
-            service.insert(eval);  // Will trigger validation before insertion
+            EmployeeEvaluation eval = EmployeeEvaluationMapper.toEntity(dto);
+            service.insert(eval);
             return ResponseEntity.status(HttpStatus.CREATED).body("✅ Evaluation record saved.");
         } catch (IllegalArgumentException e) {
-            // Handling validation errors (bad data)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Error: " + e.getMessage());
         }
     }
 
-    // DELETE employee evaluation by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable int id) {
         service.delete(id);

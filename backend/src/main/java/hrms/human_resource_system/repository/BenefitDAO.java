@@ -75,7 +75,7 @@ public class BenefitDAO {
         return benefits;
     }
 
-    public void insert(Benefit benefit, int performedBy) {
+    public void insert(Benefit benefit) {
         String sql = "INSERT INTO Benefit (name, description, is_taxable, is_active) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -106,7 +106,7 @@ public class BenefitDAO {
         }
     }
 
-    public void delete(int id, int performedBy) {
+    public void delete(int id) {
         String sql = "DELETE FROM Benefit WHERE benefit_id = ?";
         Benefit oldBenefit = getById(id); // Fetch old data for logging
         Connection conn = null;
@@ -128,7 +128,7 @@ public class BenefitDAO {
         }
     }
 
-    public void update(int id, Benefit benefit, int performedBy) {
+    public void update(int id, Benefit benefit) {
         String sql = "UPDATE Benefit SET name = ?, description = ?, is_taxable = ?, is_active = ? WHERE benefit_id = ?";
         Benefit oldBenefit = getById(id); // Fetch old data for logging
         Connection conn = null;

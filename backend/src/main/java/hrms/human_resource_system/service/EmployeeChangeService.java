@@ -4,9 +4,11 @@ import main.java.hrms.human_resource_system.model.EmployeeChange;
 import main.java.hrms.human_resource_system.repository.EmployeeChangeDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EmployeeChangeService {
 
     private final EmployeeChangeDAO dao = new EmployeeChangeDAO();

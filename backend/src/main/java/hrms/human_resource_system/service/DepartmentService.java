@@ -3,9 +3,11 @@ package main.java.hrms.human_resource_system.service;
 import main.java.hrms.human_resource_system.model.Department;
 import main.java.hrms.human_resource_system.repository.DepartmentDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DepartmentService {
 
     private final DepartmentDAO dao = new DepartmentDAO();
