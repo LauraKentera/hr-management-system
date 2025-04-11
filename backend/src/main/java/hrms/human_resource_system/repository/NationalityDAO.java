@@ -1,15 +1,38 @@
 package main.java.hrms.human_resource_system.repository;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Nationality;
+import main.java.hrms.human_resource_system.util.AuditLogger;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class NationalityDAO {
+
+    public Nationality getById(int id) {
+        String sql = "SELECT * FROM Nationality WHERE nationality_id = ?";
+        Nationality nationality = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    nationality = new Nationality(
+                        rs.getInt("nationality_id"),
+                        rs.getString("name")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving nationality with ID " + id, e);
+        }
+
+        return nationality;
+    }
 
     public List<Nationality> getAll() {
         String sql = "SELECT * FROM Nationality";
@@ -20,101 +43,76 @@ public class NationalityDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Nationality nationality = new Nationality(
-                        rs.getInt("nationality_id"),
-                        rs.getString("name"),
-                        rs.getInt("user_id"),
-                        rs.getTimestamp("modification_date") != null ?
-                                rs.getTimestamp("modification_date").toLocalDateTime() : null,
-                        rs.getBoolean("is_active")
-                );
-                nationalities.add(nationality);
+                nationalities.add(new Nationality(
+                    rs.getInt("nationality_id"),
+                    rs.getString("name")
+                ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error fetching all nationalities", e);
         }
+
         return nationalities;
     }
 
-    public Nationality getById(Integer nationalityId) {
-        String sql = "SELECT * FROM Nationality WHERE nationality_id = ?";
-        Nationality nationality = null;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, nationalityId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    nationality = new Nationality(
-                            rs.getInt("nationality_id"),
-                            rs.getString("name"),
-                            rs.getInt("user_id"),
-                            rs.getTimestamp("modification_date") != null ?
-                                    rs.getTimestamp("modification_date").toLocalDateTime() : null,
-                            rs.getBoolean("is_active")
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return nationality;
-    }
-
-    public void insert(Nationality nationality) {
-        String sql = "INSERT INTO Nationality (name, user_id, modification_date, is_active) " +
-                "VALUES (?, ?, ?, ?)";
+    public void insert(Nationality nationality, int performedBy) {
+        String sql = "INSERT INTO Nationality (name) VALUES (?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, nationality.getName());
-            ps.setObject(2, nationality.getUserId(), Types.INTEGER);
-            ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setBoolean(4, nationality.getIsActive());
-
             ps.executeUpdate();
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    nationality.setNationalityId(rs.getInt(1));
+            // Retrieve the generated ID
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    nationality.setNationalityId(generatedKeys.getInt(1));
                 }
             }
+
+            // Log the change
+            AuditLogger.logChange("Nationality", nationality.getNationalityId(), "INSERT", performedBy, null, nationality);
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error inserting nationality: " + nationality.getName(), e);
         }
     }
 
-    public void update(Nationality nationality) {
-        String sql = "UPDATE Nationality SET name = ?, user_id = ?, modification_date = ?, is_active = ? " +
-                "WHERE nationality_id = ?";
+    public void delete(int id, int performedBy) {
+        String sql = "DELETE FROM Nationality WHERE nationality_id = ?";
+        Nationality oldNationality = getById(id); // Fetch old data for logging
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+            // Log the change
+            AuditLogger.logChange("Nationality", id, "DELETE", performedBy, oldNationality, null);
+
+        } catch (SQLException e) {
+            throw new DLException("Error deleting nationality with ID " + id, e);
+        }
+    }
+
+    public void update(Nationality nationality, int performedBy) {
+        String sql = "UPDATE Nationality SET name = ? WHERE nationality_id = ?";
+        Nationality oldNationality = getById(nationality.getNationalityId()); // Fetch old data for logging
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, nationality.getName());
-            ps.setObject(2, nationality.getUserId(), Types.INTEGER);
-            ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setBoolean(4, nationality.getIsActive());
-            ps.setInt(5, nationality.getNationalityId());
-
+            ps.setInt(2, nationality.getNationalityId());
             ps.executeUpdate();
+
+            // Log the change
+            AuditLogger.logChange("Nationality", nationality.getNationalityId(), "UPDATE", performedBy, oldNationality, nationality);
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void delete(Integer nationalityId) {
-        String sql = "DELETE FROM Nationality WHERE nationality_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, nationalityId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error updating nationality with ID " + nationality.getNationalityId(), e);
         }
     }
 }

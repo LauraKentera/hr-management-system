@@ -2,6 +2,7 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Department;
+import main.java.hrms.human_resource_system.util.AuditLogger;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -28,7 +29,7 @@ public class DepartmentDAO {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Use DLException in your setup
+            throw new DLException("Error retrieving department with ID " + id, e);
         }
 
         return department;
@@ -50,29 +51,40 @@ public class DepartmentDAO {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error fetching all departments", e);
         }
 
         return departments;
     }
 
-    public void insert(Department department) {
+    public void insert(Department department, int performedBy) {
         String sql = "INSERT INTO Department (name, manager_id) VALUES (?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, department.getName());
             ps.setObject(2, department.getManagerId(), Types.INTEGER);
             ps.executeUpdate();
 
+            // Retrieve the generated ID
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    department.setDepartmentId(generatedKeys.getInt(1));
+                }
+            }
+
+            // Log the change
+            AuditLogger.logChange("Department", department.getDepartmentId(), "INSERT", performedBy, null, department);
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error inserting department: " + department.getName(), e);
         }
     }
 
-    public void delete(int id) {
+    public void delete(int id, int performedBy) {
         String sql = "DELETE FROM Department WHERE department_id = ?";
+        Department oldDepartment = getById(id); // Fetch old data for logging
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -80,13 +92,17 @@ public class DepartmentDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
 
+            // Log the change
+            AuditLogger.logChange("Department", id, "DELETE", performedBy, oldDepartment, null);
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DLException("Error deleting department with ID " + id, e);
         }
     }
 
-    public void update(int id, Department department) {
+    public void update(int id, Department department, int performedBy) {
         String sql = "UPDATE Department SET name = ?, manager_id = ? WHERE department_id = ?";
+        Department oldDepartment = getById(id); // Fetch old data for logging
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -95,6 +111,9 @@ public class DepartmentDAO {
             ps.setObject(2, department.getManagerId(), Types.INTEGER);
             ps.setInt(3, id);
             ps.executeUpdate();
+
+            // Log the change
+            AuditLogger.logChange("Department", id, "UPDATE", performedBy, oldDepartment, department);
 
         } catch (SQLException e) {
             throw new DLException("Error updating department with ID " + id, e);
@@ -117,7 +136,5 @@ public class DepartmentDAO {
         }
         return false; // Return false if no record is found
     }
-
-
 }
 
