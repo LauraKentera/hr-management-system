@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class NationalityService {
@@ -17,34 +18,60 @@ public class NationalityService {
         this.nationalityDAO = nationalityDAO;
     }
 
-    public List<Nationality> getAllNationalities() {
-        return nationalityDAO.getAll();
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
+    // Get all nationalities
+    public List<Nationality> getAllNationalities() {
+        return wrap(nationalityDAO::getAll);
+    }
+
+    // Get nationality by ID
     public Nationality getNationalityById(Integer nationalityId) {
         if (nationalityId == null) {
             throw new IllegalArgumentException("Nationality ID cannot be null");
         }
-        return nationalityDAO.getById(nationalityId);
+        return wrap(() -> nationalityDAO.getById(nationalityId));
     }
 
+    // Add new nationality
     public void addNationality(Nationality nationality) {
-        validateNationality(nationality); // validate before inserting
-        nationalityDAO.insert(nationality);
+        wrap(() -> {
+            validateNationality(nationality);
+            nationalityDAO.insert(nationality);
+            return null;  // return type is Void
+        });
     }
 
+    // Update existing nationality
     public void updateNationality(Nationality nationality) {
-        validateNationality(nationality); // validate before updating
-        nationalityDAO.update(nationality);
+        wrap(() -> {
+            validateNationality(nationality);
+            nationalityDAO.update(nationality);
+            return null;  // return type is Void
+        });
     }
 
+    // Delete nationality by ID
     public void deleteNationality(Integer nationalityId) {
-        if (nationalityId == null) {
-            throw new IllegalArgumentException("Nationality ID cannot be null");
-        }
-        nationalityDAO.delete(nationalityId);
+        wrap(() -> {
+            if (nationalityId == null) {
+                throw new IllegalArgumentException("Nationality ID cannot be null");
+            }
+            nationalityDAO.delete(nationalityId);
+            return null;  // return type is Void
+        });
     }
 
+    // Validation for nationality data
     private void validateNationality(Nationality nationality) {
         if (nationality.getName() == null || nationality.getName().isEmpty()) {
             throw new IllegalArgumentException("Nationality name cannot be null or empty");

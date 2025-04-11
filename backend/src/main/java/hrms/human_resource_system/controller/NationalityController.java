@@ -1,62 +1,116 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Nationality;
 import main.java.hrms.human_resource_system.service.NationalityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController  // This annotation marks the class as a REST controller
-@RequestMapping("/api/nationalities")  // This annotation maps all methods in the class to this base URL
+@RestController
+@RequestMapping("/api/nationalities")
 public class NationalityController {
 
     private final NationalityService nationalityService;
 
-    @Autowired  // This annotation ensures that the service is injected
+    @Autowired
     public NationalityController(NationalityService nationalityService) {
         this.nationalityService = nationalityService;
     }
 
-    // GET all nationalities
     @GetMapping
-    public ResponseEntity<List<Nationality>> getAllNationalities() {
-        List<Nationality> nationalities = nationalityService.getAllNationalities();
-        return ResponseEntity.ok(nationalities);
-    }
-
-    // GET a nationality by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Nationality> getNationalityById(@PathVariable("id") Integer nationalityId) {
-        Nationality nationality = nationalityService.getNationalityById(nationalityId);
-        if (nationality != null) {
-            return ResponseEntity.ok(nationality);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getAllNationalities() {
+        try {
+            List<Nationality> nationalities = nationalityService.getAllNationalities();
+            return ResponseEntity.ok(nationalities);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving nationalities", 500));
         }
     }
 
-    // POST new nationality
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getNationalityById(@PathVariable("id") Integer nationalityId) {
+        try {
+            Nationality nationality = nationalityService.getNationalityById(nationalityId);
+            return nationality != null
+                    ? ResponseEntity.ok(nationality)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("Nationality not found with ID: " + nationalityId, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving nationality", 500));
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<String> createNationality(@RequestBody Nationality nationality) {
-        nationalityService.addNationality(nationality);
-        return ResponseEntity.status(201).body("Nationality created successfully.");
+    public ResponseEntity<?> createNationality(@RequestBody Nationality nationality) {
+        try {
+            Nationality created = nationalityService.addNationality(nationality);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating nationality", 500));
+        }
     }
 
-    // PUT update an existing nationality
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateNationality(@PathVariable("id") Integer nationalityId,
-                                                    @RequestBody Nationality nationality) {
-        nationality.setNationalityId(nationalityId);
-        nationalityService.updateNationality(nationality);
-        return ResponseEntity.ok("Nationality updated successfully.");
+    public ResponseEntity<?> updateNationality(@PathVariable("id") Integer nationalityId,
+                                               @RequestBody Nationality nationality) {
+        try {
+            if (nationality.getNationalityId() != null && !nationality.getNationalityId().equals(nationalityId)) {
+                return ResponseEntity.badRequest()
+                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
+            }
+
+            nationality.setNationalityId(nationalityId);
+            Nationality updated = nationalityService.updateNationality(nationality);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating nationality", 500));
+        }
     }
 
-    // DELETE a nationality
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNationality(@PathVariable("id") Integer nationalityId) {
-        nationalityService.deleteNationality(nationalityId);
-        return ResponseEntity.ok("Nationality deleted successfully.");
+    public ResponseEntity<?> deleteNationality(@PathVariable("id") Integer nationalityId) {
+        try {
+            nationalityService.deleteNationality(nationalityId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting nationality", 500));
+        }
     }
 }

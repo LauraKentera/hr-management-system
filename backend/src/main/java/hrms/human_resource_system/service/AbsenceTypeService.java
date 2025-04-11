@@ -1,65 +1,84 @@
 package main.java.hrms.human_resource_system.service;
 
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.AbsenceType;
 import main.java.hrms.human_resource_system.repository.AbsenceTypeDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class AbsenceTypeService {
 
     private final AbsenceTypeDAO dao = new AbsenceTypeDAO();
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (DLException e) {
+            throw new RuntimeException("Database error: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let controller handle validation errors
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
     public AbsenceType getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
     public List<AbsenceType> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
     public void insert(AbsenceType absenceType) {
-        // Step 1: Validate required fields
-        if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
-            throw new IllegalArgumentException("Absence Type Name is required.");
-        }
+        wrap(() -> {
+            if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
+                throw new IllegalArgumentException("Absence Type Name is required.");
+            }
 
-        if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
-            throw new IllegalArgumentException("Absence Type Code is required.");
-        }
+            if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
+                throw new IllegalArgumentException("Absence Type Code is required.");
+            }
 
-        // Step 2: Check if an Absence Type with the same code or name already exists
-        if (dao.getAll().stream().anyMatch(existingAbsenceType -> existingAbsenceType.getCode().equals(absenceType.getCode()))) {
-            throw new IllegalArgumentException("Absence Type with this code already exists.");
-        }
+            boolean duplicate = dao.getAll().stream()
+                    .anyMatch(existing -> existing.getCode().equals(absenceType.getCode()));
+            if (duplicate) {
+                throw new IllegalArgumentException("Absence Type with this code already exists.");
+            }
 
-        // Step 3: Call DAO to insert the new absenceType
-        dao.insert(absenceType);
+            dao.insert(absenceType);
+            return null;
+        });
     }
 
     public void update(AbsenceType absenceType) {
-        // Step 1: Validate required fields
-        if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
-            throw new IllegalArgumentException("Absence Type Name is required.");
-        }
+        wrap(() -> {
+            if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
+                throw new IllegalArgumentException("Absence Type Name is required.");
+            }
 
-        if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
-            throw new IllegalArgumentException("Absence Type Code is required.");
-        }
+            if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
+                throw new IllegalArgumentException("Absence Type Code is required.");
+            }
 
-        // Step 2: Call DAO to update the absenceType
-        dao.update(absenceType);
+            dao.update(absenceType);
+            return null;
+        });
     }
 
     public void delete(int id) {
-        // Step 1: Check if the AbsenceType exists before trying to delete
-        AbsenceType absenceType = dao.getById(id);
-        if (absenceType == null) {
-            throw new IllegalArgumentException("Absence Type with ID " + id + " does not exist.");
-        }
+        wrap(() -> {
+            AbsenceType existing = dao.getById(id);
+            if (existing == null) {
+                throw new IllegalArgumentException("Absence Type with ID " + id + " does not exist.");
+            }
 
-        // Step 2: Call DAO to delete the absenceType
-        dao.delete(id);
+            dao.delete(id);
+            return null;
+        });
     }
 }

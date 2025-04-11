@@ -4,27 +4,44 @@ import main.java.hrms.human_resource_system.model.EmployeeAbsence;
 import main.java.hrms.human_resource_system.repository.EmployeeAbsenceDAO;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class EmployeeAbsenceService {
 
     private final EmployeeAbsenceDAO dao = new EmployeeAbsenceDAO();
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
     public EmployeeAbsence getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
     public List<EmployeeAbsence> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
     public void insert(EmployeeAbsence entity) {
-        // Validate before inserting
-        validateEmployeeAbsence(entity);
-        dao.insert(entity);
+        wrap(() -> {
+            validateEmployeeAbsence(entity);  // Validate before inserting
+            dao.insert(entity);
+            return null;
+        });
     }
 
     public void delete(int id) {
-        dao.delete(id);
+        wrap(() -> {
+            dao.delete(id);
+            return null;
+        });
     }
 
     // Validation method for EmployeeAbsence
