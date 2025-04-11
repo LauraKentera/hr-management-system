@@ -3,6 +3,8 @@ package main.java.hrms.human_resource_system.repository;
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.AbsenceType;
 import org.springframework.stereotype.Repository;
+import main.java.hrms.human_resource_system.util.AuditLogger;
+
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -76,11 +78,10 @@ public class AbsenceTypeDAO {
         return list;
     }
 
-    public void insert(AbsenceType absenceType) {
+    public void insert(AbsenceType absenceType, int performed_by) {
         String sql = "INSERT INTO AbsenceType (name, code, description, is_paid, requires_approval, is_active) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
-
         try {
             conn = DatabaseConnection.getConnection();
             ps = conn.prepareStatement(sql);
@@ -91,6 +92,14 @@ public class AbsenceTypeDAO {
             ps.setBoolean(5, absenceType.isRequiresApproval());
             ps.setBoolean(6, absenceType.isActive());
             ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    absenceType.setAbsenceTypeId(generatedKeys.getInt(1));
+                }
+            }
+            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "INSERT", performedBy, null, absenceType);
+
         } catch (SQLException e) {
             throw new DLException("Error inserting absence type: " + absenceType.getName(), e);
         } finally {
@@ -98,7 +107,8 @@ public class AbsenceTypeDAO {
         }
     }
 
-    public void delete(int id) {
+    public void delete(int id, int performed_by) {
+        AbsenceType absenceType = getById(id);
         String sql = "DELETE FROM AbsenceType WHERE absence_type_id = ?";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -108,6 +118,8 @@ public class AbsenceTypeDAO {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             ps.executeUpdate();
+
+            AuditLogger.logChange("AbsenceType", id, "DELETE", performed_by, absenceType, null);
         } catch (SQLException e) {
             throw new DLException("Error deleting absence type with ID " + id, e);
         } finally {
@@ -115,8 +127,9 @@ public class AbsenceTypeDAO {
         }
     }
 
-    public void update(AbsenceType absenceType) {
+    public void update(AbsenceType absenceType, int performed_by) {
         String sql = "UPDATE AbsenceType SET name = ?, code = ?, description = ?, is_paid = ?, requires_approval = ?, is_active = ? WHERE absence_type_id = ?";
+        AbsenceTypeDAO oldAbsenceType = getById(absenceType.getAbsenceTypeId());
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -129,6 +142,8 @@ public class AbsenceTypeDAO {
             ps.setInt(7, absenceType.getAbsenceTypeId());
 
             ps.executeUpdate();
+            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "UPDATE", performedBy, oldAbsenceType, absenceType);
+            
         } catch (SQLException e) {
             throw new DLException("Error updating absence type with ID " + absenceType.getAbsenceTypeId(), e);
         }

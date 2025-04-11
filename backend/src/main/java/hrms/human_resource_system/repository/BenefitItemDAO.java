@@ -53,6 +53,39 @@ public class BenefitItemDAO {
         return list;
     }
 
+    public List<BenefitItem> getByBenefitId(int benefitId) {
+        List<BenefitItem> items = new ArrayList<>();
+        String sql = "SELECT * FROM BenefitItem WHERE benefit_id = ?";
+    
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            ps.setInt(1, benefitId);
+            ResultSet rs = ps.executeQuery();
+    
+            while (rs.next()) {
+                BenefitItem item = new BenefitItem(
+                    rs.getInt("benefit_item_id"),
+                    rs.getInt("benefit_id"),
+                    rs.getInt("region_id"),
+                    rs.getDate("from_date").toLocalDate(),
+                    rs.getDate("to_date") != null ? rs.getDate("to_date").toLocalDate() : null,
+                    rs.getBoolean("allow_coefficient"),
+                    rs.getBoolean("use_standard_amount"),
+                    rs.getBigDecimal("amount"),
+                    rs.getBigDecimal("coefficient")
+                );
+                items.add(item);
+            }
+    
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving benefit items for benefit ID: " + benefitId, e);
+        }
+    
+        return items;
+    }
+    
+
     public void insert(BenefitItem item) {
         String sql = "INSERT INTO BenefitItem (benefit_id, region_id, from_date, to_date, " +
                 "allow_coefficient, use_standard_amount, amount, coefficient) " +
