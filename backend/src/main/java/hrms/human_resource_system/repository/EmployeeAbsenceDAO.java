@@ -1,6 +1,7 @@
 package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
+import main.java.hrms.human_resource_system.model.AbsenceType;
 import main.java.hrms.human_resource_system.model.EmployeeAbsence;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,10 @@ import java.util.List;
 
 @Repository
 public class EmployeeAbsenceDAO {
+
+    AbsenceTypeDAO absenceTypeDAO = new AbsenceTypeDAO();
+    EmployeeDAO employeeDAO = new EmployeeDAO();
+
 
     public EmployeeAbsence getById(int id) {
         String sql = "SELECT * FROM EmployeeAbsence WHERE absence_id = ?";
@@ -52,6 +57,28 @@ public class EmployeeAbsenceDAO {
         return list;
     }
 
+    public List<EmployeeAbsence> getByEmployeeId(int employeeId) {
+        String sql = "SELECT * FROM EmployeeAbsence WHERE employee_id = ?";
+        List<EmployeeAbsence> list = new ArrayList<>();
+    
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+    
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+    
+        } catch (SQLException e) {
+            throw new DLException("Error retrieving absences for employee ID " + employeeId, e);
+        }
+    
+        return list;
+    }
+    
+
     public void insert(EmployeeAbsence absence) {
         String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -87,15 +114,23 @@ public class EmployeeAbsenceDAO {
     }
 
     private EmployeeAbsence mapResultSet(ResultSet rs) throws SQLException {
-        return new EmployeeAbsence(
-                rs.getInt("absence_id"),
-                rs.getInt("employee_id"),
-                rs.getInt("absence_type_id"),
-                rs.getDate("start_date").toLocalDate(),
-                rs.getDate("end_date").toLocalDate(),
-                rs.getString("notes")
-        );
+        EmployeeAbsence ea = new EmployeeAbsence();
+        ea.setAbsenceId(rs.getInt("absence_id"));
+        ea.setEmployeeId(rs.getInt("employee_id"));
+        ea.setAbsenceTypeId(rs.getInt("absence_type_id"));
+        ea.setStartDate(rs.getDate("start_date").toLocalDate());
+        ea.setEndDate(rs.getDate("end_date").toLocalDate());
+        ea.setNotes(rs.getString("notes"));
+
+        // fetch and set AbsenceType
+        AbsenceType type = absenceTypeDAO.getById(ea.getAbsenceTypeId());
+        ea.setAbsenceType(type);
+
+        ea.setEmployee(employeeDAO.getById(ea.getEmployeeId()));
+
+        return ea;
     }
+
 
     public void update(int id, EmployeeAbsence absence) {
         String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ? WHERE absence_id = ?";
@@ -116,6 +151,28 @@ public class EmployeeAbsenceDAO {
             throw new DLException("Error updating employee absence with ID " + id, e);
         }
     }
+
+    public List<EmployeeAbsence> getByEmployeeId(int employeeId) {
+        String sql = "SELECT * FROM EmployeeAbsence WHERE employee_id = ?";
+        List<EmployeeAbsence> absences = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                absences.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new DLException("Error fetching absences", e);
+        }
+
+        return absences;
+    }
+
 
 }
 

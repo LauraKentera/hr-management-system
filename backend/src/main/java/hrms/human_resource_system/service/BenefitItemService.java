@@ -34,6 +34,10 @@ public class BenefitItemService {
         return wrap(dao::getAll);
     }
 
+    public List<BenefitItem> getByBenefitId(int benefitId) {
+        return dao.getByBenefitId(benefitId);
+    }    
+
     public void insert(BenefitItem item) {
         wrap(() -> {
             validate(item);
