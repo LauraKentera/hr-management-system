@@ -35,6 +35,34 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping("/{id}/retirement-status")
+    public ResponseEntity<?> getRetirementStatus(@PathVariable int id) {
+        try {
+            boolean isEligible = employeeService.isEligibleForRetirement(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("employeeId", id);
+            response.put("isEligibleForRetirement", isEligible);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error checking retirement status", 500));
+        }
+    }
+
+    @GetMapping("/retirement-eligible")
+    public ResponseEntity<?> getRetirementEligibleEmployees() {
+        try {
+            List<Employee> eligibleEmployees = employeeService.getEmployeesEligibleForRetirement();
+            return ResponseEntity.ok(eligibleEmployees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving retirement-eligible employees", 500));
+        }
+    }
+
     // POST new employee
     @PostMapping
     public ResponseEntity<String> createEmployee(@RequestBody Employee employee) {

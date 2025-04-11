@@ -6,6 +6,8 @@ import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.RoleDAO;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -15,14 +17,57 @@ public class EmployeeService {
     private final DepartmentDAO departmentDAO;
     private final RoleDAO roleDAO;
 
-    public EmployeeService() {
-        this.employeeDAO = new EmployeeDAO();
-        this.departmentDAO = new DepartmentDAO();
-        this.roleDAO = new RoleDAO();
+    // Constructor injection
+    public EmployeeService(EmployeeDAO employeeDAO, DepartmentDAO departmentDAO, RoleDAO roleDAO) {
+        this.employeeDAO = employeeDAO;
+        this.departmentDAO = departmentDAO;
+        this.roleDAO = roleDAO;
     }
 
-    // Validate required fields, logical conditions, and entity existence before insert/update
+    // Retirement eligibility constants
+    private static final int RETIREMENT_AGE = 65;
+    private static final int MIN_SERVICE_YEARS = 40;
+
+    public boolean isEligibleForRetirement(int employeeId) {
+        Employee employee = getEmployeeById(employeeId);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found with ID: " + employeeId);
+        }
+        return calculateRetirementEligibility(employee);
+    }
+
+    public boolean isEligibleForRetirement(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
+        return calculateRetirementEligibility(employee);
+    }
+
+    private boolean calculateRetirementEligibility(Employee employee) {
+        LocalDate today = LocalDate.now();
+        
+        // Calculate age
+        int age = Period.between(employee.getBirthDate(), today).getYears();
+        
+        // Calculate years of service
+        int serviceYears = 0;
+        if (employee.getDateOfHire() != null) {
+            serviceYears = Period.between(employee.getDateOfHire(), today).getYears();
+            // Adjust for partial years
+            if (today.getMonthValue() < employee.getDateOfHire().getMonthValue() ||
+                (today.getMonthValue() == employee.getDateOfHire().getMonthValue() && 
+                 today.getDayOfMonth() < employee.getDateOfHire().getDayOfMonth())) {
+                serviceYears--;
+            }
+        }
+        
+        return age >= RETIREMENT_AGE || serviceYears >= MIN_SERVICE_YEARS;
+    }
+
     public void validateEmployee(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
         if (employee.getPIN() == null || employee.getPIN().isEmpty()) {
             throw new IllegalArgumentException("PIN is required");
         }
@@ -31,6 +76,12 @@ public class EmployeeService {
         }
         if (employee.getFirstName() == null || employee.getFirstName().isEmpty()) {
             throw new IllegalArgumentException("First name is required");
+        }
+        if (employee.getBirthDate() == null) {
+            throw new IllegalArgumentException("Birth date is required");
+        }
+        if (employee.getBirthDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Birth date cannot be in the future");
         }
         if (employee.getDepartment() == null || !departmentDAO.existsById(employee.getDepartment().getDepartmentId())) {
             throw new IllegalArgumentException("Invalid department ID");
@@ -44,28 +95,39 @@ public class EmployeeService {
         }
     }
 
-    public void addEmployee(Employee employee) {
+    public Employee addEmployee(Employee employee) {
         validateEmployee(employee);
-        employeeDAO.insert(employee);
+        return employeeDAO.insert(employee);
     }
 
-    public void updateEmployee(int id, Employee employee) {
+    public Employee updateEmployee(int id, Employee employee) {
         validateEmployee(employee);
-        employeeDAO.update(id, employee);
+        if (getEmployeeById(id) == null) {
+            throw new IllegalArgumentException("Employee not found with ID: " + id);
+        }
+        employee.setEmployeeId(id);
+        return employeeDAO.update(employee);
     }
 
     public void deleteEmployee(int id) {
+        if (getEmployeeById(id) == null) {
+            throw new IllegalArgumentException("Employee not found with ID: " + id);
+        }
         employeeDAO.delete(id);
     }
 
-    // Method to get all employees
     public List<Employee> getAllEmployees() {
-        return employeeDAO.getAll();  // Fetch all employees from the database
+        return employeeDAO.getAll();
     }
 
-    // Method to get a specific employee by ID
     public Employee getEmployeeById(int id) {
-        return employeeDAO.getById(id);  // Fetch a specific employee by ID
+        return employeeDAO.getById(id);
+    }
+
+    public List<Employee> getEmployeesEligibleForRetirement() {
+        List<Employee> allEmployees = getAllEmployees();
+        return allEmployees.stream()
+                .filter(this::isEligibleForRetirement)
+                .toList();
     }
 }
-
