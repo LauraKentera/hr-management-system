@@ -1,8 +1,11 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Employee;
 import main.java.hrms.human_resource_system.service.EmployeeService;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,54 +16,100 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    public EmployeeController() {
-        this.employeeService = new EmployeeService();
+    // Constructor injection
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
-    // GET all employees
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<?> getAllEmployees() {
+        try {
+            List<Employee> employees = employeeService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employees", 500));
+        }
     }
 
-    // GET employee by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
-        Employee employee = employeeService.getEmployeeById(id);
-        if (employee != null) {
-            return ResponseEntity.ok(employee);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<?> getEmployeeById(@PathVariable int id) {
+        try {
+            Employee employee = employeeService.getEmployeeById(id);
+            return employee != null
+                    ? ResponseEntity.ok(employee)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("Employee not found with id: " + id, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee", 500));
         }
     }
 
-    // POST new employee
     @PostMapping
-    public ResponseEntity<String> createEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
         try {
-            employeeService.addEmployee(employee);
-            return ResponseEntity.status(HttpStatus.CREATED).body("✅ Employee created.");
+            Employee createdEmployee = employeeService.createEmployee(employee);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating employee", 500));
         }
     }
 
-    // PUT update an existing employee
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
+    public ResponseEntity<?> updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
         try {
-            employeeService.updateEmployee(id, employee);
-            return ResponseEntity.ok("✅ Employee updated.");
+            // Ensure path ID matches the entity ID if present in body
+            if (employee.getId() != null && employee.getId() != id) {
+                return ResponseEntity.badRequest()
+                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
+            }
+            employee.setId(id);
+            
+            Employee updatedEmployee = employeeService.updateEmployee(employee);
+            return ResponseEntity.ok(updatedEmployee);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating employee", 500));
         }
     }
 
-    // DELETE employee by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
-        employeeService.deleteEmployee(id);
-        return ResponseEntity.ok("🗑️ Employee deleted.");
+    public ResponseEntity<?> deleteEmployee(@PathVariable int id) {
+        try {
+            employeeService.deleteEmployee(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting employee", 500));
+        }
     }
 }

@@ -6,6 +6,7 @@ import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class EmployeeEvaluationService {
@@ -19,26 +20,51 @@ public class EmployeeEvaluationService {
         this.employeeDAO = employeeDAO;
     }
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+    // Get EmployeeEvaluation by ID
     public EmployeeEvaluation getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
+    // Get all EmployeeEvaluations
     public List<EmployeeEvaluation> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
+    // Insert new EmployeeEvaluation after validation
     public void insert(EmployeeEvaluation entity) {
-        validateEmployeeEvaluation(entity);
-        dao.insert(entity);
+        wrap(() -> {
+            validateEmployeeEvaluation(entity);
+            dao.insert(entity);
+            return null;
+        });
     }
 
+    // Update existing EmployeeEvaluation after validation
     public void update(int id, EmployeeEvaluation entity) {
-        validateEmployeeEvaluation(entity);
-        dao.update(id, entity);
+        wrap(() -> {
+            validateEmployeeEvaluation(entity);
+            dao.update(id, entity);
+            return null;
+        });
     }
 
+    // Delete EmployeeEvaluation by ID
     public void delete(int id) {
-        dao.delete(id);
+        wrap(() -> {
+            dao.delete(id);
+            return null;
+        });
     }
 
     // Validation for Employee Evaluation

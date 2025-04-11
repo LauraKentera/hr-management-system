@@ -1,59 +1,114 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeBenefit;
 import main.java.hrms.human_resource_system.service.EmployeeBenefitService;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/employeeBenefits")
+@RequestMapping("/api/employee-benefits")
 public class EmployeeBenefitController {
 
     private final EmployeeBenefitService employeeBenefitService;
 
-    // Constructor Injection of EmployeeBenefitService
     public EmployeeBenefitController(EmployeeBenefitService employeeBenefitService) {
         this.employeeBenefitService = employeeBenefitService;
     }
 
-    // GET all employee benefits
     @GetMapping
-    public ResponseEntity<List<EmployeeBenefit>> getAllEmployeeBenefits() {
-        List<EmployeeBenefit> employeeBenefits = employeeBenefitService.getAllEmployeeBenefits();
-        return ResponseEntity.ok(employeeBenefits);
-    }
-
-    // GET employee benefit by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<EmployeeBenefit> getEmployeeBenefitById(@PathVariable int id) {
-        EmployeeBenefit employeeBenefit = employeeBenefitService.getEmployeeBenefitById(id);
-        if (employeeBenefit != null) {
-            return ResponseEntity.ok(employeeBenefit);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<?> getAllEmployeeBenefits() {
+        try {
+            List<EmployeeBenefit> employeeBenefits = employeeBenefitService.getAllEmployeeBenefits();
+            return ResponseEntity.ok(employeeBenefits);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee benefits", 500));
         }
     }
 
-    // POST new employee benefit
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEmployeeBenefitById(@PathVariable int id) {
+        try {
+            EmployeeBenefit employeeBenefit = employeeBenefitService.getEmployeeBenefitById(id);
+            return employeeBenefit != null
+                    ? ResponseEntity.ok(employeeBenefit)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("Employee benefit not found with id: " + id, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee benefit", 500));
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<String> createEmployeeBenefit(@RequestBody EmployeeBenefit employeeBenefit) {
-        employeeBenefitService.addEmployeeBenefit(employeeBenefit);
-        return ResponseEntity.status(HttpStatus.CREATED).body("✅ Employee Benefit created.");
+    public ResponseEntity<?> createEmployeeBenefit(@RequestBody EmployeeBenefit employeeBenefit) {
+        try {
+            EmployeeBenefit createdBenefit = employeeBenefitService.createEmployeeBenefit(employeeBenefit);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdBenefit);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating employee benefit", 500));
+        }
     }
 
-    // PUT update an existing employee benefit
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateEmployeeBenefit(@PathVariable int id, @RequestBody EmployeeBenefit employeeBenefit) {
-        employeeBenefitService.updateEmployeeBenefit(id, employeeBenefit);
-        return ResponseEntity.ok("✅ Employee Benefit updated.");
+    public ResponseEntity<?> updateEmployeeBenefit(@PathVariable int id, @RequestBody EmployeeBenefit employeeBenefit) {
+        try {
+            // Ensure path ID matches the entity ID if present in body
+            if (employeeBenefit.getId() != null && employeeBenefit.getId() != id) {
+                return ResponseEntity.badRequest()
+                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
+            }
+            employeeBenefit.setId(id);
+            
+            EmployeeBenefit updatedBenefit = employeeBenefitService.updateEmployeeBenefit(employeeBenefit);
+            return ResponseEntity.ok(updatedBenefit);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating employee benefit", 500));
+        }
     }
 
-    // DELETE employee benefit by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEmployeeBenefit(@PathVariable int id) {
-        employeeBenefitService.deleteEmployeeBenefit(id);
-        return ResponseEntity.ok("🗑️ Employee Benefit deleted.");
+    public ResponseEntity<?> deleteEmployeeBenefit(@PathVariable int id) {
+        try {
+            employeeBenefitService.deleteEmployeeBenefit(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting employee benefit", 500));
+        }
     }
 }

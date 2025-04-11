@@ -2,10 +2,10 @@ package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.Position;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
+import java.util.List;
+import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PositionService {
@@ -17,28 +17,51 @@ public class PositionService {
         this.positionDAO = positionDAO;
     }
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+    // Get all positions
     public List<Position> getAllPositions() {
-        return positionDAO.getAll();
+        return wrap(positionDAO::getAll);
     }
 
+    // Get position by ID
     public Position getPositionById(int id) {
-        return positionDAO.getById(id);
+        return wrap(() -> positionDAO.getById(id));
     }
 
+    // Add a new position
     public void addPosition(Position position) {
-        // Validate position before inserting
-        validatePosition(position);
-        positionDAO.insert(position);
+        wrap(() -> {
+            validatePosition(position); // Validate before inserting
+            positionDAO.insert(position);
+            return null;  // Return type is Void
+        });
     }
 
+    // Update an existing position
     public void updatePosition(Position position) {
-        // Validate position before updating
-        validatePosition(position);
-        positionDAO.update(position);
+        wrap(() -> {
+            validatePosition(position); // Validate before updating
+            positionDAO.update(position);
+            return null;  // Return type is Void
+        });
     }
 
+    // Delete position by ID
     public void deletePosition(int id) {
-        positionDAO.delete(id);
+        wrap(() -> {
+            positionDAO.delete(id);
+            return null;  // Return type is Void
+        });
     }
 
     // Validation method for Position

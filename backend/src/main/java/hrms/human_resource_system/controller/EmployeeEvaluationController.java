@@ -1,5 +1,7 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
 import main.java.hrms.human_resource_system.service.EmployeeEvaluationService;
 import org.springframework.http.HttpStatus;
@@ -14,41 +16,98 @@ public class EmployeeEvaluationController {
 
     private final EmployeeEvaluationService service;
 
-    // Constructor Injection (Spring will handle the service injection)
     public EmployeeEvaluationController(EmployeeEvaluationService service) {
         this.service = service;
     }
 
-    // GET employee evaluation by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<EmployeeEvaluation> getById(@PathVariable int id) {
-        EmployeeEvaluation eval = service.getById(id);
-        return eval != null ? ResponseEntity.ok(eval) : ResponseEntity.notFound().build();
-    }
-
-    // GET all employee evaluations
     @GetMapping
-    public ResponseEntity<List<EmployeeEvaluation>> getAll() {
-        List<EmployeeEvaluation> evaluations = service.getAll();
-        return ResponseEntity.ok(evaluations);
-    }
-
-    // POST create a new employee evaluation
-    @PostMapping
-    public ResponseEntity<String> create(@RequestBody EmployeeEvaluation eval) {
+    public ResponseEntity<?> getAllEvaluations() {
         try {
-            service.insert(eval);  // Will trigger validation before insertion
-            return ResponseEntity.status(HttpStatus.CREATED).body("✅ Evaluation record saved.");
-        } catch (IllegalArgumentException e) {
-            // Handling validation errors (bad data)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Error: " + e.getMessage());
+            List<EmployeeEvaluation> evaluations = service.getAll();
+            return ResponseEntity.ok(evaluations);
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving evaluations", 500));
         }
     }
 
-    // DELETE employee evaluation by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEvaluationById(@PathVariable int id) {
+        try {
+            EmployeeEvaluation eval = service.getById(id);
+            return eval != null
+                    ? ResponseEntity.ok(eval)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new CustomErrorResponse("Evaluation not found with id: " + id, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving evaluation", 500));
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createEvaluation(@RequestBody EmployeeEvaluation eval) {
+        try {
+            EmployeeEvaluation created = service.insert(eval);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error creating evaluation", 500));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEvaluation(@PathVariable int id, @RequestBody EmployeeEvaluation eval) {
+        try {
+            if (eval.getId() != null && eval.getId() != id) {
+                return ResponseEntity.badRequest()
+                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
+            }
+
+            eval.setId(id);
+            EmployeeEvaluation updated = service.update(eval);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CustomErrorResponse(e.getMessage(), 400));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error updating evaluation", 500));
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable int id) {
-        service.delete(id);
-        return ResponseEntity.ok("🗑️ Evaluation deleted.");
+    public ResponseEntity<?> deleteEvaluation(@PathVariable int id) {
+        try {
+            service.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse(e.getMessage(), 404));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new CustomErrorResponse(e.getMessage(), 409));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error deleting evaluation", 500));
+        }
     }
 }

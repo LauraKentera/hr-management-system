@@ -5,28 +5,45 @@ import main.java.hrms.human_resource_system.repository.DepartmentDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class DepartmentService {
 
     private final DepartmentDAO dao = new DepartmentDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO(); // Add EmployeeDAO to check if the manager exists
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
     public Department getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
     public List<Department> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
     public void insert(Department entity) {
-        // Validate before inserting
-        validateDepartment(entity);
-        dao.insert(entity);
+        wrap(() -> {
+            validateDepartment(entity);
+            dao.insert(entity);
+            return null;
+        });
     }
 
     public void delete(int id) {
-        dao.delete(id);
+        wrap(() -> {
+            dao.delete(id);
+            return null;
+        });
     }
 
     private void validateDepartment(Department department) {

@@ -4,34 +4,54 @@ import main.java.hrms.human_resource_system.model.EmployeeDisability;
 import main.java.hrms.human_resource_system.repository.EmployeeDisabilityDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.DisabilityCategoryDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Supplier;
 
+@Service
 public class EmployeeDisabilityService {
 
     private final EmployeeDisabilityDAO dao = new EmployeeDisabilityDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();  // Assuming EmployeeDAO is available
     private final DisabilityCategoryDAO disabilityCategoryDAO = new DisabilityCategoryDAO();  // Assuming DisabilityCategoryDAO is available
 
+    // Wrapper method for consistent exception handling
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (IllegalArgumentException e) {
+            throw e;  // Let validation errors bubble up
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
     // Get EmployeeDisability by ID
     public EmployeeDisability getById(int id) {
-        return dao.getById(id);
+        return wrap(() -> dao.getById(id));
     }
 
     // Get all EmployeeDisabilities
     public List<EmployeeDisability> getAll() {
-        return dao.getAll();
+        return wrap(dao::getAll);
     }
 
     // Insert new EmployeeDisability after validation
     public void insert(EmployeeDisability entity) {
-        validateEmployeeDisability(entity);  // Validate before inserting
-        dao.insert(entity);
+        wrap(() -> {
+            validateEmployeeDisability(entity);  // Validate before inserting
+            dao.insert(entity);
+            return null;
+        });
     }
 
     // Delete an EmployeeDisability by ID
     public void delete(int id) {
-        dao.delete(id);
+        wrap(() -> {
+            dao.delete(id);
+            return null;
+        });
     }
 
     // Validation for EmployeeDisability
