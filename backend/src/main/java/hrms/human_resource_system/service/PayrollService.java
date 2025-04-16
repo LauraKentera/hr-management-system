@@ -31,7 +31,7 @@ public class PayrollService {
         try {
             return action.get();
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e; // Let validation errors bubble up
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -52,21 +52,19 @@ public class PayrollService {
         return wrap(payrollDAO::getAll);
     }
 
-    // Add new Payroll
-    public void addPayroll(Payroll payroll) {
-        wrap(() -> {
+    public Payroll addPayroll(Payroll payroll) {
+        return wrap(() -> {
             validatePayroll(payroll);
             payrollDAO.insert(payroll);
-            return null;  // Return type is Void
+            return payroll;
         });
     }
 
-    // Update existing Payroll
-    public void updatePayroll(Payroll payroll) {
-        wrap(() -> {
+    public Payroll updatePayroll(Payroll payroll) {
+        return wrap(() -> {
             validatePayroll(payroll);
             payrollDAO.update(payroll);
-            return null;  // Return type is Void
+            return payroll;
         });
     }
 
@@ -74,7 +72,7 @@ public class PayrollService {
     public void deletePayroll(int payrollId) {
         wrap(() -> {
             payrollDAO.delete(payrollId);
-            return null;  // Return type is Void
+            return null; // Return type is Void
         });
     }
 
@@ -97,7 +95,8 @@ public class PayrollService {
         }
 
         // Additional business rule checks (optional)
-        // e.g., if salary should be checked against employee's contract type or position
+        // e.g., if salary should be checked against employee's contract type or
+        // position
     }
 
     // Optional validation method to check if the payroll period is valid
@@ -118,7 +117,8 @@ public class PayrollService {
 
     // Helper method to get the base salary (EmployeeChange or Contract)
     private BigDecimal getBaseSalary(Employee employee, LocalDate from, LocalDate to) {
-        // Check employee change history or contract to get the base salary during the given period
+        // Check employee change history or contract to get the base salary during the
+        // given period
         // Assuming you will fetch it from the EmployeeChange or Contract
         // Example: Using contractDAO for demonstration
         BigDecimal baseSalary = contractDAO.getBaseSalary(employee.getId(), from, to);
@@ -131,7 +131,7 @@ public class PayrollService {
         // Fetch bonuses from payroll records or other business logic
         // For now, we assume bonuses are part of the employee's compensation plan
         // Example: Just returning zero for simplicity
-        return BigDecimal.ZERO;  // Placeholder: Fetch actual bonuses from relevant source
+        return BigDecimal.ZERO; // Placeholder: Fetch actual bonuses from relevant source
     }
 
     // Helper method to get deductions, including unpaid absences
@@ -139,7 +139,8 @@ public class PayrollService {
         List<EmployeeAbsence> absences = employeeAbsenceDAO.getByEmployeeId(employee.getId());
         BigDecimal totalDeductions = BigDecimal.ZERO;
 
-        // Deduct the unpaid absence days (calculate days and apply some formula if needed)
+        // Deduct the unpaid absence days (calculate days and apply some formula if
+        // needed)
         for (EmployeeAbsence absence : absences) {
             if (!absence.getAbsenceType().isPaid()) {
                 totalDeductions = totalDeductions.add(calculateAbsenceDeductions(absence));
@@ -151,16 +152,19 @@ public class PayrollService {
 
     // Helper method to calculate deductions for unpaid absences
     private BigDecimal calculateAbsenceDeductions(EmployeeAbsence absence) {
-        // Assuming we calculate deductions based on the days of absence and employee's daily salary rate
+        // Assuming we calculate deductions based on the days of absence and employee's
+        // daily salary rate
         long absenceDays = absence.getStartDate().until(absence.getEndDate(), java.time.temporal.ChronoUnit.DAYS);
-        BigDecimal dailySalary = getBaseSalary(absence.getEmployee(), absence.getStartDate(), absence.getEndDate()).divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP); // Assuming 30 days in a month
+        BigDecimal dailySalary = getBaseSalary(absence.getEmployee(), absence.getStartDate(), absence.getEndDate())
+                .divide(BigDecimal.valueOf(30), 2, RoundingMode.HALF_UP);
         return dailySalary.multiply(BigDecimal.valueOf(absenceDays));
     }
 
     // Helper method to get taxable benefits
     private BigDecimal getTaxableBenefits(Employee employee, LocalDate from, LocalDate to) {
-        // Check benefits of the employee, if they are taxable and add them to the net pay calculation
+        // Check benefits of the employee, if they are taxable and add them to the net
+        // pay calculation
         // Example: Returning zero for simplicity
-        return BigDecimal.ZERO;  // Placeholder: Implement actual taxable benefits logic
+        return BigDecimal.ZERO; // Placeholder: Implement actual taxable benefits logic
     }
 }

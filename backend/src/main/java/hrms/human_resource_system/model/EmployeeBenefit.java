@@ -34,14 +34,14 @@ public class EmployeeBenefit {
     }
 
     // Getters and Setters
-    public int getEmployeeBenefitId() {
+    public int getId() {
         return employeeBenefitId;
     }
-
-    public void setEmployeeBenefitId(int employeeBenefitId) {
-        this.employeeBenefitId = employeeBenefitId;
+    
+    public void setId(int id) {
+        this.employeeBenefitId = id;
     }
-
+    
     public Employee getEmployee() {
         return employee;
     }
