@@ -1,20 +1,20 @@
 package main.java.hrms.human_resource_system.dto;
 
 public class EmployeeBankAccountResponseDTO {
-    private int id;
     private int employeeId;
     private String bankName;
     private String accountNumber;
     private String iban;
 
-    public int getId() {
-        return id;
+    // Constructor to initialize fields
+    public EmployeeBankAccountResponseDTO(int employeeId, String bankName, String accountNumber, String iban) {
+        this.employeeId = employeeId;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.iban = iban;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    // Getters and setters
     public int getEmployeeId() {
         return employeeId;
     }

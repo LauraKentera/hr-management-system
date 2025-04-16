@@ -2,10 +2,12 @@ package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.EmployeeBankAccount;
 import main.java.hrms.human_resource_system.repository.EmployeeBankAccountDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class EmployeeBankAccountService {
 
     private final EmployeeBankAccountDAO dao = new EmployeeBankAccountDAO();
@@ -67,4 +69,12 @@ public class EmployeeBankAccountService {
             throw new IllegalArgumentException("IBAN must be 22 characters long.");
         }
     }
+
+    public void update(int id, EmployeeBankAccount account) {
+        wrap(() -> {
+            dao.update(account);  // Call the DAO update method
+            return null;
+        });
+    }
+
 }
