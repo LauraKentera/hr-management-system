@@ -113,4 +113,7 @@ public class EmployeeBenefit {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public void setBenefit(BenefitItem benefit) {
+    }
 }

@@ -57,6 +57,9 @@ public class Employee {
         this.bankAccountNumber = bankAccountNumber;
     }
 
+    public Employee() {
+    }
+
     // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
