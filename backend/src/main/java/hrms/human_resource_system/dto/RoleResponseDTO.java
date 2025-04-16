@@ -1,9 +1,17 @@
 package main.java.hrms.human_resource_system.dto;
 
 public class RoleResponseDTO {
+
     private int id;
     private String name;
 
+    // Constructor that accepts id and name
+    public RoleResponseDTO(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    // Getters and Setters
     public int getId() {
         return id;
     }
