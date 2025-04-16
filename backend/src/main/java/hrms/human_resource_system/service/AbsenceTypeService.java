@@ -27,13 +27,14 @@ public class AbsenceTypeService {
     }
 
     public AbsenceType getById(int id) {
-        return wrap(() -> dao.getById(id));
+        return wrap(() -> dao.getById(id)); // Only passing id
     }
 
     public List<AbsenceType> getAll() {
-        return wrap(dao::getAll);
+        return wrap(dao::getAll); // No parameters for getAll
     }
 
+    // For insert, just pass the absenceType
     public void insert(AbsenceType absenceType) {
         wrap(() -> {
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
@@ -55,7 +56,8 @@ public class AbsenceTypeService {
         });
     }
 
-    public void update(AbsenceType absenceType) {
+    // For update, the absenceType and its ID need to be passed
+    public void update(int id, AbsenceType absenceType) {
         wrap(() -> {
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Name is required.");
@@ -65,11 +67,13 @@ public class AbsenceTypeService {
                 throw new IllegalArgumentException("Absence Type Code is required.");
             }
 
+            absenceType.setAbsenceTypeId(id); // Set the ID
             dao.update(absenceType);
             return null;
         });
     }
 
+    // Delete method expects an ID
     public void delete(int id) {
         wrap(() -> {
             AbsenceType existing = dao.getById(id);

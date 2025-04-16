@@ -1,6 +1,8 @@
-package main.java.hrms.human_resource_system.util;
+package main.resources.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import main.java.hrms.human_resource_system.repository.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

@@ -1,31 +1,35 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.AbsenceTypeResponseDTO;
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import main.java.hrms.human_resource_system.exception.DLException;
+import main.java.hrms.human_resource_system.mapper.AbsenceTypeMapper;
 import main.java.hrms.human_resource_system.model.AbsenceType;
 import main.java.hrms.human_resource_system.service.AbsenceTypeService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/absence-types")
 public class AbsenceTypeController {
 
-    private final AbsenceTypeService service;
+    private final AbsenceTypeService absenceTypeService;
 
-    // Changed to constructor injection
-    public AbsenceTypeController(AbsenceTypeService service) {
-        this.service = service;
+    public AbsenceTypeController(AbsenceTypeService absenceTypeService) {
+        this.absenceTypeService = absenceTypeService;
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAllAbsenceTypes() {
         try {
-            List<AbsenceType> absenceTypes = service.getAllAbsenceTypes();
-            return ResponseEntity.ok(absenceTypes);
+            List<AbsenceType> types = absenceTypeService.getAll();
+            List<AbsenceTypeResponseDTO> dtoList = types.stream()
+                    .map(AbsenceTypeMapper::toDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(dtoList);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -38,11 +42,13 @@ public class AbsenceTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         try {
-            AbsenceType absenceType = service.getAbsenceTypeById(id);
-            return absenceType != null
-                    ? ResponseEntity.ok(absenceType)
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+            AbsenceType type = absenceTypeService.getById(id);
+            if (type != null) {
+                return ResponseEntity.ok(AbsenceTypeMapper.toDTO(type));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new CustomErrorResponse("Absence type not found with id: " + id, 404));
+            }
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -55,8 +61,8 @@ public class AbsenceTypeController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody AbsenceType absenceType) {
         try {
-            AbsenceType createdType = service.createAbsenceType(absenceType);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdType);
+            absenceTypeService.insert(absenceType);
+            return ResponseEntity.status(HttpStatus.CREATED).body("✅ Absence type created.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -72,15 +78,9 @@ public class AbsenceTypeController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody AbsenceType updatedType) {
         try {
-            // Ensure path ID matches the entity ID
-            if (updatedType.getId() != null && updatedType.getId() != id) {
-                return ResponseEntity.badRequest()
-                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
-            }
-            updatedType.setId(id);
-            
-            AbsenceType result = service.updateAbsenceType(updatedType, id);
-            return ResponseEntity.ok(result);
+            updatedType.setAbsenceTypeId(id); // Make sure ID matches from path and request
+            absenceTypeService.update(id, updatedType); // Pass both ID and object
+            return ResponseEntity.ok("✏️ Absence type updated.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -96,8 +96,8 @@ public class AbsenceTypeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         try {
-            service.deleteAbsenceType(id);
-            return ResponseEntity.noContent().build();
+            absenceTypeService.delete(id);
+            return ResponseEntity.ok("🗑️ Absence type deleted.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new CustomErrorResponse(e.getMessage(), 404));
