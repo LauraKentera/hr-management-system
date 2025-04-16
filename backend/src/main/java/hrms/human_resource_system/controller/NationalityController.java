@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import main.java.hrms.human_resource_system.mapper.NationalityMapper;
+import main.java.hrms.human_resource_system.dto.NationalityResponseDTO;
 
 import java.util.List;
 
@@ -26,7 +28,10 @@ public class NationalityController {
     public ResponseEntity<?> getAllNationalities() {
         try {
             List<Nationality> nationalities = nationalityService.getAllNationalities();
-            return ResponseEntity.ok(nationalities);
+            List<NationalityResponseDTO> responseDTOs = nationalities.stream()
+                    .map(NationalityMapper::toDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responseDTOs);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -41,9 +46,9 @@ public class NationalityController {
         try {
             Nationality nationality = nationalityService.getNationalityById(nationalityId);
             return nationality != null
-                    ? ResponseEntity.ok(nationality)
+                    ? ResponseEntity.ok(NationalityMapper.toDTO(nationality))
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Nationality not found with ID: " + nationalityId, 404));
+                            .body(new CustomErrorResponse("Nationality not found with ID: " + nationalityId, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -57,7 +62,8 @@ public class NationalityController {
     public ResponseEntity<?> createNationality(@RequestBody Nationality nationality) {
         try {
             Nationality created = nationalityService.addNationality(nationality);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(NationalityMapper.toDTO(created));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -72,7 +78,7 @@ public class NationalityController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateNationality(@PathVariable("id") Integer nationalityId,
-                                               @RequestBody Nationality nationality) {
+            @RequestBody Nationality nationality) {
         try {
             if (nationality.getNationalityId() != null && !nationality.getNationalityId().equals(nationalityId)) {
                 return ResponseEntity.badRequest()
@@ -81,7 +87,7 @@ public class NationalityController {
 
             nationality.setNationalityId(nationalityId);
             Nationality updated = nationalityService.updateNationality(nationality);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(NationalityMapper.toDTO(updated));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
