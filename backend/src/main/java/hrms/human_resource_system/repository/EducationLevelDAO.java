@@ -14,30 +14,23 @@ public class EducationLevelDAO {
 
     public EducationLevel getById(int id) {
         String sql = "SELECT * FROM EducationLevel WHERE education_level_id = ?";
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
         EducationLevel educationLevel = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 educationLevel = new EducationLevel(
-                    rs.getInt("education_level_id"),
-                    rs.getString("name"),
-                    rs.getInt("user_id"),
-                    rs.getTimestamp("modification_date").toLocalDateTime(),
-                    rs.getBoolean("is_active")
+                        rs.getInt("education_level_id"),
+                        rs.getString("name"),
+                        rs.getInt("user_id"),
+                        rs.getTimestamp("modification_date").toLocalDateTime(),
+                        rs.getBoolean("is_active")
                 );
             }
         } catch (SQLException e) {
             throw new DLException("Error retrieving education level with ID " + id, e);
-        } finally {
-            DatabaseConnection.closeResources(conn, ps, rs);
         }
 
         return educationLevel;
@@ -46,28 +39,21 @@ public class EducationLevelDAO {
     public List<EducationLevel> getAll() {
         String sql = "SELECT * FROM EducationLevel";
         List<EducationLevel> list = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(new EducationLevel(
-                    rs.getInt("education_level_id"),
-                    rs.getString("name"),
-                    rs.getInt("user_id"),
-                    rs.getTimestamp("modification_date").toLocalDateTime(),
-                    rs.getBoolean("is_active")
+                        rs.getInt("education_level_id"),
+                        rs.getString("name"),
+                        rs.getInt("user_id"),
+                        rs.getTimestamp("modification_date").toLocalDateTime(),
+                        rs.getBoolean("is_active")
                 ));
             }
         } catch (SQLException e) {
             throw new DLException("Error fetching all education levels", e);
-        } finally {
-            DatabaseConnection.closeResources(conn, ps, rs);
         }
 
         return list;
@@ -75,12 +61,8 @@ public class EducationLevelDAO {
 
     public void insert(EducationLevel educationLevel) {
         String sql = "INSERT INTO EducationLevel (name, user_id, modification_date, is_active) VALUES (?, ?, ?, ?)";
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, educationLevel.getName());
             ps.setInt(2, educationLevel.getUserId());
             ps.setTimestamp(3, Timestamp.valueOf(educationLevel.getModificationDate()));
@@ -88,36 +70,13 @@ public class EducationLevelDAO {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DLException("Error inserting education level: " + educationLevel.getName(), e);
-        } finally {
-            DatabaseConnection.closeResources(conn, ps, null);
-        }
-    }
-
-    public void delete(int id) {
-        String sql = "DELETE FROM EducationLevel WHERE education_level_id = ?";
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new DLException("Error deleting education level with ID " + id, e);
-        } finally {
-            DatabaseConnection.closeResources(conn, ps, null);
         }
     }
 
     public void update(int id, EducationLevel educationLevel) {
         String sql = "UPDATE EducationLevel SET name = ?, user_id = ?, modification_date = ?, is_active = ? WHERE education_level_id = ?";
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            ps = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, educationLevel.getName());
             ps.setInt(2, educationLevel.getUserId());
             ps.setTimestamp(3, Timestamp.valueOf(educationLevel.getModificationDate()));
@@ -126,9 +85,33 @@ public class EducationLevelDAO {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DLException("Error updating education level with ID " + id, e);
-        } finally {
-            DatabaseConnection.closeResources(conn, ps, null);
         }
     }
 
+    public void delete(int id) {
+        String sql = "DELETE FROM EducationLevel WHERE education_level_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DLException("Error deleting education level with ID " + id, e);
+        }
+    }
+
+    public boolean existsById(int id) {
+        String sql = "SELECT COUNT(*) FROM EducationLevel WHERE education_level_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error checking if education level exists with ID " + id, e);
+        }
+        return false;
+    }
 }

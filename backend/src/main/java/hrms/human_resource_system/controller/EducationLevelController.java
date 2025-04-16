@@ -42,7 +42,7 @@ public class EducationLevelController {
             return educationLevel != null
                     ? ResponseEntity.ok(educationLevel)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Education level not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Education level not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -55,8 +55,8 @@ public class EducationLevelController {
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody EducationLevel educationLevel) {
         try {
-            EducationLevel createdLevel = service.create(educationLevel);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdLevel);
+            service.insert(educationLevel);
+            return ResponseEntity.status(HttpStatus.CREATED).body(educationLevel);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -72,15 +72,12 @@ public class EducationLevelController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody EducationLevel educationLevel) {
         try {
-            // Ensure path ID matches the entity ID if present in body
-            if (educationLevel.getId() != null && educationLevel.getId() != id) {
+            if (educationLevel.getEducationLevelId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            educationLevel.setId(id);
-            
-            EducationLevel updatedLevel = service.update(educationLevel);
-            return ResponseEntity.ok(updatedLevel);
+            service.update(id, educationLevel);
+            return ResponseEntity.ok(educationLevel);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -101,9 +98,6 @@ public class EducationLevelController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new CustomErrorResponse(e.getMessage(), 404));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse(e.getMessage(), 409));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));

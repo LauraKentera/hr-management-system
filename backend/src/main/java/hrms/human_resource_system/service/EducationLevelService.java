@@ -2,10 +2,12 @@ package main.java.hrms.human_resource_system.service;
 
 import main.java.hrms.human_resource_system.model.EducationLevel;
 import main.java.hrms.human_resource_system.repository.EducationLevelDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class EducationLevelService {
 
     private final EducationLevelDAO dao = new EducationLevelDAO();
@@ -53,14 +55,14 @@ public class EducationLevelService {
     }
 
     private void validateEducationLevel(EducationLevel educationLevel) {
-        // Validate required fields
         if (educationLevel.getName() == null || educationLevel.getName().isEmpty()) {
             throw new IllegalArgumentException("Education Level name is required.");
         }
-
-        // Example additional validation (optional): Check if the name is unique (this can be done in the DAO)
-        // if (dao.existsByName(educationLevel.getName())) {
-        //     throw new IllegalArgumentException("Education Level name must be unique.");
-        // }
+        if (educationLevel.getUserId() <= 0) {
+            throw new IllegalArgumentException("Valid userId is required.");
+        }
+        if (educationLevel.getModificationDate() == null) {
+            throw new IllegalArgumentException("Modification date is required.");
+        }
     }
 }
