@@ -38,12 +38,11 @@ public class PositionService {
         return wrap(() -> positionDAO.getById(id));
     }
 
-    // Add a new position
-    public void addPosition(Position position) {
+    public Position addPosition(Position position) {
         wrap(() -> {
             validatePosition(position); // Validate before inserting
             positionDAO.insert(position);
-            return null;  // Return type is Void
+            return position;
         });
     }
 

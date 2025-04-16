@@ -1,7 +1,10 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.PositionRequestDTO;
+import main.java.hrms.human_resource_system.dto.PositionResponseDTO;
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import main.java.hrms.human_resource_system.exception.DLException;
+import main.java.hrms.human_resource_system.mapper.PositionMapper;
 import main.java.hrms.human_resource_system.model.Position;
 import main.java.hrms.human_resource_system.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/positions")
@@ -26,7 +30,10 @@ public class PositionController {
     public ResponseEntity<?> getAllPositions() {
         try {
             List<Position> positions = positionService.getAllPositions();
-            return ResponseEntity.ok(positions);
+            List<PositionResponseDTO> responseDTOs = positions.stream()
+                    .map(PositionMapper::toResponseDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responseDTOs);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -40,10 +47,12 @@ public class PositionController {
     public ResponseEntity<?> getPositionById(@PathVariable int id) {
         try {
             Position position = positionService.getPositionById(id);
-            return position != null
-                    ? ResponseEntity.ok(position)
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Position not found with id: " + id, 404));
+            if (position != null) {
+                PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(position);
+                return ResponseEntity.ok(responseDTO);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse("Position not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -54,10 +63,12 @@ public class PositionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createPosition(@RequestBody Position position) {
+    public ResponseEntity<?> createPosition(@RequestBody PositionRequestDTO positionRequestDTO) {
         try {
+            Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
             Position created = positionService.addPosition(position);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(created);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -71,16 +82,13 @@ public class PositionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePosition(@PathVariable int id, @RequestBody Position position) {
+    public ResponseEntity<?> updatePosition(@PathVariable int id, @RequestBody PositionRequestDTO positionRequestDTO) {
         try {
-            if (position.getPositionId() != null && position.getPositionId() != id) {
-                return ResponseEntity.badRequest()
-                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
-            }
-
+            Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
             position.setPositionId(id);
             Position updated = positionService.updatePosition(position);
-            return ResponseEntity.ok(updated);
+            PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(updated);
+            return ResponseEntity.ok(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
