@@ -6,21 +6,24 @@ import main.java.hrms.human_resource_system.repository.ContractAnnexDAO;
 import main.java.hrms.human_resource_system.repository.ContractDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
 import main.java.hrms.human_resource_system.repository.PositionDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class ContractService {
 
     private final ContractDAO contractDAO;
     private final EmployeeDAO employeeDAO;
     private final PositionDAO positionDAO;
-    private final ContractAnnexDAO contractAnnexDAO = new ContractAnnexDAO();
+    private final ContractAnnexDAO contractAnnexDAO;
 
     public ContractService() {
         this.contractDAO = new ContractDAO();
         this.employeeDAO = new EmployeeDAO();
         this.positionDAO = new PositionDAO();
+        this.contractAnnexDAO = new ContractAnnexDAO(); // Ensure contractAnnexDAO is initialized
     }
 
     // Wrapper method for consistent exception handling
@@ -45,25 +48,27 @@ public class ContractService {
                 .orElse(null));
     }
 
-    public void addContract(EmploymentContract contract) {
+    public EmploymentContract addContract(EmploymentContract contract, int performedBy) {
         wrap(() -> {
             validateContract(contract);
-            contractDAO.insert(contract);
-            return null;
+            contractDAO.insert(contract, performedBy); // Insert contract with performedBy for audit logging
+            return contract;
         });
+        return contract;
     }
 
-    public void updateContract(EmploymentContract contract) {
+    public EmploymentContract updateContract(EmploymentContract contract, int performedBy) {
         wrap(() -> {
             validateContract(contract);
-            contractDAO.update(contract);
-            return null;
+            contractDAO.update(contract, performedBy); // Update contract with performedBy for audit logging
+            return contract;
         });
+        return contract;
     }
 
-    public void deleteContract(int contractId) {
+    public void deleteContract(int contractId, int performedBy) {
         wrap(() -> {
-            contractDAO.delete(contractId);
+            contractDAO.delete(contractId, performedBy); // Delete contract with performedBy for audit logging
             return null;
         });
     }
@@ -88,5 +93,37 @@ public class ContractService {
 
     public List<ContractAnnex> getAnnexesByContractId(int contractId) {
         return wrap(() -> contractAnnexDAO.getAnnexesByContractId(contractId));
+    }
+
+    // Add a contract annex
+    public ContractAnnex addContractAnnex(ContractAnnex annex, int performedBy) {
+        wrap(() -> {
+            if (!contractDAO.getAll().stream().anyMatch(contract -> contract.getContractId() == annex.getContractId())) {
+                throw new IllegalArgumentException("Contract ID " + annex.getContractId() + " does not exist.");
+            }
+            contractAnnexDAO.insert(annex); // Insert contract annex with only the ContractAnnex object
+            return annex;
+        });
+        return annex;
+    }
+
+    // Update a contract annex
+    public ContractAnnex updateContractAnnex(ContractAnnex annex, int performedBy) {
+        wrap(() -> {
+            if (!contractDAO.getAll().stream().anyMatch(contract -> contract.getContractId() == annex.getContractId())) {
+                throw new IllegalArgumentException("Contract ID " + annex.getContractId() + " does not exist.");
+            }
+            contractAnnexDAO.update(annex); // Update contract annex with only the ContractAnnex object
+            return annex;
+        });
+        return annex;
+    }
+
+    // Delete a contract annex
+    public void deleteContractAnnex(int annexId, int performedBy) {
+        wrap(() -> {
+            contractAnnexDAO.delete(annexId); // Delete contract annex with only the annexId
+            return null;
+        });
     }
 }

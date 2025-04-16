@@ -3,14 +3,16 @@ package main.java.hrms.human_resource_system.service;
 import main.java.hrms.human_resource_system.model.Department;
 import main.java.hrms.human_resource_system.repository.DepartmentDAO;
 import main.java.hrms.human_resource_system.repository.EmployeeDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class DepartmentService {
 
     private final DepartmentDAO dao = new DepartmentDAO();
-    private final EmployeeDAO employeeDAO = new EmployeeDAO(); // Add EmployeeDAO to check if the manager exists
+    private final EmployeeDAO employeeDAO = new EmployeeDAO(); // Check if the manager exists
 
     // Wrapper method for consistent exception handling
     private <T> T wrap(Supplier<T> action) {
@@ -39,15 +41,22 @@ public class DepartmentService {
         });
     }
 
+    public void update(Department department) {
+        wrap(() -> {
+            validateDepartment(department);
+            dao.update(department.getDepartmentId(), department, 0); // assuming `0` is the `performedBy`
+            return null;
+        });
+    }
+
     public void delete(int id) {
         wrap(() -> {
-            dao.delete(id);
+            dao.delete(id, 0); // assuming `0` is the `performedBy`
             return null;
         });
     }
 
     private void validateDepartment(Department department) {
-        // Validate required fields
         if (department.getName() == null || department.getName().isEmpty()) {
             throw new IllegalArgumentException("Department name is required.");
         }

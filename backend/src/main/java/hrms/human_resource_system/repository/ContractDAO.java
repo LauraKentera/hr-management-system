@@ -2,8 +2,8 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.EmploymentContract;
 import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.util.AuditLogger;
 import org.springframework.stereotype.Repository;
+import main.resources.util.AuditLogger;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -23,15 +23,15 @@ public class ContractDAO {
 
             while (rs.next()) {
                 contracts.add(new EmploymentContract(
-                    rs.getInt("contract_id"),
-                    rs.getInt("employee_id"),
-                    rs.getDate("start_date").toLocalDate(),
-                    rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : null,
-                    rs.getInt("position_id"),
-                    rs.getBigDecimal("salary"),
-                    rs.getString("contract_type"),
-                    rs.getDate("signed_date") != null ? rs.getDate("signed_date").toLocalDate() : null,
-                    rs.getString("document_path")
+                        rs.getInt("contract_id"),
+                        rs.getInt("employee_id"),
+                        rs.getDate("start_date").toLocalDate(),
+                        rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : null,
+                        rs.getInt("position_id"),
+                        rs.getBigDecimal("salary"),
+                        rs.getString("contract_type"),
+                        rs.getDate("signed_date") != null ? rs.getDate("signed_date").toLocalDate() : null,
+                        rs.getString("document_path")
                 ));
             }
         } catch (SQLException e) {
@@ -115,55 +115,56 @@ public class ContractDAO {
     }
 
 
-public BigDecimal getBaseSalary(int employeeId, LocalDate from, LocalDate to) {
-    String sql = "SELECT salary FROM EmploymentContract WHERE employee_id = ? AND start_date <= ? " +
-            "AND (end_date IS NULL OR end_date >= ?) ORDER BY start_date DESC LIMIT 1";
+    public BigDecimal getBaseSalary(int employeeId, LocalDate from, LocalDate to) {
+        String sql = "SELECT salary FROM EmploymentContract WHERE employee_id = ? AND start_date <= ? " +
+                "AND (end_date IS NULL OR end_date >= ?) ORDER BY start_date DESC LIMIT 1";
 
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, employeeId);
-        ps.setDate(2, Date.valueOf(from));
-        ps.setDate(3, Date.valueOf(to));
+            ps.setInt(1, employeeId);
+            ps.setDate(2, Date.valueOf(from));
+            ps.setDate(3, Date.valueOf(to));
 
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getBigDecimal("salary");
-        }
-
-    } catch (SQLException e) {
-        throw new DLException("Error fetching salary for employee ID " + employeeId, e);
-    }
-
-    return null;
-}
-
-public EmploymentContract getById(int contractId) {
-    String sql = "SELECT * FROM EmploymentContract WHERE contract_id = ?";
-    EmploymentContract contract = null;
-
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setInt(1, contractId);
-        try (ResultSet rs = ps.executeQuery()) {
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                contract = new EmploymentContract(
-                    rs.getInt("contract_id"),
-                    rs.getInt("employee_id"),
-                    rs.getDate("start_date").toLocalDate(),
-                    rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : null,
-                    rs.getInt("position_id"),
-                    rs.getBigDecimal("salary"),
-                    rs.getString("contract_type"),
-                    rs.getDate("signed_date") != null ? rs.getDate("signed_date").toLocalDate() : null,
-                    rs.getString("document_path")
-                );
+                return rs.getBigDecimal("salary");
             }
+
+        } catch (SQLException e) {
+            throw new DLException("Error fetching salary for employee ID " + employeeId, e);
         }
-    } catch (SQLException e) {
-        throw new DLException("Error fetching contract with ID " + contractId, e);
+
+        return null;
     }
 
-    return contract;
+    public EmploymentContract getById(int contractId) {
+        String sql = "SELECT * FROM EmploymentContract WHERE contract_id = ?";
+        EmploymentContract contract = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, contractId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    contract = new EmploymentContract(
+                            rs.getInt("contract_id"),
+                            rs.getInt("employee_id"),
+                            rs.getDate("start_date").toLocalDate(),
+                            rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : null,
+                            rs.getInt("position_id"),
+                            rs.getBigDecimal("salary"),
+                            rs.getString("contract_type"),
+                            rs.getDate("signed_date") != null ? rs.getDate("signed_date").toLocalDate() : null,
+                            rs.getString("document_path")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error fetching contract with ID " + contractId, e);
+        }
+
+        return contract;
+    }
 }

@@ -42,7 +42,7 @@ public class BenefitController {
             return benefit != null
                     ? ResponseEntity.ok(benefit)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Benefit not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Benefit not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -53,9 +53,9 @@ public class BenefitController {
     }
 
     @PostMapping
-    public ResponseEntity<?> insert(@RequestBody Benefit benefit) {
+    public ResponseEntity<?> insert(@RequestBody Benefit benefit, @RequestParam int performedBy) {
         try {
-            Benefit createdBenefit = service.create(benefit); // Changed to create() for consistency
+            Benefit createdBenefit = service.create(benefit, performedBy); // Passing performedBy
             return ResponseEntity.status(HttpStatus.CREATED).body(createdBenefit);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -70,15 +70,14 @@ public class BenefitController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Benefit benefit) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Benefit benefit, @RequestParam int performedBy) {
         try {
-            // Ensure path ID matches the entity ID if present in body
-            if (benefit.getId() != null && benefit.getId() != id) {
+            if (benefit.getBenefitId() != 0 && benefit.getBenefitId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            
-            Benefit updatedBenefit = service.update(id, benefit);
+
+            Benefit updatedBenefit = service.update(id, benefit, performedBy); // Passing performedBy
             return ResponseEntity.ok(updatedBenefit);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -93,9 +92,9 @@ public class BenefitController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable int id, @RequestParam int performedBy) {
         try {
-            service.delete(id);
+            service.delete(id, performedBy); // Passing performedBy
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

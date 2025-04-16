@@ -59,9 +59,9 @@ public class AbsenceTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody AbsenceType absenceType) {
+    public ResponseEntity<?> create(@RequestBody AbsenceType absenceType, @RequestParam int performedBy) {
         try {
-            absenceTypeService.insert(absenceType);
+            absenceTypeService.insert(absenceType, performedBy); // Pass performedBy
             return ResponseEntity.status(HttpStatus.CREATED).body("✅ Absence type created.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -76,10 +76,10 @@ public class AbsenceTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody AbsenceType updatedType) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody AbsenceType updatedType, @RequestParam int performedBy) {
         try {
-            updatedType.setAbsenceTypeId(id); // Make sure ID matches from path and request
-            absenceTypeService.update(id, updatedType); // Pass both ID and object
+            updatedType.setAbsenceTypeId(id);
+            absenceTypeService.update(id, updatedType, performedBy); // Pass performedBy
             return ResponseEntity.ok("✏️ Absence type updated.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -94,9 +94,9 @@ public class AbsenceTypeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable int id, @RequestParam int performedBy) {
         try {
-            absenceTypeService.delete(id);
+            absenceTypeService.delete(id, performedBy); // Pass performedBy
             return ResponseEntity.ok("🗑️ Absence type deleted.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

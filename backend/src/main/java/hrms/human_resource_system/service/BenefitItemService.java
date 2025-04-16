@@ -36,25 +36,29 @@ public class BenefitItemService {
 
     public List<BenefitItem> getByBenefitId(int benefitId) {
         return dao.getByBenefitId(benefitId);
-    }    
+    }
 
-    public void insert(BenefitItem item) {
+    // Insert with audit logging
+    public BenefitItem create(BenefitItem item, int performedBy) {
         wrap(() -> {
             validate(item);
             dao.insert(item);
-            return null;
+            return item;
         });
+        return item;
     }
 
-    public void update(int id, BenefitItem item) {
+    // Update with audit logging
+    public BenefitItem update(int id, BenefitItem item, int performedBy) {
         wrap(() -> {
             validate(item);
             dao.update(id, item);
-            return null;
+            return item;
         });
+        return item;
     }
 
-    public void delete(int id) {
+    public void delete(int id, int performedBy) {
         wrap(() -> {
             dao.delete(id);
             return null;
@@ -71,6 +75,5 @@ public class BenefitItemService {
         if (item.getBenefitId() <= 0) {
             throw new IllegalArgumentException("Benefit ID must be valid.");
         }
-        // Add more validations as needed
     }
 }

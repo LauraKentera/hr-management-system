@@ -2,7 +2,6 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Department;
-import main.java.hrms.human_resource_system.util.AuditLogger;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -57,7 +56,7 @@ public class DepartmentDAO {
         return departments;
     }
 
-    public void insert(Department department, int performedBy) {
+    public void insert(Department department) {
         String sql = "INSERT INTO Department (name, manager_id) VALUES (?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -74,35 +73,13 @@ public class DepartmentDAO {
                 }
             }
 
-            // Log the change
-            AuditLogger.logChange("Department", department.getDepartmentId(), "INSERT", performedBy, null, department);
-
         } catch (SQLException e) {
             throw new DLException("Error inserting department: " + department.getName(), e);
         }
     }
 
-    public void delete(int id, int performedBy) {
-        String sql = "DELETE FROM Department WHERE department_id = ?";
-        Department oldDepartment = getById(id); // Fetch old data for logging
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            // Log the change
-            AuditLogger.logChange("Department", id, "DELETE", performedBy, oldDepartment, null);
-
-        } catch (SQLException e) {
-            throw new DLException("Error deleting department with ID " + id, e);
-        }
-    }
-
     public void update(int id, Department department, int performedBy) {
         String sql = "UPDATE Department SET name = ?, manager_id = ? WHERE department_id = ?";
-        Department oldDepartment = getById(id); // Fetch old data for logging
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -112,29 +89,22 @@ public class DepartmentDAO {
             ps.setInt(3, id);
             ps.executeUpdate();
 
-            // Log the change
-            AuditLogger.logChange("Department", id, "UPDATE", performedBy, oldDepartment, department);
-
         } catch (SQLException e) {
             throw new DLException("Error updating department with ID " + id, e);
         }
     }
 
-    public boolean existsById(int departmentId) {
-        String sql = "SELECT COUNT(*) FROM Department WHERE department_id = ?";
+    public void delete(int id, int performedBy) {
+        String sql = "DELETE FROM Department WHERE department_id = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, departmentId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0; // If count > 0, the department exists
-                }
-            }
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
         } catch (SQLException e) {
-            throw new DLException("Error checking if department exists with ID " + departmentId, e);
+            throw new DLException("Error deleting department with ID " + id, e);
         }
-        return false; // Return false if no record is found
     }
 }
-

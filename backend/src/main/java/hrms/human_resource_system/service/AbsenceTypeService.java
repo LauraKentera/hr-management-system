@@ -34,9 +34,10 @@ public class AbsenceTypeService {
         return wrap(dao::getAll); // No parameters for getAll
     }
 
-    // For insert, just pass the absenceType
-    public void insert(AbsenceType absenceType) {
+    // Insert method now requires performed_by argument
+    public void insert(AbsenceType absenceType, int performedBy) {
         wrap(() -> {
+            // Validation
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Name is required.");
             }
@@ -45,20 +46,16 @@ public class AbsenceTypeService {
                 throw new IllegalArgumentException("Absence Type Code is required.");
             }
 
-            boolean duplicate = dao.getAll().stream()
-                    .anyMatch(existing -> existing.getCode().equals(absenceType.getCode()));
-            if (duplicate) {
-                throw new IllegalArgumentException("Absence Type with this code already exists.");
-            }
-
-            dao.insert(absenceType);
+            // Insert into database
+            dao.insert(absenceType, performedBy); // Pass performedBy to DAO
             return null;
         });
     }
 
-    // For update, the absenceType and its ID need to be passed
-    public void update(int id, AbsenceType absenceType) {
+    // Update method now requires performed_by argument
+    public void update(int id, AbsenceType absenceType, int performedBy) {
         wrap(() -> {
+            // Validation
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Name is required.");
             }
@@ -68,20 +65,20 @@ public class AbsenceTypeService {
             }
 
             absenceType.setAbsenceTypeId(id); // Set the ID
-            dao.update(absenceType);
+            dao.update(absenceType, performedBy); // Pass performedBy to DAO
             return null;
         });
     }
 
-    // Delete method expects an ID
-    public void delete(int id) {
+    // Delete method now requires performed_by argument
+    public void delete(int id, int performedBy) {
         wrap(() -> {
             AbsenceType existing = dao.getById(id);
             if (existing == null) {
                 throw new IllegalArgumentException("Absence Type with ID " + id + " does not exist.");
             }
 
-            dao.delete(id);
+            dao.delete(id, performedBy); // Pass performedBy to DAO
             return null;
         });
     }
