@@ -43,20 +43,20 @@ public class NationalityService {
     }
 
     // Add new nationality
-    public void addNationality(Nationality nationality) {
-        wrap(() -> {
+    public Nationality addNationality(Nationality nationality) {
+        return wrap(() -> {
             validateNationality(nationality);
             nationalityDAO.insert(nationality);
-            return null;  // return type is Void
+            return nationality; // Return created
         });
     }
 
     // Update existing nationality
-    public void updateNationality(Nationality nationality) {
-        wrap(() -> {
+    public Nationality updateNationality(Nationality nationality) {
+        return wrap(() -> {
             validateNationality(nationality);
             nationalityDAO.update(nationality);
-            return null;  // return type is Void
+            return nationality; // Return updated
         });
     }
 
