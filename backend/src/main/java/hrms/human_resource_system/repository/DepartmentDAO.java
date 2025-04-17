@@ -107,4 +107,21 @@ public class DepartmentDAO {
             throw new DLException("Error deleting department with ID " + id, e);
         }
     }
+
+    public boolean existsById(int id) {
+        String sql = "SELECT COUNT(*) FROM Department WHERE department_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DLException("Error checking existence of department with ID " + id, e);
+        }
+        return false;
+    }
+
 }

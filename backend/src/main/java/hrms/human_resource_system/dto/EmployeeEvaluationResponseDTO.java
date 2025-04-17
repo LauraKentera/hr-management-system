@@ -1,5 +1,9 @@
 package main.java.hrms.human_resource_system.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class EmployeeEvaluationResponseDTO {
     private int id;
     private int employeeId;
@@ -45,5 +49,25 @@ public class EmployeeEvaluationResponseDTO {
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    public String setComment(String comment) {
+        return comments;
+    }
+
+    public Integer setEvaluationId(Integer evaluationId) {
+        return evaluationId;
+    }
+
+    public String setEvaluationDate(LocalDate evaluationDate) {
+        return evaluationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
+
+    public int setUserId(int userId) {
+        return userId;
+    }
+
+    public LocalDateTime setEntryDate(LocalDateTime entryDate) {
+        return entryDate;
     }
 }

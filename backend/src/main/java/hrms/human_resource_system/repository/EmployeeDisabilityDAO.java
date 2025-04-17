@@ -2,7 +2,6 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.model.EmployeeDisability;
 import org.springframework.stereotype.Repository;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import java.util.List;
 @Repository
 public class EmployeeDisabilityDAO {
 
+    // Get EmployeeDisability by ID
     public EmployeeDisability getById(int id) {
         String sql = "SELECT * FROM EmployeeDisability WHERE employee_disability_id = ?";
         EmployeeDisability disability = null;
@@ -32,6 +32,7 @@ public class EmployeeDisabilityDAO {
         return disability;
     }
 
+    // Get all EmployeeDisability records
     public List<EmployeeDisability> getAll() {
         String sql = "SELECT * FROM EmployeeDisability";
         List<EmployeeDisability> list = new ArrayList<>();
@@ -51,7 +52,8 @@ public class EmployeeDisabilityDAO {
         return list;
     }
 
-    public void insert(EmployeeDisability d) {
+    // Insert a new EmployeeDisability
+    public void insert(EmployeeDisability disability) {
         String sql = "INSERT INTO EmployeeDisability " +
                 "(employee_id, disability_category_id, official_code, from_date, to_date, description, percentage, is_active) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -59,22 +61,22 @@ public class EmployeeDisabilityDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, d.getEmployeeId());
-            ps.setInt(2, d.getDisabilityCategoryId());
-            ps.setString(3, d.getOfficialCode());
-            ps.setDate(4, Date.valueOf(d.getFromDate()));
-            if (d.getToDate() != null) {
-                ps.setDate(5, Date.valueOf(d.getToDate()));
+            ps.setInt(1, disability.getEmployeeId());
+            ps.setInt(2, disability.getDisabilityCategoryId());
+            ps.setString(3, disability.getOfficialCode());
+            ps.setDate(4, Date.valueOf(disability.getFromDate()));
+            if (disability.getToDate() != null) {
+                ps.setDate(5, Date.valueOf(disability.getToDate()));
             } else {
                 ps.setNull(5, Types.DATE);
             }
-            ps.setString(6, d.getDescription());
-            if (d.getPercentage() != null) {
-                ps.setInt(7, d.getPercentage());
+            ps.setString(6, disability.getDescription());
+            if (disability.getPercentage() != null) {
+                ps.setInt(7, disability.getPercentage());
             } else {
                 ps.setNull(7, Types.INTEGER);
             }
-            ps.setBoolean(8, d.isActive());
+            ps.setBoolean(8, disability.isActive());
 
             ps.executeUpdate();
 
@@ -83,7 +85,8 @@ public class EmployeeDisabilityDAO {
         }
     }
 
-    public void update(EmployeeDisability d) {
+    // Update an existing EmployeeDisability record
+    public void update(int id, EmployeeDisability disability) {
         String sql = "UPDATE EmployeeDisability SET " +
                 "employee_id = ?, " +
                 "disability_category_id = ?, " +
@@ -98,23 +101,23 @@ public class EmployeeDisabilityDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, d.getEmployeeId());
-            ps.setInt(2, d.getDisabilityCategoryId());
-            ps.setString(3, d.getOfficialCode());
-            ps.setDate(4, Date.valueOf(d.getFromDate()));
-            if (d.getToDate() != null) {
-                ps.setDate(5, Date.valueOf(d.getToDate()));
+            ps.setInt(1, disability.getEmployeeId());
+            ps.setInt(2, disability.getDisabilityCategoryId());
+            ps.setString(3, disability.getOfficialCode());
+            ps.setDate(4, Date.valueOf(disability.getFromDate()));
+            if (disability.getToDate() != null) {
+                ps.setDate(5, Date.valueOf(disability.getToDate()));
             } else {
                 ps.setNull(5, Types.DATE);
             }
-            ps.setString(6, d.getDescription());
-            if (d.getPercentage() != null) {
-                ps.setInt(7, d.getPercentage());
+            ps.setString(6, disability.getDescription());
+            if (disability.getPercentage() != null) {
+                ps.setInt(7, disability.getPercentage());
             } else {
                 ps.setNull(7, Types.INTEGER);
             }
-            ps.setBoolean(8, d.isActive());
-            ps.setInt(9, d.getEmployeeDisabilityId());
+            ps.setBoolean(8, disability.isActive());
+            ps.setInt(9, id);
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -126,6 +129,7 @@ public class EmployeeDisabilityDAO {
         }
     }
 
+    // Delete EmployeeDisability by ID
     public void delete(int id) {
         String sql = "DELETE FROM EmployeeDisability WHERE employee_disability_id = ?";
 
@@ -140,6 +144,7 @@ public class EmployeeDisabilityDAO {
         }
     }
 
+    // Map ResultSet to EmployeeDisability object
     private EmployeeDisability mapResultSet(ResultSet rs) throws SQLException {
         LocalDate fromDate = rs.getDate("from_date").toLocalDate();
         LocalDate toDate = rs.getDate("to_date") != null ? rs.getDate("to_date").toLocalDate() : null;

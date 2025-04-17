@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 public class EmployeeDisability {
 
-    private int employeeDisabilityId;
+    private Integer employeeDisabilityId;
     private int employeeId;
-    private int disabilityCategoryId;
+    private Integer disabilityCategoryId; // Change to Integer to allow null
     private String officialCode;
     private LocalDate fromDate;
     private LocalDate toDate;
@@ -16,12 +16,12 @@ public class EmployeeDisability {
 
     public EmployeeDisability() {}
 
-    public EmployeeDisability(int employeeDisabilityId, int employeeId, int disabilityCategoryId,
+    public EmployeeDisability(Integer employeeDisabilityId, int employeeId, Integer disabilityCategoryId, // Updated to Integer
                               String officialCode, LocalDate fromDate, LocalDate toDate,
                               String description, Integer percentage, boolean isActive) {
         this.employeeDisabilityId = employeeDisabilityId;
         this.employeeId = employeeId;
-        this.disabilityCategoryId = disabilityCategoryId;
+        this.disabilityCategoryId = disabilityCategoryId; // Updated to Integer
         this.officialCode = officialCode;
         this.fromDate = fromDate;
         this.toDate = toDate;
@@ -30,14 +30,14 @@ public class EmployeeDisability {
         this.isActive = isActive;
     }
 
-    public int getEmployeeDisabilityId() { return employeeDisabilityId; }
-    public void setEmployeeDisabilityId(int id) { this.employeeDisabilityId = id; }
+    public Integer getEmployeeDisabilityId() { return employeeDisabilityId; }
+    public void setEmployeeDisabilityId(Integer id) { this.employeeDisabilityId = id; }
 
     public int getEmployeeId() { return employeeId; }
     public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
 
-    public int getDisabilityCategoryId() { return disabilityCategoryId; }
-    public void setDisabilityCategoryId(int disabilityCategoryId) { this.disabilityCategoryId = disabilityCategoryId; }
+    public Integer getDisabilityCategoryId() { return disabilityCategoryId; }
+    public void setDisabilityCategoryId(Integer disabilityCategoryId) { this.disabilityCategoryId = disabilityCategoryId; }
 
     public String getOfficialCode() { return officialCode; }
     public void setOfficialCode(String officialCode) { this.officialCode = officialCode; }
@@ -57,4 +57,3 @@ public class EmployeeDisability {
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }
-

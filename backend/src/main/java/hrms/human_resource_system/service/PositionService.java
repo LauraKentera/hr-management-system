@@ -38,28 +38,28 @@ public class PositionService {
         return wrap(() -> positionDAO.getById(id));
     }
 
-    public Position addPosition(Position position) {
+    public Position addPosition(Position position, int performedBy) {
         wrap(() -> {
-            validatePosition(position); // Validate before inserting
-            positionDAO.insert(position);
+            validatePosition(position);
+            positionDAO.insert(position, performedBy);
             return position;
         });
+        return position;
     }
 
-    // Update an existing position
-    public void updatePosition(Position position) {
+    public Position updatePosition(Position position, int performedBy) {
         wrap(() -> {
-            validatePosition(position); // Validate before updating
-            positionDAO.update(position);
-            return null;  // Return type is Void
+            validatePosition(position);
+            positionDAO.update(position, performedBy);
+            return position;
         });
+        return position;
     }
 
-    // Delete position by ID
-    public void deletePosition(int id) {
+    public void deletePosition(int id, int performedBy) {
         wrap(() -> {
-            positionDAO.delete(id);
-            return null;  // Return type is Void
+            positionDAO.delete(id, performedBy);
+            return null;
         });
     }
 

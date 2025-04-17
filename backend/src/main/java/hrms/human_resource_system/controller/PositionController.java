@@ -10,6 +10,7 @@ import main.java.hrms.human_resource_system.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,7 +67,11 @@ public class PositionController {
     public ResponseEntity<?> createPosition(@RequestBody PositionRequestDTO positionRequestDTO) {
         try {
             Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
-            Position created = positionService.addPosition(position);
+
+            // Assuming you're using Spring Security to get the current user
+            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+
+            Position created = positionService.addPosition(position, performedBy);
             PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(created);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
@@ -86,7 +91,11 @@ public class PositionController {
         try {
             Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
             position.setPositionId(id);
-            Position updated = positionService.updatePosition(position);
+
+            // Assuming you're using Spring Security to get the current user
+            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+
+            Position updated = positionService.updatePosition(position, performedBy);
             PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(updated);
             return ResponseEntity.ok(responseDTO);
         } catch (IllegalArgumentException e) {
@@ -104,7 +113,10 @@ public class PositionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePosition(@PathVariable int id) {
         try {
-            positionService.deletePosition(id);
+            // Assuming you're using Spring Security to get the current user
+            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+
+            positionService.deletePosition(id, performedBy);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -119,5 +131,11 @@ public class PositionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Error deleting position", 500));
         }
+    }
+
+    // Assuming you have a method to get the current logged-in user's ID
+    private int getCurrentUserId() {
+        // For example, if you're using Spring Security, you can fetch the user's ID from the SecurityContext
+        return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class EmployeeBenefit {
-    private int employeeBenefitId;
+    private Integer employeeBenefitId;
     private Employee employee;
     private Benefit benefit;
     private LocalDate fromDate;
@@ -34,11 +34,11 @@ public class EmployeeBenefit {
     }
 
     // Getters and Setters
-    public int getId() {
+    public Integer getId() {
         return employeeBenefitId;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.employeeBenefitId = id;
     }
     

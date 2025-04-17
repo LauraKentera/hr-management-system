@@ -1,6 +1,8 @@
 package main.java.hrms.human_resource_system.controller;
 
 import main.java.hrms.human_resource_system.dto.PayrollRequest;
+import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
+import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Employee;
 import main.java.hrms.human_resource_system.model.Payroll;
 import main.java.hrms.human_resource_system.service.EmployeeService;
@@ -8,7 +10,6 @@ import main.java.hrms.human_resource_system.service.PayrollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -27,10 +28,11 @@ public class PayrollController {
         this.employeeService = employeeService;
     }
 
+    // Get all payrolls
     @GetMapping
     public ResponseEntity<?> getAllPayrolls() {
         try {
-            List<Payroll> payrolls = payrollService.getAllPayrolls();
+            List<Payroll> payrolls = payrollService.getAll(); // Call the service method to get all payrolls
             return ResponseEntity.ok(payrolls);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -41,10 +43,11 @@ public class PayrollController {
         }
     }
 
+    // Add new payroll
     @PostMapping
     public ResponseEntity<?> addPayroll(@RequestBody Payroll payroll) {
         try {
-            Payroll created = payrollService.addPayroll(payroll);
+            Payroll created = payrollService.addPayroll(payroll); // Call service method to add payroll
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -58,16 +61,17 @@ public class PayrollController {
         }
     }
 
+    // Update existing payroll
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePayroll(@PathVariable int id, @RequestBody Payroll payroll) {
         try {
-            if (payroll.getPayrollId() != null && payroll.getPayrollId() != id) {
+            if (payroll.getPayrollId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
 
             payroll.setPayrollId(id);
-            Payroll updated = payrollService.updatePayroll(payroll);
+            Payroll updated = payrollService.updatePayroll(payroll); // Call service method to update payroll
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -81,10 +85,11 @@ public class PayrollController {
         }
     }
 
+    // Delete payroll by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePayroll(@PathVariable int id) {
         try {
-            payrollService.deletePayroll(id);
+            payrollService.deletePayroll(id); // Call service method to delete payroll
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -101,22 +106,28 @@ public class PayrollController {
         }
     }
 
+    // Generate payroll for a specific employee
     @PostMapping("/generate")
     public ResponseEntity<String> generatePayroll(@RequestBody PayrollRequest request) {
-        // Assuming request includes employeeId, startDate, endDate, and other details
-        Employee employee = employeeService.getEmployeeById(request.getEmployeeId());
+        try {
+            Employee employee = employeeService.getEmployeeById(request.getEmployeeId());
 
-        // Calculate net pay using the calculateNetPay method
-        BigDecimal netPay = payrollService.calculateNetPay(employee, request.getStartDate(), request.getEndDate());
+            // Calculate net pay using the calculateNetPay method from the PayrollService
+            BigDecimal netPay = payrollService.calculateNetPay(employee, request.getStartDate(), request.getEndDate());
 
-        // Generate Payroll object and save it (save payroll record logic here)
-        Payroll payroll = new Payroll();
-        payroll.setEmployeeId(request.getEmployeeId());
-        payroll.setPeriodStart(request.getStartDate());
-        payroll.setPeriodEnd(request.getEndDate());
-        payroll.setNetPay(netPay);
-        payrollService.addPayroll(payroll);
+            // Create the payroll object and save it
+            Payroll payroll = new Payroll();
+            payroll.setEmployeeId(request.getEmployeeId());
+            payroll.setPeriodStart(request.getStartDate());
+            payroll.setPeriodEnd(request.getEndDate());
+            payroll.setNetPay(netPay);
 
-        return ResponseEntity.ok("✅ Payroll generated for employee " + request.getEmployeeId());
+            payrollService.addPayroll(payroll); // Save the generated payroll
+
+            return ResponseEntity.ok("✅ Payroll generated for employee " + request.getEmployeeId());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating payroll: " + e.getMessage());
+        }
     }
 }

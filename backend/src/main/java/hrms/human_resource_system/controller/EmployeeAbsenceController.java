@@ -63,10 +63,10 @@ public class EmployeeAbsenceController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody EmployeeAbsence absence) {
         try {
-            if (absence.getId() != null && absence.getId() != id) {
+            if (absence.getAbsenceId() != null && absence.getAbsenceId() != id) {
                 return error("ID in path does not match ID in request body", HttpStatus.BAD_REQUEST);
             }
-            absence.setId(id);
+            absence.setAbsenceId(id);
             EmployeeAbsence updated = service.update(absence);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {

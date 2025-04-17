@@ -80,8 +80,11 @@ public class EmployeeEvaluationController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvaluation(@PathVariable int id, @RequestBody EmployeeEvaluationRequestDTO dto, @RequestParam int performedBy) {
         try {
+            // Map DTO to Entity
             EmployeeEvaluation eval = EmployeeEvaluationMapper.toEntity(dto);
-            eval.setId(id);
+            eval.setEvaluationId(id); // Set the ID from the path to the evaluation entity
+
+            // Call the service to update
             service.update(id, eval, performedBy);
             return ResponseEntity.ok("✏ Evaluation updated.");
         } catch (IllegalArgumentException e) {

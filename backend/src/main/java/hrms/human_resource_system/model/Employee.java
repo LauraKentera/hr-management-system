@@ -3,7 +3,7 @@ package main.java.hrms.human_resource_system.model;
 import java.time.LocalDate;
 
 public class Employee {
-    private int id;
+    private Integer id;
     private String PIN;
     private String lastName;
     private String firstName;
@@ -27,7 +27,7 @@ public class Employee {
     private String bankAccountNumber;
 
     // Constructor
-    public Employee(int id, String PIN, String lastName, String firstName, LocalDate birthDate,
+    public Employee(Integer id, String PIN, String lastName, String firstName, LocalDate birthDate,
                     LocalDate dateOfHire, LocalDate dateOfDismissal, String phoneNumber, String email,
                     String address, String gender, Nationality nationality, Department department,
                     Position position, String employmentStatus, String emergencyContactName,
@@ -61,8 +61,8 @@ public class Employee {
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getPIN() { return PIN; }
     public void setPIN(String PIN) { this.PIN = PIN; }

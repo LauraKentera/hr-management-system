@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -42,7 +44,7 @@ public class EmployeeController {
             return employee != null
                     ? ResponseEntity.ok(employee)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Employee not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Employee not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -81,11 +83,12 @@ public class EmployeeController {
     }
 
     // POST new employee
-  
     @PostMapping
     public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
         try {
-            Employee createdEmployee = employeeService.createEmployee(employee);
+            // Assuming "performedBy" is provided or fetched from authenticated user context
+            int performedBy = 1; // Replace with the actual user's ID who performs the operation
+            Employee createdEmployee = employeeService.createEmployee(employee, performedBy);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -103,13 +106,14 @@ public class EmployeeController {
     public ResponseEntity<?> updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
         try {
             // Ensure path ID matches the entity ID if present in body
-            if (employee.getId() != null && employee.getId() != id) {
+            if (employee.getId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
+            // Assuming "performedBy" is provided or fetched from authenticated user context
+            int performedBy = 1; // Replace with the actual user's ID who performs the operation
             employee.setId(id);
-            
-            Employee updatedEmployee = employeeService.updateEmployee(employee);
+            Employee updatedEmployee = employeeService.updateEmployee(id, employee, performedBy);
             return ResponseEntity.ok(updatedEmployee);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -126,7 +130,9 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEmployee(@PathVariable int id) {
         try {
-            employeeService.deleteEmployee(id);
+            // Assuming "performedBy" is provided or fetched from authenticated user context
+            int performedBy = 1; // Replace with the actual user's ID who performs the operation
+            employeeService.deleteEmployee(id, performedBy);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

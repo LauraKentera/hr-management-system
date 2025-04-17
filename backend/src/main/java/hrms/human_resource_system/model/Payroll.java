@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Payroll {
-    private int payrollId;
+    private Integer payrollId;
     private int employeeId;
     private LocalDate periodStart;
     private LocalDate periodEnd;
@@ -18,7 +18,7 @@ public class Payroll {
     // Constructors
     public Payroll() {}
 
-    public Payroll(int payrollId, int employeeId, LocalDate periodStart, LocalDate periodEnd,
+    public Payroll(Integer payrollId, int employeeId, LocalDate periodStart, LocalDate periodEnd,
                    BigDecimal baseSalary, BigDecimal bonus, BigDecimal deductions,
                    BigDecimal netPay, LocalDate paymentDate, String status) {
         this.payrollId = payrollId;
@@ -35,7 +35,7 @@ public class Payroll {
 
     // Getters and Setters
 
-    public int getPayrollId() {
+    public Integer getPayrollId() {
         return payrollId;
     }
 

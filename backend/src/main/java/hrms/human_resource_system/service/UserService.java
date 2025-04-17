@@ -43,21 +43,46 @@ public class UserService {
         }
     }
 
-    // Insert new user after validation
-    public void insert(User user) {
-        wrap(() -> {
-            validateUser(user, -1); // Validate user before insertion
-            userDAO.insert(user);
-            return null;  // Return type is Void
+    // Create a new user
+    public User createUser(String username, String password, int roleId, int employeeId) {
+        return wrap(() -> {
+            // Create a new User object
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(password); // Assume password is hashed elsewhere
+            newUser.setRole(roleDAO.getById(roleId)); // Assign role from RoleDAO
+            newUser.setEmployeeId(employeeId); // Assuming employeeId is an integer representing the employee
+
+            // Validate user before creation
+            validateUser(newUser, -1); // -1 means no existing user to update
+
+            // Save the user
+            userDAO.insert(newUser);
+            return newUser;
         });
     }
 
-    // Update existing user after validation
-    public void update(int id, User user) {
-        wrap(() -> {
-            validateUser(user, id); // Validate user before updating
-            userDAO.update(id, user);
-            return null;  // Return type is Void
+    // Update an existing user
+    public User updateUser(int id, String username, String password, int roleId, int employeeId) {
+        return wrap(() -> {
+            // Fetch existing user
+            User existingUser = userDAO.getById(id);
+            if (existingUser == null) {
+                throw new IllegalArgumentException("User not found.");
+            }
+
+            // Update user fields
+            existingUser.setUsername(username);
+            existingUser.setPassword(password); // Assume password is hashed elsewhere
+            existingUser.setRole(roleDAO.getById(roleId)); // Assign role from RoleDAO
+            existingUser.setEmployeeId(employeeId); // Assuming employeeId is an integer representing the employee
+
+            // Validate user before updating
+            validateUser(existingUser, id); // Pass the current ID to prevent username conflicts
+
+            // Save the updated user
+            userDAO.update(id, existingUser);
+            return existingUser;
         });
     }
 

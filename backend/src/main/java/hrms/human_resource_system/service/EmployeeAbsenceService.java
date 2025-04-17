@@ -3,10 +3,12 @@ package main.java.hrms.human_resource_system.service;
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.EmployeeAbsence;
 import main.java.hrms.human_resource_system.repository.EmployeeAbsenceDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class EmployeeAbsenceService {
 
     private final EmployeeAbsenceDAO dao = new EmployeeAbsenceDAO();

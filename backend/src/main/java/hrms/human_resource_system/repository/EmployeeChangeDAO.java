@@ -5,10 +5,8 @@ import main.java.hrms.human_resource_system.model.EmployeeChange;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.math.BigDecimal;
 
 @Repository
 public class EmployeeChangeDAO {
@@ -113,7 +111,7 @@ public class EmployeeChangeDAO {
         );
     }
 
-    public void update(int id, EmployeeChange change) {
+    public void update(EmployeeChange change) {
         String sql = "UPDATE EmployeeChange SET employee_id = ?, change_date = ?, old_position_id = ?, " +
                 "new_position_id = ?, old_salary = ?, new_salary = ? WHERE change_id = ?";
 

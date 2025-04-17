@@ -12,6 +12,7 @@ import main.java.hrms.human_resource_system.mapper.NationalityMapper;
 import main.java.hrms.human_resource_system.dto.NationalityResponseDTO;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nationalities")
