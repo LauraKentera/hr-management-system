@@ -38,12 +38,13 @@ public class EmployeeDisabilityService {
     }
 
     // Insert new EmployeeDisability after validation
-    public void insert(EmployeeDisability entity) {
+    public EmployeeDisability insert(EmployeeDisability entity) {
         wrap(() -> {
             validateEmployeeDisability(entity);  // Validate before inserting
             dao.insert(entity);
             return null;
         });
+        return entity;
     }
 
     // Delete an EmployeeDisability by ID
@@ -75,5 +76,18 @@ public class EmployeeDisabilityService {
         if (entity.getPercentage() < 0 || entity.getPercentage() > 100) {
             throw new IllegalArgumentException("Disability percentage must be between 0 and 100.");
         }
+    }
+
+    // Update an existing EmployeeDisability
+    public EmployeeDisability update(EmployeeDisability disability) {
+        return wrap(() -> {
+            validateEmployeeDisability(disability);  // Validate before update
+            EmployeeDisability existingDisability = dao.getById(disability.getEmployeeDisabilityId());
+            if (existingDisability == null) {
+                throw new IllegalArgumentException("Employee disability record not found with ID: " + disability.getEmployeeDisabilityId());
+            }
+            dao.update(disability.getEmployeeDisabilityId(), disability); // Update the record
+            return disability;
+        });
     }
 }

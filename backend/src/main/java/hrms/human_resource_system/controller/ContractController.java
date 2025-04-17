@@ -17,7 +17,6 @@ public class ContractController {
 
     private final ContractService contractService;
 
-    // Constructor injection
     public ContractController(ContractService contractService) {
         this.contractService = contractService;
     }
@@ -43,7 +42,7 @@ public class ContractController {
             return contract != null
                     ? ResponseEntity.ok(contract)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Contract not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Contract not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -54,9 +53,9 @@ public class ContractController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addContract(@RequestBody EmploymentContract contract) {
+    public ResponseEntity<?> addContract(@RequestBody EmploymentContract contract, @RequestParam int performedBy) {
         try {
-            EmploymentContract createdContract = contractService.createContract(contract);
+            EmploymentContract createdContract = contractService.addContract(contract, performedBy);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdContract);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -71,16 +70,14 @@ public class ContractController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContract(@PathVariable int id, @RequestBody EmploymentContract contract) {
+    public ResponseEntity<?> updateContract(@PathVariable int id, @RequestBody EmploymentContract contract, @RequestParam int performedBy) {
         try {
-            // Ensure path ID matches the entity ID
-            if (contract.getContractId() != null && contract.getContractId() != id) {
+            if (contract.getContractId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
             contract.setContractId(id);
-            
-            EmploymentContract updatedContract = contractService.updateContract(contract);
+            EmploymentContract updatedContract = contractService.updateContract(contract, performedBy);
             return ResponseEntity.ok(updatedContract);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -95,9 +92,9 @@ public class ContractController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteContract(@PathVariable int id) {
+    public ResponseEntity<?> deleteContract(@PathVariable int id, @RequestParam int performedBy) {
         try {
-            contractService.deleteContract(id);
+            contractService.deleteContract(id, performedBy);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

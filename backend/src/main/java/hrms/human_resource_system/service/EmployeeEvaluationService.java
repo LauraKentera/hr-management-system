@@ -42,27 +42,27 @@ public class EmployeeEvaluationService {
     }
 
     // Insert new EmployeeEvaluation after validation
-    public void insert(EmployeeEvaluation entity) {
+    public void insert(EmployeeEvaluation entity, int performedBy) {
         wrap(() -> {
-            validateEmployeeEvaluation(entity);
-            dao.insert(entity);
+            validateEmployeeEvaluation(entity);  // Validate the entity before insertion
+            dao.insert(entity, performedBy);  // Pass performedBy to the DAO method
             return null;
         });
     }
 
     // Update existing EmployeeEvaluation after validation
-    public void update(int id, EmployeeEvaluation entity) {
+    public void update(int id, EmployeeEvaluation entity, int performedBy) {
         wrap(() -> {
-            validateEmployeeEvaluation(entity);
-            dao.update(id, entity);
+            validateEmployeeEvaluation(entity);  // Validate the entity before updating
+            dao.update(id, entity, performedBy);  // Pass performedBy to the DAO method
             return null;
         });
     }
 
     // Delete EmployeeEvaluation by ID
-    public void delete(int id) {
+    public void delete(int id, int performedBy) {
         wrap(() -> {
-            dao.delete(id);
+            dao.delete(id, performedBy);  // Pass performedBy to the DAO method for logging
             return null;
         });
     }

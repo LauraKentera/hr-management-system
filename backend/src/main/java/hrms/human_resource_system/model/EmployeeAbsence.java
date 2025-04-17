@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class EmployeeAbsence {
 
-    private int absenceId;
+    private Integer absenceId;
     private int employeeId;
     private int absenceTypeId;
     private LocalDate startDate;
@@ -16,7 +16,7 @@ public class EmployeeAbsence {
     public EmployeeAbsence() {
     }
 
-    public EmployeeAbsence(int absenceId, int employeeId, int absenceTypeId,
+    public EmployeeAbsence(Integer absenceId, int employeeId, int absenceTypeId,
                            LocalDate startDate, LocalDate endDate, String notes) {
         this.absenceId = absenceId;
         this.employeeId = employeeId;
@@ -34,11 +34,11 @@ public class EmployeeAbsence {
         this.employee = employee;
     }
 
-    public int getAbsenceId() {
+    public Integer getAbsenceId() {
         return absenceId;
     }
 
-    public void setAbsenceId(int absenceId) {
+    public void setAbsenceId(Integer absenceId) {
         this.absenceId = absenceId;
     }
 

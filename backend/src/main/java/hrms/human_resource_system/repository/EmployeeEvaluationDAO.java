@@ -51,9 +51,9 @@ public class EmployeeEvaluationDAO {
         return list;
     }
 
-    public void insert(EmployeeEvaluation evaluation) {
-        String sql = "INSERT INTO EmployeeEvaluation (evaluation_id, evaluation_date, comment, score, user_id, entry_date) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+    public void insert(EmployeeEvaluation evaluation, int performedBy) {
+        String sql = "INSERT INTO EmployeeEvaluation (evaluation_id, evaluation_date, comment, score, user_id, entry_date, performed_by) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -64,16 +64,16 @@ public class EmployeeEvaluationDAO {
             ps.setDouble(4, evaluation.getScore());
             ps.setInt(5, evaluation.getUserId());
             ps.setTimestamp(6, Timestamp.valueOf(evaluation.getEntryDate()));
+            ps.setInt(7, performedBy);  // Add performedBy here
 
             ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new DLException("Error inserting employee evaluation", e);
         }
     }
 
-    public void update(int id, EmployeeEvaluation evaluation) {
-        String sql = "UPDATE EmployeeEvaluation SET evaluation_id = ?, evaluation_date = ?, comment = ?, score = ?, user_id = ?, entry_date = ? WHERE employee_evaluation_id = ?";
+    public void update(int id, EmployeeEvaluation evaluation, int performedBy) {
+        String sql = "UPDATE EmployeeEvaluation SET evaluation_id = ?, evaluation_date = ?, comment = ?, score = ?, user_id = ?, entry_date = ?, performed_by = ? WHERE employee_evaluation_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -84,16 +84,17 @@ public class EmployeeEvaluationDAO {
             ps.setDouble(4, evaluation.getScore());
             ps.setInt(5, evaluation.getUserId());
             ps.setTimestamp(6, Timestamp.valueOf(evaluation.getEntryDate()));
-            ps.setInt(7, id);
+            ps.setInt(7, performedBy);  // Add performedBy here
+            ps.setInt(8, id);  // Ensure to update the record by ID
 
             ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new DLException("Error updating employee evaluation with ID " + id, e);
         }
     }
 
-    public void delete(int id) {
+
+    public void delete(int id, int performedBy) {
         String sql = "DELETE FROM EmployeeEvaluation WHERE employee_evaluation_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -102,6 +103,7 @@ public class EmployeeEvaluationDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
 
+            // You may also log who performed the delete operation (optional)
         } catch (SQLException e) {
             throw new DLException("Error deleting employee evaluation with ID " + id, e);
         }

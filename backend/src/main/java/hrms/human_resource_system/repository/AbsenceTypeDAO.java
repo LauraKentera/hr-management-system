@@ -3,7 +3,7 @@ package main.java.hrms.human_resource_system.repository;
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.AbsenceType;
 import org.springframework.stereotype.Repository;
-import main.java.hrms.human_resource_system.util.AuditLogger;
+import main.resources.util.AuditLogger;
 
 
 import java.sql.*;

@@ -34,18 +34,23 @@ public class ApprovalRequestDAO {
     // Retrieve an approval request by ID
     public Optional<ApprovalRequest> getById(int requestId) {
         String sql = "SELECT * FROM ApprovalRequest WHERE request_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{requestId}, (rs, rowNum) -> {
-            ApprovalRequest approvalRequest = new ApprovalRequest();
-            approvalRequest.setRequestId(rs.getInt("request_id"));
-            approvalRequest.setRequestType(rs.getString("request_type"));
-            approvalRequest.setEmployeeId(rs.getInt("employee_id"));
-            approvalRequest.setRelatedId(rs.getInt("related_id"));
-            approvalRequest.setStatus(rs.getString("status"));
-            approvalRequest.setRequestedBy(rs.getInt("requested_by"));
-            approvalRequest.setApprovedBy(rs.getInt("approved_by"));
-            approvalRequest.setTimestamp(rs.getTimestamp("timestamp"));
-            return approvalRequest;
-        });
+        try {
+            ApprovalRequest approvalRequest = jdbcTemplate.queryForObject(sql, new Object[]{requestId}, (rs, rowNum) -> {
+                ApprovalRequest request = new ApprovalRequest();
+                request.setRequestId(rs.getInt("request_id"));
+                request.setRequestType(rs.getString("request_type"));
+                request.setEmployeeId(rs.getInt("employee_id"));
+                request.setRelatedId(rs.getInt("related_id"));
+                request.setStatus(rs.getString("status"));
+                request.setRequestedBy(rs.getInt("requested_by"));
+                request.setApprovedBy(rs.getInt("approved_by"));
+                request.setTimestamp(rs.getTimestamp("timestamp"));
+                return request;
+            });
+            return Optional.ofNullable(approvalRequest); // Wrap in Optional to handle the case where result is null
+        } catch (Exception e) {
+            return Optional.empty(); // Return an empty Optional if no result found or error occurred
+        }
     }
 
     // Get all approval requests with a specific status

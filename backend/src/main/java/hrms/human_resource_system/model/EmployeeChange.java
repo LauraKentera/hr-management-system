@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class EmployeeChange {
 
-    private int changeId;
+    private Integer changeId;
     private int employeeId;
     private LocalDate changeDate;
     private Integer oldPositionId;
@@ -15,7 +15,7 @@ public class EmployeeChange {
 
     public EmployeeChange() {}
 
-    public EmployeeChange(int changeId, int employeeId, LocalDate changeDate,
+    public EmployeeChange(Integer changeId, int employeeId, LocalDate changeDate,
                           Integer oldPositionId, int newPositionId,
                           BigDecimal oldSalary, BigDecimal newSalary) {
         this.changeId = changeId;
@@ -27,8 +27,8 @@ public class EmployeeChange {
         this.newSalary = newSalary;
     }
 
-    public int getChangeId() { return changeId; }
-    public void setChangeId(int changeId) { this.changeId = changeId; }
+    public Integer getChangeId() { return changeId; }
+    public void setChangeId(Integer changeId) { this.changeId = changeId; }
 
     public int getEmployeeId() { return employeeId; }
     public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }

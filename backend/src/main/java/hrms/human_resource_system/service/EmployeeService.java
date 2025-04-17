@@ -18,7 +18,6 @@ public class EmployeeService {
     private final DepartmentDAO departmentDAO;
     private final RoleDAO roleDAO;
 
-
     // Constructor injection for DAOs
     @Autowired
     public EmployeeService(EmployeeDAO employeeDAO, DepartmentDAO departmentDAO, RoleDAO roleDAO) {
@@ -48,22 +47,22 @@ public class EmployeeService {
 
     private boolean calculateRetirementEligibility(Employee employee) {
         LocalDate today = LocalDate.now();
-        
+
         // Calculate age
         int age = Period.between(employee.getBirthDate(), today).getYears();
-        
+
         // Calculate years of service
         int serviceYears = 0;
         if (employee.getDateOfHire() != null) {
             serviceYears = Period.between(employee.getDateOfHire(), today).getYears();
             // Adjust for partial years
             if (today.getMonthValue() < employee.getDateOfHire().getMonthValue() ||
-                (today.getMonthValue() == employee.getDateOfHire().getMonthValue() && 
-                 today.getDayOfMonth() < employee.getDateOfHire().getDayOfMonth())) {
+                    (today.getMonthValue() == employee.getDateOfHire().getMonthValue() &&
+                            today.getDayOfMonth() < employee.getDateOfHire().getDayOfMonth())) {
                 serviceYears--;
             }
         }
-        
+
         return age >= RETIREMENT_AGE || serviceYears >= MIN_SERVICE_YEARS;
     }
 
@@ -95,39 +94,39 @@ public class EmployeeService {
         }
     }
 
-
     // Add a new employee
-    public void addEmployee(Employee employee) {
-        validateEmployee(employee);
-        return employeeDAO.insert(employee);
+    public Employee createEmployee(Employee employee, int performedBy) {
+        validateEmployee(employee);  // Validate the employee data before adding
+        return employeeDAO.insert(employee, performedBy);  // Pass the performedBy value
     }
 
     // Update an existing employee by ID
-    public void updateEmployee(int id, Employee employee) {
-        validateEmployee(employee);
-        if (getEmployeeById(id) == null) {
+    public Employee updateEmployee(int id, Employee employee, int performedBy) {
+        validateEmployee(employee);  // Validate the employee data before updating
+        Employee existingEmployee = getEmployeeById(id);
+        if (existingEmployee == null) {
             throw new IllegalArgumentException("Employee not found with ID: " + id);
         }
-        employee.setEmployeeId(id);
-        return employeeDAO.update(employee);
+        employee.setId(id);  // Set the employee ID to ensure correct update
+        return employeeDAO.update(id, employee, performedBy);  // Pass the performedBy value
     }
 
     // Delete an employee by ID
-    public void deleteEmployee(int id) {
+    public void deleteEmployee(int id, int performedBy) {
         if (getEmployeeById(id) == null) {
             throw new IllegalArgumentException("Employee not found with ID: " + id);
         }
-        employeeDAO.delete(id);
+        employeeDAO.delete(id, performedBy);  // Pass the performedBy value
     }
 
     // Retrieve all employees
     public List<Employee> getAllEmployees() {
-        return employeeDAO.getAll();
+        return employeeDAO.getAll();  // Get all employees from the database
     }
 
     // Retrieve a specific employee by ID
     public Employee getEmployeeById(int id) {
-        return employeeDAO.getById(id);
+        return employeeDAO.getById(id);  // Get employee by ID
     }
 
     public List<Employee> getEmployeesEligibleForRetirement() {
@@ -137,4 +136,3 @@ public class EmployeeService {
                 .toList();
     }
 }
-

@@ -71,11 +71,11 @@ public class EmployeeDisabilityController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDisability(@PathVariable int id, @RequestBody EmployeeDisability record) {
         try {
-            if (record.getId() != null && record.getId() != id) {
+            if (record.getDisabilityCategoryId() != null && record.getDisabilityCategoryId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            record.setId(id);
+            record.setDisabilityCategoryId(id);
             EmployeeDisability updated = service.update(record);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {

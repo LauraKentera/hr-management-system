@@ -73,11 +73,11 @@ public class EmployeeChangeController {
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody EmployeeChange change) {
         try {
             // Ensure path ID matches the entity ID if present in body
-            if (change.getId() != null && change.getId() != id) {
+            if (change.getChangeId() != null && change.getChangeId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            change.setId(id);
+            change.setChangeId(id);
             
             EmployeeChange updatedChange = service.update(change);
             return ResponseEntity.ok(updatedChange);

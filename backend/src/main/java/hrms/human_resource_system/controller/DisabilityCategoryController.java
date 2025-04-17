@@ -42,7 +42,7 @@ public class DisabilityCategoryController {
             return category != null
                     ? ResponseEntity.ok(category)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Disability category not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Disability category not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -55,8 +55,8 @@ public class DisabilityCategoryController {
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody DisabilityCategory category) {
         try {
-            DisabilityCategory createdCategory = service.create(category);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
+            service.insert(category);
+            return ResponseEntity.status(HttpStatus.CREATED).body(category);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -72,15 +72,12 @@ public class DisabilityCategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody DisabilityCategory category) {
         try {
-            // Ensure path ID matches the entity ID if present in body
-            if (category.getId() != null && category.getId() != id) {
+            if (category.getDisabilityCategoryId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            category.setId(id);
-            
-            DisabilityCategory updatedCategory = service.update(category);
-            return ResponseEntity.ok(updatedCategory);
+            service.update(id, category);
+            return ResponseEntity.ok(category);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -101,9 +98,6 @@ public class DisabilityCategoryController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new CustomErrorResponse(e.getMessage(), 404));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse(e.getMessage(), 409));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));

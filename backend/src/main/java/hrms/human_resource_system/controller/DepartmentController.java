@@ -16,7 +16,7 @@ public class DepartmentController {
 
     private final DepartmentService service;
 
-    // Constructor injection (Spring will automatically inject the service)
+    // Constructor injection
     public DepartmentController(DepartmentService service) {
         this.service = service;
     }
@@ -42,7 +42,7 @@ public class DepartmentController {
             return department != null
                     ? ResponseEntity.ok(department)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Department not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Department not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -55,8 +55,8 @@ public class DepartmentController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Department department) {
         try {
-            Department createdDepartment = service.create(department);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
+            service.insert(department);
+            return ResponseEntity.status(HttpStatus.CREATED).body(department);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -72,15 +72,12 @@ public class DepartmentController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody Department department) {
         try {
-            // Ensure path ID matches the entity ID
-            if (department.getId() != null && department.getId() != id) {
+            if (department.getDepartmentId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            department.setId(id);
-            
-            Department updatedDepartment = service.update(department);
-            return ResponseEntity.ok(updatedDepartment);
+            service.update(department);
+            return ResponseEntity.ok(department);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -101,9 +98,6 @@ public class DepartmentController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new CustomErrorResponse(e.getMessage(), 404));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new CustomErrorResponse(e.getMessage(), 409));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));

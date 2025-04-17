@@ -1,14 +1,17 @@
 package main.java.hrms.human_resource_system.controller;
 
+import main.java.hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
+import main.java.hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
 import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
 import main.java.hrms.human_resource_system.exception.DLException;
+import main.java.hrms.human_resource_system.mapper.EmployeeEvaluationMapper;
 import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
 import main.java.hrms.human_resource_system.service.EmployeeEvaluationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/employee-evaluations")
@@ -24,7 +27,10 @@ public class EmployeeEvaluationController {
     public ResponseEntity<?> getAllEvaluations() {
         try {
             List<EmployeeEvaluation> evaluations = service.getAll();
-            return ResponseEntity.ok(evaluations);
+            List<EmployeeEvaluationResponseDTO> dtoList = evaluations.stream()
+                    .map(EmployeeEvaluationMapper::toDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(dtoList);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -38,10 +44,12 @@ public class EmployeeEvaluationController {
     public ResponseEntity<?> getEvaluationById(@PathVariable int id) {
         try {
             EmployeeEvaluation eval = service.getById(id);
-            return eval != null
-                    ? ResponseEntity.ok(eval)
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+            if (eval != null) {
+                return ResponseEntity.ok(EmployeeEvaluationMapper.toDTO(eval));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new CustomErrorResponse("Evaluation not found with id: " + id, 404));
+            }
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -52,10 +60,11 @@ public class EmployeeEvaluationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createEvaluation(@RequestBody EmployeeEvaluation eval) {
+    public ResponseEntity<?> createEvaluation(@RequestBody EmployeeEvaluationRequestDTO dto, @RequestParam int performedBy) {
         try {
-            EmployeeEvaluation created = service.insert(eval);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            EmployeeEvaluation eval = EmployeeEvaluationMapper.toEntity(dto);
+            service.insert(eval, performedBy);
+            return ResponseEntity.status(HttpStatus.CREATED).body("✅ Evaluation created.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -69,16 +78,15 @@ public class EmployeeEvaluationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvaluation(@PathVariable int id, @RequestBody EmployeeEvaluation eval) {
+    public ResponseEntity<?> updateEvaluation(@PathVariable int id, @RequestBody EmployeeEvaluationRequestDTO dto, @RequestParam int performedBy) {
         try {
-            if (eval.getId() != null && eval.getId() != id) {
-                return ResponseEntity.badRequest()
-                        .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
-            }
+            // Map DTO to Entity
+            EmployeeEvaluation eval = EmployeeEvaluationMapper.toEntity(dto);
+            eval.setEvaluationId(id); // Set the ID from the path to the evaluation entity
 
-            eval.setId(id);
-            EmployeeEvaluation updated = service.update(eval);
-            return ResponseEntity.ok(updated);
+            // Call the service to update
+            service.update(id, eval, performedBy);
+            return ResponseEntity.ok("✏ Evaluation updated.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(new CustomErrorResponse(e.getMessage(), 400));
@@ -92,10 +100,10 @@ public class EmployeeEvaluationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvaluation(@PathVariable int id) {
+    public ResponseEntity<?> deleteEvaluation(@PathVariable int id, @RequestParam int performedBy) {
         try {
-            service.delete(id);
-            return ResponseEntity.noContent().build();
+            service.delete(id, performedBy);
+            return ResponseEntity.ok("🗑 Evaluation deleted.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new CustomErrorResponse(e.getMessage(), 404));

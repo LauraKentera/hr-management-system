@@ -76,4 +76,22 @@ public class EmployeeChangeService {
             throw new IllegalArgumentException("Change date cannot be in the future.");
         }
     }
+
+    // Create a new EmployeeChange
+    public EmployeeChange create(EmployeeChange entity) {
+        return wrap(() -> {
+            validateEmployeeChange(entity);  // Validate before creating
+            dao.insert(entity);  // Save to the database
+            return entity;  // Return the created entity
+        });
+    }
+
+    // Update an existing EmployeeChange
+    public EmployeeChange update(EmployeeChange entity) {
+        return wrap(() -> {
+            validateEmployeeChange(entity);  // Validate before updating
+            dao.update(entity);  // Update in the database
+            return entity;  // Return the updated entity
+        });
+    }
 }

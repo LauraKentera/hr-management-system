@@ -25,6 +25,10 @@ public class EmployeeEvaluation {
         this.entryDate = entryDate;
     }
 
+    public EmployeeEvaluation() {
+
+    }
+
     // Getters and Setters
     public int getEmployeeEvaluationId() {
         return employeeEvaluationId;

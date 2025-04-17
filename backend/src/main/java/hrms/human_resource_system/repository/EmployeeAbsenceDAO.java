@@ -151,28 +151,5 @@ public class EmployeeAbsenceDAO {
             throw new DLException("Error updating employee absence with ID " + id, e);
         }
     }
-
-    public List<EmployeeAbsence> getByEmployeeId(int employeeId) {
-        String sql = "SELECT * FROM EmployeeAbsence WHERE employee_id = ?";
-        List<EmployeeAbsence> absences = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, employeeId);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                absences.add(mapResultSet(rs));
-            }
-
-        } catch (SQLException e) {
-            throw new DLException("Error fetching absences", e);
-        }
-
-        return absences;
-    }
-
-
 }
 

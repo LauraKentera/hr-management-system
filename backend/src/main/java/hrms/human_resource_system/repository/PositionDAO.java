@@ -2,7 +2,7 @@ package main.java.hrms.human_resource_system.repository;
 
 import main.java.hrms.human_resource_system.exception.DLException;
 import main.java.hrms.human_resource_system.model.Position;
-import main.java.hrms.human_resource_system.util.AuditLogger;
+import main.resources.util.AuditLogger;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

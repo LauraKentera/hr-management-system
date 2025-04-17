@@ -38,10 +38,10 @@ public class BenefitItemController {
     public ResponseEntity<?> getById(@PathVariable int id) {
         try {
             BenefitItem item = service.getById(id);
-            return item != null 
+            return item != null
                     ? ResponseEntity.ok(item)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new CustomErrorResponse("Benefit item not found with id: " + id, 404));
+                    .body(new CustomErrorResponse("Benefit item not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
@@ -57,9 +57,9 @@ public class BenefitItemController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody BenefitItem item) {
+    public ResponseEntity<?> create(@RequestBody BenefitItem item, @RequestParam int performedBy) {
         try {
-            BenefitItem createdItem = service.create(item);
+            BenefitItem createdItem = service.create(item, performedBy);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -74,15 +74,14 @@ public class BenefitItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody BenefitItem item) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody BenefitItem item, @RequestParam int performedBy) {
         try {
-            if (item.getId() != null && item.getId() != id) {
+            if (item.getBenefitItemId() != id) {
                 return ResponseEntity.badRequest()
                         .body(new CustomErrorResponse("ID in path does not match ID in request body", 400));
             }
-            item.setId(id);
-            
-            BenefitItem updatedItem = service.update(item);
+
+            BenefitItem updatedItem = service.update(id, item, performedBy);
             return ResponseEntity.ok(updatedItem);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -97,9 +96,9 @@ public class BenefitItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable int id, @RequestParam int performedBy) {
         try {
-            service.delete(id);
+            service.delete(id, performedBy);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
