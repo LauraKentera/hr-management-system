@@ -8,6 +8,10 @@ const Sidebar = () => (
       <li><NavLink to="/contracts">Contracts</NavLink></li>
       <li><NavLink to="/positions">Positions</NavLink></li>
       <li><NavLink to="/profile">Profile</NavLink></li>
+      <li><NavLink to="/absence">Absence</NavLink></li>
+      <li><NavLink to="/department">Department</NavLink></li>
+      <li><NavLink to="/employee">Employee</NavLink></li>
+
     </ul>
   </nav>
 );

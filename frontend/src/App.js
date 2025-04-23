@@ -7,6 +7,9 @@ import LoginView from './views/LoginView';
 import ProfileView from './views/ProfileView';
 import ContractsView from './views/ContractsView';
 import PositionView from './views/PositionView';
+import AbsenceView from './views/AbsenceView'
+import DepartmentView from './views/DepartmentView';
+import EmployeeView from './views/EmployeeView';
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
             <Route path="/dashboard" element={<DashboardView />} />
             <Route path="/contracts" element={<ContractsView />} />
             <Route path="/positions" element={<PositionView />} />
+            <Route path='/absence' element={<AbsenceView />} />
+            <Route path='/department' element={<DepartmentView />} />
+            <Route path='/employee' element={<EmployeeView />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>

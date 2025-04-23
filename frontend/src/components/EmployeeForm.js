@@ -39,10 +39,10 @@ const EmployeeForm = ({ open, onClose, onSave, initialData = {}, departments = [
       <DialogTitle>{isEditMode ? 'Edit Employee' : 'Add New Employee'}</DialogTitle>
       <Formik
         initialValues={{
-          firstName: initialData.firstName || '',
-          lastName: initialData.lastName || '',
-          email: initialData.email || '',
-          departmentId: initialData.department?.id || '',
+          firstName: initialData?.firstName || '',
+          lastName: initialData?.lastName || '',
+          email: initialData?.email || '',
+          departmentId: initialData?.department?.id || '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}

@@ -36,9 +36,10 @@ const DepartmentForm = ({ open, onClose, onSave, initialData = {}, managers = []
       <DialogTitle>{isEdit ? 'Edit Department' : 'Add Department'}</DialogTitle>
       <Formik
         initialValues={{
-          name: initialData.name || '',
-          managerId: initialData.manager?.id || '',
+          name: initialData?.name || '',
+          managerId: initialData?.manager?.id || '',
         }}
+        
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
