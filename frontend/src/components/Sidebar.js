@@ -1,15 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { logout } from '../services/authService';  // Add this line
+import { NavLink } from 'react-router-dom';
 
-function Sidebar() {
-    return (
-        <div className="sidebar">
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/profile">Profile</Link>
-            <button onClick={logout}>Logout</button>
-        </div>
-    );
-}
+const Sidebar = () => (
+  <nav className="sidebar">
+    <ul>
+      <li><NavLink to="/dashboard">Dashboard</NavLink></li>
+      <li><NavLink to="/contracts">Contracts</NavLink></li>
+      <li><NavLink to="/positions">Positions</NavLink></li>
+      <li><NavLink to="/profile">Profile</NavLink></li>
+    </ul>
+  </nav>
+);
 
 export default Sidebar;
