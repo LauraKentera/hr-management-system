@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 import Topbar from './components/Topbar';
 import Sidebar from './components/Sidebar';
 import DashboardView from './views/DashboardView';
@@ -10,29 +10,20 @@ import PositionView from './views/PositionView';
 import AbsenceView from './views/AbsenceView'
 import DepartmentView from './views/DepartmentView';
 import EmployeeView from './views/EmployeeView';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import DashboardPage from './views/DashboardPage';  // Correct path for DashboardPage
+import LoginView from './views/LoginView';  // Correct path for LoginView
 
 function App() {
-  return (
-    <Router>
-      <Topbar />
-      <div className="app-container">
-        <Sidebar />
-        <main>
-          <Routes>
-            <Route path="/login" element={<LoginView />} />
-            <Route path="/profile" element={<ProfileView />} />
-            <Route path="/dashboard" element={<DashboardView />} />
-            <Route path="/contracts" element={<ContractsView />} />
-            <Route path="/positions" element={<PositionView />} />
-            <Route path='/absence' element={<AbsenceView />} />
-            <Route path='/department' element={<DepartmentView />} />
-            <Route path='/employee' element={<EmployeeView />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
+    return (
+
+        <Router>
+            <Routes>
+                <Route path="/login" element={<LoginView/>}/> {/* Login route */}
+                <Route path="/dashboard" element={<DashboardPage/>}/> {/* Dashboard route */}
+                <Route path="/" element={<LoginView/>}/> {/* Default route */}
+            </Routes>
+        </Router>)
 }
 
 export default App;
