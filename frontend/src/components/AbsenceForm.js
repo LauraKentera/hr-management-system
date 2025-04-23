@@ -22,11 +22,12 @@ const AbsenceForm = ({ open, onClose, onSave, initialData = {}, employees = [], 
       <DialogTitle>{isEdit ? 'Edit Absence' : 'Add Absence'}</DialogTitle>
       <Formik
         initialValues={{
-          employeeId: initialData.employee?.id || '',
-          type: initialData.type || '',
-          date: initialData.date || '',
-          status: initialData.status || 'PENDING',
+          employeeId: initialData?.employee?.id || '',
+          type: initialData?.type || '',
+          date: initialData?.date || '',
+          status: initialData?.status || 'PENDING',
         }}
+        
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try {
