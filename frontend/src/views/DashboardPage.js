@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Grid, Typography, Box } from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Container, Grid, Typography, Box} from '@mui/material';
 import Sidebar from '../components/Sidebar';  // Import Sidebar component
 import Header from '../components/Topbar';  // Import Header component
 import AttendanceGraph from '../components/AttendanceGraph';  // Import the Attendance Graph component
@@ -49,8 +49,8 @@ const DashboardPage = () => {
     return (
         <div className="dashboard-page">
             {/* Sidebar and Header */}
-            <Sidebar />
-            <Header />  {/* Add Topbar here */}
+            <Sidebar/>
+            <Header/> {/* Add Topbar here */}
 
             {/* Main Dashboard Content */}
             <Container className="dashboard-container">
@@ -66,16 +66,17 @@ const DashboardPage = () => {
                     {/* Employee Metrics (Attendance, Late Arrivals, etc.) */}
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6} md={3}>
-                            <KPICard title="Employee Turnover" value={`${kpiData.employeeTurnoverRate}%`} color="red" />
+                            <KPICard title="Employee Turnover" value={`${kpiData.employeeTurnoverRate}%`} color="red"/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <KPICard title="Absenteeism Rate" value={`${kpiData.absenteeismRate}%`} color="orange" />
+                            <KPICard title="Absenteeism Rate" value={`${kpiData.absenteeismRate}%`} color="orange"/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <KPICard title="Employee Engagement" value={`${kpiData.employeeEngagement}%`} color="green" />
+                            <KPICard title="Employee Engagement" value={`${kpiData.employeeEngagement}%`}
+                                     color="green"/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <KPICard title="Leave Applications" value={`${kpiData.leaveApplications}`} color="blue" />
+                            <KPICard title="Leave Applications" value={`${kpiData.leaveApplications}`} color="blue"/>
                         </Grid>
                     </Grid>
                 </Box>
@@ -85,7 +86,7 @@ const DashboardPage = () => {
                     <Typography variant="h5" gutterBottom>
                         Attendance Trends (This Week)
                     </Typography>
-                    <AttendanceGraph />
+                    <AttendanceGraph/>
                 </Box>
 
                 {/* Charts Section - Distributed in 2 Columns */}
@@ -95,10 +96,10 @@ const DashboardPage = () => {
                     </Typography>
                     <Grid container spacing={4}>
                         <Grid item xs={12} sm={6} md={4}>
-                            <EmployeeStatusChart />
+                            <EmployeeStatusChart/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
-                            <AbsenceTypeChart />
+                            <AbsenceTypeChart/>
                         </Grid>
                     </Grid>
 
@@ -107,10 +108,10 @@ const DashboardPage = () => {
                     </Typography>
                     <Grid container spacing={4}>
                         <Grid item xs={12} sm={6} md={4}>
-                            <SalaryByDepartmentChart />
+                            <SalaryByDepartmentChart/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
-                            <PayrollExpensesChart />
+                            <PayrollExpensesChart/>
                         </Grid>
                     </Grid>
 
@@ -119,10 +120,10 @@ const DashboardPage = () => {
                     </Typography>
                     <Grid container spacing={4}>
                         <Grid item xs={12} sm={6} md={4}>
-                            <EmployeeGrowthChart />
+                            <EmployeeGrowthChart/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
-                            <UpcomingContractsTable />
+                            <UpcomingContractsTable/>
                         </Grid>
                     </Grid>
                 </Box>
