@@ -27,7 +27,7 @@ const AbsenceForm = ({ open, onClose, onSave, initialData = {}, employees = [], 
           date: initialData?.date || '',
           status: initialData?.status || 'PENDING',
         }}
-        
+
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try {

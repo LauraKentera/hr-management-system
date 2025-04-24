@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { getToken } from '../services/authService';
 
 function PayrollForm({ onClose, onSubmitSuccess }) {
-    const [employees, setEmployees] = useState([]);
+    // Dummy employee data for testing
+    const [employees, setEmployees] = useState([
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Smith' },
+        { id: 3, name: 'Michael Brown' },
+        { id: 4, name: 'Emily Davis' },
+    ]);
+
     const [form, setForm] = useState({
         employeeId: '',
         baseSalary: '',
@@ -11,16 +17,6 @@ function PayrollForm({ onClose, onSubmitSuccess }) {
         status: 'Pending',
     });
 
-    useEffect(() => {
-        // Load employees for the dropdown
-        fetch('http://localhost:8080/api/employees', {
-            headers: { Authorization: `Bearer ${getToken()}` },
-        })
-            .then((res) => res.json())
-            .then((data) => setEmployees(data))
-            .catch((err) => console.error('Failed to load employees:', err));
-    }, []);
-
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -28,24 +24,14 @@ function PayrollForm({ onClose, onSubmitSuccess }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const res = await fetch('http://localhost:8080/api/payrolls', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${getToken()}`,
-                },
-                body: JSON.stringify(form),
-            });
+        // Simulating the payroll data submission
+        const payrollData = { ...form };
 
-            if (!res.ok) throw new Error('Payroll creation failed');
+        console.log('Payroll Data:', payrollData);
 
-            onSubmitSuccess(); // Notify parent to refresh
-            onClose(); // Close modal
-        } catch (err) {
-            console.error(err);
-            alert('Failed to create payroll');
-        }
+        // Simulate success by notifying the parent component
+        onSubmitSuccess();
+        onClose();
     };
 
     return (
@@ -54,21 +40,44 @@ function PayrollForm({ onClose, onSubmitSuccess }) {
                 <h3>Add Payroll Entry</h3>
                 <form onSubmit={handleSubmit}>
                     <label>Employee</label>
-                    <select name="employeeId" value={form.employeeId} onChange={handleChange} required>
+                    <select
+                        name="employeeId"
+                        value={form.employeeId}
+                        onChange={handleChange}
+                        required
+                    >
                         <option value="">Select</option>
                         {employees.map(emp => (
-                            <option key={emp.id} value={emp.id}>{emp.name}</option>
+                            <option key={emp.id} value={emp.id}>
+                                {emp.name}
+                            </option>
                         ))}
                     </select>
 
                     <label>Base Salary</label>
-                    <input name="baseSalary" type="number" value={form.baseSalary} onChange={handleChange} required />
+                    <input
+                        name="baseSalary"
+                        type="number"
+                        value={form.baseSalary}
+                        onChange={handleChange}
+                        required
+                    />
 
                     <label>Benefits</label>
-                    <input name="benefits" type="number" value={form.benefits} onChange={handleChange} />
+                    <input
+                        name="benefits"
+                        type="number"
+                        value={form.benefits}
+                        onChange={handleChange}
+                    />
 
                     <label>Deductions</label>
-                    <input name="deductions" type="number" value={form.deductions} onChange={handleChange} />
+                    <input
+                        name="deductions"
+                        type="number"
+                        value={form.deductions}
+                        onChange={handleChange}
+                    />
 
                     <label>Status</label>
                     <select name="status" value={form.status} onChange={handleChange}>

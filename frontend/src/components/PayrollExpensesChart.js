@@ -34,4 +34,3 @@ const PayrollExpensesChart = () => {
 };
 
 export default PayrollExpensesChart;
-
