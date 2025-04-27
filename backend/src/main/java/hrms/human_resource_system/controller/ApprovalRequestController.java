@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.model.ApprovalRequest;
-import main.java.hrms.human_resource_system.service.ApprovalRequestService;
+import hrms.human_resource_system.model.ApprovalRequest;
+import hrms.human_resource_system.service.ApprovalRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

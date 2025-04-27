@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.model;
+package hrms.human_resource_system.model;
 
 public class Role {
     private int id;

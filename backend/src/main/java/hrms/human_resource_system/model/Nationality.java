@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.model;
+package hrms.human_resource_system.model;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +13,16 @@ public class Nationality {
         this.isActive = true;
     }
 
+    // ADD THIS:
+    public Nationality(Integer nationalityId, String name) {
+        this.nationalityId = nationalityId;
+        this.name = name;
+        this.isActive = true;
+        this.modificationDate = LocalDateTime.now();
+    }
+
     public Nationality(Integer nationalityId, String name, Integer userId,
-            LocalDateTime modificationDate, Boolean isActive) {
+                       LocalDateTime modificationDate, Boolean isActive) {
         this.nationalityId = nationalityId;
         this.name = name;
         this.userId = userId;

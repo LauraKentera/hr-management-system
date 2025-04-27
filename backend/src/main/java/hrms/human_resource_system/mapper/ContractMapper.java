@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.ContractResponseDTO;
-import main.java.hrms.human_resource_system.model.EmploymentContract;
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.Position;
+import hrms.human_resource_system.dto.ContractResponseDTO;
+import hrms.human_resource_system.model.EmploymentContract;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.Position;
 
 public class ContractMapper {
 

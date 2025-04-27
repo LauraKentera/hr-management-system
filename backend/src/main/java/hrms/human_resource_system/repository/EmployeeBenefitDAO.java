@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.repository;
+package hrms.human_resource_system.repository;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.EmployeeBenefit;
-import main.java.hrms.human_resource_system.model.Benefit;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.EmployeeBenefit;
+import hrms.human_resource_system.model.Benefit;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

@@ -1,11 +1,11 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeCreateRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeUpdateRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeResponseDTO;
-import main.java.hrms.human_resource_system.model.Department;
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.Position;
+import hrms.human_resource_system.dto.EmployeeCreateRequestDTO;
+import hrms.human_resource_system.dto.EmployeeUpdateRequestDTO;
+import hrms.human_resource_system.dto.EmployeeResponseDTO;
+import hrms.human_resource_system.model.Department;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.Position;
 
 public class EmployeeMapper {
 

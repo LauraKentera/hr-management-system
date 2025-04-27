@@ -1,12 +1,12 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.mapper.EmployeeEvaluationMapper;
-import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
-import main.java.hrms.human_resource_system.service.EmployeeEvaluationService;
+import hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
+import hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.mapper.EmployeeEvaluationMapper;
+import hrms.human_resource_system.model.EmployeeEvaluation;
+import hrms.human_resource_system.service.EmployeeEvaluationService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 

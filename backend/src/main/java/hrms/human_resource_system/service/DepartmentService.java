@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.Department;
-import main.java.hrms.human_resource_system.repository.DepartmentDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeDAO;
+import hrms.human_resource_system.model.Department;
+import hrms.human_resource_system.repository.DepartmentDAO;
+import hrms.human_resource_system.repository.EmployeeDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

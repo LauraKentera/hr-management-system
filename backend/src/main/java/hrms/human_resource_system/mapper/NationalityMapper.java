@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.NationalityResponseDTO;
-import main.java.hrms.human_resource_system.model.Nationality;
+import hrms.human_resource_system.dto.NationalityResponseDTO;
+import hrms.human_resource_system.model.Nationality;
 
 public class NationalityMapper {
 

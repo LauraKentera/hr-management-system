@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.Nationality;
-import main.java.hrms.human_resource_system.repository.NationalityDAO;
+import hrms.human_resource_system.model.Nationality;
+import hrms.human_resource_system.repository.NationalityDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ public class NationalityService {
     public Nationality addNationality(Nationality nationality) {
         return wrap(() -> {
             validateNationality(nationality);
-            nationalityDAO.insert(nationality);
+            nationalityDAO.insert(nationality, nationality.getUserId());
             return nationality; // Return created
         });
     }
@@ -55,18 +55,18 @@ public class NationalityService {
     public Nationality updateNationality(Nationality nationality) {
         return wrap(() -> {
             validateNationality(nationality);
-            nationalityDAO.update(nationality);
+            nationalityDAO.update(nationality, nationality.getUserId());
             return nationality; // Return updated
         });
     }
 
     // Delete nationality by ID
-    public void deleteNationality(Integer nationalityId) {
+    public void deleteNationality(Integer nationalityId, Integer performedBy) {
         wrap(() -> {
             if (nationalityId == null) {
                 throw new IllegalArgumentException("Nationality ID cannot be null");
             }
-            nationalityDAO.delete(nationalityId);
+            nationalityDAO.delete(nationalityId, performedBy);
             return null;  // return type is Void
         });
     }

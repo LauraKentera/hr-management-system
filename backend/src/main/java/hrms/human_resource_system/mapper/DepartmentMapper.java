@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.DepartmentRequestDTO;
-import main.java.hrms.human_resource_system.dto.DepartmentResponseDTO;
-import main.java.hrms.human_resource_system.model.Department;
+import hrms.human_resource_system.dto.DepartmentRequestDTO;
+import hrms.human_resource_system.dto.DepartmentResponseDTO;
+import hrms.human_resource_system.model.Department;
 
 public class DepartmentMapper {
 

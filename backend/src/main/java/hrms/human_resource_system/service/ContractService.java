@@ -1,11 +1,11 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.ContractAnnex;
-import main.java.hrms.human_resource_system.model.EmploymentContract;
-import main.java.hrms.human_resource_system.repository.ContractAnnexDAO;
-import main.java.hrms.human_resource_system.repository.ContractDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeDAO;
-import main.java.hrms.human_resource_system.repository.PositionDAO;
+import hrms.human_resource_system.model.ContractAnnex;
+import hrms.human_resource_system.model.EmploymentContract;
+import hrms.human_resource_system.repository.ContractAnnexDAO;
+import hrms.human_resource_system.repository.ContractDAO;
+import hrms.human_resource_system.repository.EmployeeDAO;
+import hrms.human_resource_system.repository.PositionDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

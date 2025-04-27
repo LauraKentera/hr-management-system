@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.model;
+package hrms.human_resource_system.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

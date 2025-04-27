@@ -1,10 +1,17 @@
-package main.java.hrms.human_resource_system.dto;
+package hrms.human_resource_system.dto;
 
 public class UserResponseDTO {
     private int id;
     private String username;
     private String roleName;
     private Integer employeeId;
+
+    public UserResponseDTO(int id, String username, String roleName, Integer employeeId) {
+        this.id = id;
+        this.username = username;
+        this.roleName = roleName;
+        this.employeeId = employeeId;
+    }
 
     public int getId() {
         return id;

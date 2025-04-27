@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmployeeAbsence;
-import main.java.hrms.human_resource_system.service.EmployeeAbsenceService;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmployeeAbsence;
+import hrms.human_resource_system.service.EmployeeAbsenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +67,7 @@ public class EmployeeAbsenceController {
                 return error("ID in path does not match ID in request body", HttpStatus.BAD_REQUEST);
             }
             absence.setAbsenceId(id);
-            EmployeeAbsence updated = service.update(absence);
+            EmployeeAbsence updated = service.update(id, absence);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return error(e.getMessage(), HttpStatus.BAD_REQUEST);

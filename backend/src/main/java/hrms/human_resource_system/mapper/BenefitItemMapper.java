@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.BenefitItemRequestDTO;
-import main.java.hrms.human_resource_system.dto.BenefitItemResponseDTO;
-import main.java.hrms.human_resource_system.model.BenefitItem;
+import hrms.human_resource_system.dto.BenefitItemRequestDTO;
+import hrms.human_resource_system.dto.BenefitItemResponseDTO;
+import hrms.human_resource_system.model.BenefitItem;
 
 public class BenefitItemMapper {
 

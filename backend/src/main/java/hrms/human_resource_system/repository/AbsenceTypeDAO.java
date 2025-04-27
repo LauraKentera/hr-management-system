@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.repository;
+package hrms.human_resource_system.repository;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.AbsenceType;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.AbsenceType;
 import org.springframework.stereotype.Repository;
-import main.resources.util.AuditLogger;
+import hrms.human_resource_system.util.AuditLogger;
 
 
 import java.sql.*;
@@ -98,7 +98,7 @@ public class AbsenceTypeDAO {
                     absenceType.setAbsenceTypeId(generatedKeys.getInt(1));
                 }
             }
-            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "INSERT", performedBy, null, absenceType);
+            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "INSERT", performed_by, null, absenceType);
 
         } catch (SQLException e) {
             throw new DLException("Error inserting absence type: " + absenceType.getName(), e);
@@ -129,7 +129,7 @@ public class AbsenceTypeDAO {
 
     public void update(AbsenceType absenceType, int performed_by) {
         String sql = "UPDATE AbsenceType SET name = ?, code = ?, description = ?, is_paid = ?, requires_approval = ?, is_active = ? WHERE absence_type_id = ?";
-        AbsenceTypeDAO oldAbsenceType = getById(absenceType.getAbsenceTypeId());
+        AbsenceType oldAbsenceType = getById(absenceType.getAbsenceTypeId());
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -142,7 +142,7 @@ public class AbsenceTypeDAO {
             ps.setInt(7, absenceType.getAbsenceTypeId());
 
             ps.executeUpdate();
-            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "UPDATE", performedBy, oldAbsenceType, absenceType);
+            AuditLogger.logChange("AbsenceType", absenceType.getAbsenceTypeId(), "UPDATE", performed_by, oldAbsenceType, absenceType);
             
         } catch (SQLException e) {
             throw new DLException("Error updating absence type with ID " + absenceType.getAbsenceTypeId(), e);

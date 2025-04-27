@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.security;
+package hrms.human_resource_system.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

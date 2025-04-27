@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.exception;
+package hrms.human_resource_system.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.RoleResponseDTO;
-import main.java.hrms.human_resource_system.model.Role;
+import hrms.human_resource_system.dto.RoleResponseDTO;
+import hrms.human_resource_system.model.Role;
 
 public class RoleMapper {
 

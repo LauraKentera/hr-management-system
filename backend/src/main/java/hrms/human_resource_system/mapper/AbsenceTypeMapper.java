@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.AbsenceTypeResponseDTO;
-import main.java.hrms.human_resource_system.model.AbsenceType;
+import hrms.human_resource_system.dto.AbsenceTypeResponseDTO;
+import hrms.human_resource_system.model.AbsenceType;
 
 public class AbsenceTypeMapper {
 

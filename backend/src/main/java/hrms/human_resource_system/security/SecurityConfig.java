@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.security;
+package hrms.human_resource_system.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

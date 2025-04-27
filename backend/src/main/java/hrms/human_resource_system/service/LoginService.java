@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.User;
-import main.java.hrms.human_resource_system.repository.UserDAO;
-import main.resources.util.PasswordUtil;
+import hrms.human_resource_system.model.User;
+import hrms.human_resource_system.repository.UserDAO;
+import hrms.human_resource_system.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;

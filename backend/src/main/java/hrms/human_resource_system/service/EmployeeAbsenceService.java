@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmployeeAbsence;
-import main.java.hrms.human_resource_system.repository.EmployeeAbsenceDAO;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmployeeAbsence;
+import hrms.human_resource_system.repository.EmployeeAbsenceDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +16,7 @@ public class EmployeeAbsenceService {
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (DLException e) {
+        } catch (IllegalArgumentException | DLException e) {
             throw e;
         } catch (Exception e) {
             throw new DLException("Unexpected error: " + e.getMessage(), e);
@@ -36,15 +34,15 @@ public class EmployeeAbsenceService {
     public EmployeeAbsence create(EmployeeAbsence absence) {
         return wrap(() -> {
             validateEmployeeAbsence(absence);
-            dao.insert(absence);
+            dao.insert(absence);   // only pass absence
             return absence;
         });
     }
 
-    public EmployeeAbsence update(EmployeeAbsence absence) {
+    public EmployeeAbsence update(int id, EmployeeAbsence absence) {
         return wrap(() -> {
             validateEmployeeAbsence(absence);
-            dao.update(absence);
+            dao.update(id, absence);  // pass id and absence
             return absence;
         });
     }

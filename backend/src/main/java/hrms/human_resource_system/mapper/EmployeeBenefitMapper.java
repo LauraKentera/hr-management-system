@@ -1,10 +1,10 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeBenefitRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeBenefitResponseDTO;
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.EmployeeBenefit;
-import main.java.hrms.human_resource_system.model.BenefitItem;
+import hrms.human_resource_system.dto.EmployeeBenefitRequestDTO;
+import hrms.human_resource_system.dto.EmployeeBenefitResponseDTO;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.EmployeeBenefit;
+import hrms.human_resource_system.model.BenefitItem;
 
 import java.time.LocalDate;
 
@@ -30,7 +30,6 @@ public class EmployeeBenefitMapper {
 
     public static EmployeeBenefitResponseDTO toDTO(EmployeeBenefit eb) {
         EmployeeBenefitResponseDTO dto = new EmployeeBenefitResponseDTO();
-        dto.setId(eb.getEmployeeBenefitId());
         dto.setEmployeeId(eb.getEmployee().getId());
         dto.setBenefitItemId(eb.getBenefit().getBenefitId());
         dto.setStartDate(eb.getFromDate().toString());

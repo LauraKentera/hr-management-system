@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmployeeBenefit;
-import main.java.hrms.human_resource_system.repository.EmployeeBenefitDAO;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmployeeBenefit;
+import hrms.human_resource_system.repository.EmployeeBenefitDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

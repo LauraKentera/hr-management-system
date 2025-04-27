@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
-import main.java.hrms.human_resource_system.model.EmployeeEvaluation;
+import hrms.human_resource_system.dto.EmployeeEvaluationRequestDTO;
+import hrms.human_resource_system.dto.EmployeeEvaluationResponseDTO;
+import hrms.human_resource_system.model.EmployeeEvaluation;
 import java.time.LocalDateTime;
 
 public class EmployeeEvaluationMapper {

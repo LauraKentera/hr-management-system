@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.User;
-import main.java.hrms.human_resource_system.repository.RoleDAO;
-import main.java.hrms.human_resource_system.repository.UserDAO;
+import hrms.human_resource_system.model.User;
+import hrms.human_resource_system.repository.RoleDAO;
+import hrms.human_resource_system.repository.UserDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
