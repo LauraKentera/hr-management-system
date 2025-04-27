@@ -1,10 +1,10 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmploymentContract;
-import main.java.hrms.human_resource_system.model.ContractAnnex;
-import main.java.hrms.human_resource_system.service.ContractService;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmploymentContract;
+import hrms.human_resource_system.model.ContractAnnex;
+import hrms.human_resource_system.service.ContractService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

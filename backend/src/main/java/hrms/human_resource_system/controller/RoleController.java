@@ -1,10 +1,10 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.RoleResponseDTO;
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.model.Role;
-import main.java.hrms.human_resource_system.mapper.RoleMapper;
-import main.java.hrms.human_resource_system.service.RoleService;
+import hrms.human_resource_system.dto.RoleResponseDTO;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.model.Role;
+import hrms.human_resource_system.mapper.RoleMapper;
+import hrms.human_resource_system.service.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

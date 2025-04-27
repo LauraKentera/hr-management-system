@@ -1,6 +1,6 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.dto.DashboardDTO;
+import hrms.human_resource_system.dto.DashboardDTO;
 import org.springframework.stereotype.Service;
 
 @Service

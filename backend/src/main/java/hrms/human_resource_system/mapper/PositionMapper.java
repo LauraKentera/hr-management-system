@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.PositionRequestDTO;
-import main.java.hrms.human_resource_system.dto.PositionResponseDTO;
-import main.java.hrms.human_resource_system.model.Position;
+import hrms.human_resource_system.dto.PositionRequestDTO;
+import hrms.human_resource_system.dto.PositionResponseDTO;
+import hrms.human_resource_system.model.Position;
 
 public class PositionMapper {
 

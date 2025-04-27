@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <!-- Reference the parent POM -->
     <parent>
@@ -36,7 +36,8 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-boot.main-class>src.main.java.hrms.human_resource_system.HumanResourceSystemApplication</spring-boot.main-class>
+        <spring-boot.main-class>hrms.human_resource_system.HumanResourceSystemApplication</spring-boot.main-class>
+
     </properties>
 
     <dependencies>
@@ -98,21 +99,6 @@
             <version>2.15.2</version>
         </dependency>
 
-        <!-- SLF4J API (for logging interface) -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>  <!-- Check for the latest version -->
-        </dependency>
-
-        <!-- SLF4J Simple (for basic logging implementation) -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.32</version>  <!-- Check for the latest version -->
-            <scope>runtime</scope>
-        </dependency>
-
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -124,6 +110,15 @@
             <artifactId>jjwt-impl</artifactId>
             <version>0.11.5</version>  <!-- This version works with the 'jjwt-api' -->
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version> <!-- latest version -->
+            <scope>provided</scope>
+        </dependency>
+
+
 
     </dependencies>
 
@@ -138,14 +133,21 @@
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
 
 </project>

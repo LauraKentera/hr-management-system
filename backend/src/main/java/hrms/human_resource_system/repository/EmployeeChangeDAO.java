@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.repository;
+package hrms.human_resource_system.repository;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmployeeChange;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmployeeChange;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -137,12 +137,12 @@ public class EmployeeChangeDAO {
 
             ps.setBigDecimal(6, change.getNewSalary());
 
-            ps.setInt(7, id);
+            ps.setInt(7, change.getChangeId());
 
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DLException("Error updating EmployeeChange with ID " + id, e);
+            throw new DLException("Error updating EmployeeChange with ID " + change.getChangeId(), e);
         }
     }
 

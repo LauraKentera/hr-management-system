@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.LoginRequestDTO;
-import main.java.hrms.human_resource_system.security.JwtUtils;
-import main.java.hrms.human_resource_system.security.JwtResponse;
-import main.java.hrms.human_resource_system.service.UserDetailsServiceImpl;
+import hrms.human_resource_system.dto.LoginRequestDTO;
+import hrms.human_resource_system.security.JwtUtils;
+import hrms.human_resource_system.security.JwtResponse;
+import hrms.human_resource_system.service.UserDetailsServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

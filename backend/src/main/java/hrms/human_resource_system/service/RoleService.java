@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.Role;
-import main.java.hrms.human_resource_system.repository.RoleDAO;
+import hrms.human_resource_system.model.Role;
+import hrms.human_resource_system.repository.RoleDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

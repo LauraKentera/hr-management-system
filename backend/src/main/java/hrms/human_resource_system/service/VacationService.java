@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.EmployeeAbsence;
-import main.java.hrms.human_resource_system.repository.EmployeeDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeAbsenceDAO;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.EmployeeAbsence;
+import hrms.human_resource_system.repository.EmployeeDAO;
+import hrms.human_resource_system.repository.EmployeeAbsenceDAO;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

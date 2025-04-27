@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.DashboardDTO;
-import main.java.hrms.human_resource_system.service.DashboardService;
+import hrms.human_resource_system.dto.DashboardDTO;
+import hrms.human_resource_system.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

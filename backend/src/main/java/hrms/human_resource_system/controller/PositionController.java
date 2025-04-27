@@ -1,12 +1,12 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.PositionRequestDTO;
-import main.java.hrms.human_resource_system.dto.PositionResponseDTO;
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.mapper.PositionMapper;
-import main.java.hrms.human_resource_system.model.Position;
-import main.java.hrms.human_resource_system.service.PositionService;
+import hrms.human_resource_system.dto.PositionRequestDTO;
+import hrms.human_resource_system.dto.PositionResponseDTO;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.mapper.PositionMapper;
+import hrms.human_resource_system.model.Position;
+import hrms.human_resource_system.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

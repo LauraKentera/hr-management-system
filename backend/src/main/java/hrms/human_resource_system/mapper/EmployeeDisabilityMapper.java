@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeDisabilityRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeDisabilityResponseDTO;
-import main.java.hrms.human_resource_system.model.EmployeeDisability;
+import hrms.human_resource_system.dto.EmployeeDisabilityRequestDTO;
+import hrms.human_resource_system.dto.EmployeeDisabilityResponseDTO;
+import hrms.human_resource_system.model.EmployeeDisability;
 
 public class EmployeeDisabilityMapper {
 

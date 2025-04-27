@@ -1,11 +1,11 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.EmployeeBankAccount;
-import main.java.hrms.human_resource_system.service.EmployeeBankAccountService;
-import main.java.hrms.human_resource_system.dto.EmployeeBankAccountRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeBankAccountResponseDTO;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.EmployeeBankAccount;
+import hrms.human_resource_system.service.EmployeeBankAccountService;
+import hrms.human_resource_system.dto.EmployeeBankAccountRequestDTO;
+import hrms.human_resource_system.dto.EmployeeBankAccountResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.EmployeeDisability;
-import main.java.hrms.human_resource_system.repository.EmployeeDisabilityDAO;
-import main.java.hrms.human_resource_system.repository.EmployeeDAO;
-import main.java.hrms.human_resource_system.repository.DisabilityCategoryDAO;
+import hrms.human_resource_system.model.EmployeeDisability;
+import hrms.human_resource_system.repository.EmployeeDisabilityDAO;
+import hrms.human_resource_system.repository.EmployeeDAO;
+import hrms.human_resource_system.repository.DisabilityCategoryDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

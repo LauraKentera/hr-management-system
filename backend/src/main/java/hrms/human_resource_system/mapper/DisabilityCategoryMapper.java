@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.DisabilityCategoryResponseDTO;
-import main.java.hrms.human_resource_system.model.DisabilityCategory;
+import hrms.human_resource_system.dto.DisabilityCategoryResponseDTO;
+import hrms.human_resource_system.model.DisabilityCategory;
 
 public class DisabilityCategoryMapper {
 

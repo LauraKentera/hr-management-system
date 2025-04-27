@@ -1,9 +1,9 @@
-package main.java.hrms.human_resource_system.repository;
+package hrms.human_resource_system.repository;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.*;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.*;
 import org.springframework.stereotype.Repository;
-import main.resources.util.AuditLogger;
+import hrms.human_resource_system.util.AuditLogger;
 
 import java.sql.*;
 import java.time.LocalDate;

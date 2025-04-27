@@ -1,15 +1,15 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.Nationality;
-import main.java.hrms.human_resource_system.service.NationalityService;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.Nationality;
+import hrms.human_resource_system.service.NationalityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import main.java.hrms.human_resource_system.mapper.NationalityMapper;
-import main.java.hrms.human_resource_system.dto.NationalityResponseDTO;
+import hrms.human_resource_system.mapper.NationalityMapper;
+import hrms.human_resource_system.dto.NationalityResponseDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,7 +104,7 @@ public class NationalityController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNationality(@PathVariable("id") Integer nationalityId) {
         try {
-            nationalityService.deleteNationality(nationalityId);
+            nationalityService.deleteNationality(nationalityId, 1); // 1 = hardcoded performedBy for now
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -120,4 +120,5 @@ public class NationalityController {
                     .body(new CustomErrorResponse("Error deleting nationality", 500));
         }
     }
+
 }

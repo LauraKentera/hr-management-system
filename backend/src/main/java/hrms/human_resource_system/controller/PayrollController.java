@@ -1,12 +1,12 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.PayrollRequest;
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.Payroll;
-import main.java.hrms.human_resource_system.service.EmployeeService;
-import main.java.hrms.human_resource_system.service.PayrollService;
+import hrms.human_resource_system.dto.PayrollRequest;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.Payroll;
+import hrms.human_resource_system.service.EmployeeService;
+import hrms.human_resource_system.service.PayrollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;

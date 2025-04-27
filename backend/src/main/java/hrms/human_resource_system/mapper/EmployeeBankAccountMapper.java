@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeBankAccountRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeBankAccountResponseDTO;
-import main.java.hrms.human_resource_system.model.EmployeeBankAccount;
+import hrms.human_resource_system.dto.EmployeeBankAccountRequestDTO;
+import hrms.human_resource_system.dto.EmployeeBankAccountResponseDTO;
+import hrms.human_resource_system.model.EmployeeBankAccount;
 
 public class EmployeeBankAccountMapper {
 
@@ -16,12 +16,11 @@ public class EmployeeBankAccountMapper {
     }
 
     public static EmployeeBankAccountResponseDTO toDTO(EmployeeBankAccount account) {
-        EmployeeBankAccountResponseDTO dto = new EmployeeBankAccountResponseDTO();
-        dto.setId(account.getEmployeeId());
-        dto.setEmployeeId(account.getEmployeeId());
-        dto.setBankName(account.getBankName());
-        dto.setAccountNumber(account.getAccountNumber());
-        dto.setIban(account.getIban());
-        return dto;
+        return new EmployeeBankAccountResponseDTO(
+                account.getEmployeeId(),
+                account.getBankName(),
+                account.getAccountNumber(),
+                account.getIban()
+        );
     }
 }

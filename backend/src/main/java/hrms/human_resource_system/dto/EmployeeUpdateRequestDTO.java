@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.dto;
+package hrms.human_resource_system.dto;
 
-import main.java.hrms.human_resource_system.model.Employee;
-import main.java.hrms.human_resource_system.model.Nationality;
+import hrms.human_resource_system.model.Employee;
+import hrms.human_resource_system.model.Nationality;
 
 import java.time.LocalDate;
 

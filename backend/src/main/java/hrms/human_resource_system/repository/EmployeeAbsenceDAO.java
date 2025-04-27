@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.repository;
+package hrms.human_resource_system.repository;
 
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.AbsenceType;
-import main.java.hrms.human_resource_system.model.EmployeeAbsence;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.AbsenceType;
+import hrms.human_resource_system.model.EmployeeAbsence;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

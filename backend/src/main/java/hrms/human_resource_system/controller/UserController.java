@@ -1,11 +1,11 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.model.User;
-import main.java.hrms.human_resource_system.service.UserService;
-import main.java.hrms.human_resource_system.dto.UserCreateRequest;
-import main.java.hrms.human_resource_system.model.Role;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.model.User;
+import hrms.human_resource_system.service.UserService;
+import hrms.human_resource_system.dto.UserCreateRequest;
+import hrms.human_resource_system.model.Role;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

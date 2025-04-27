@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.EmployeeBankAccount;
-import main.java.hrms.human_resource_system.repository.EmployeeBankAccountDAO;
+import hrms.human_resource_system.model.EmployeeBankAccount;
+import hrms.human_resource_system.repository.EmployeeBankAccountDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

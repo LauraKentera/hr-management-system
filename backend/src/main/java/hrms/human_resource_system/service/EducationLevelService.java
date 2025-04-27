@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.EducationLevel;
-import main.java.hrms.human_resource_system.repository.EducationLevelDAO;
+import hrms.human_resource_system.model.EducationLevel;
+import hrms.human_resource_system.repository.EducationLevelDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package main.java.hrms.human_resource_system.dto;
+package hrms.human_resource_system.dto;
 
 public class AuthResponseDTO {
     private String token;        // JWT or session token

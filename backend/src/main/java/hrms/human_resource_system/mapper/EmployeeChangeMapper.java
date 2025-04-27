@@ -1,8 +1,8 @@
-package main.java.hrms.human_resource_system.mapper;
+package hrms.human_resource_system.mapper;
 
-import main.java.hrms.human_resource_system.dto.EmployeeChangeRequestDTO;
-import main.java.hrms.human_resource_system.dto.EmployeeChangeResponseDTO;
-import main.java.hrms.human_resource_system.model.EmployeeChange;
+import hrms.human_resource_system.dto.EmployeeChangeRequestDTO;
+import hrms.human_resource_system.dto.EmployeeChangeResponseDTO;
+import hrms.human_resource_system.model.EmployeeChange;
 
 import java.time.LocalDate;
 

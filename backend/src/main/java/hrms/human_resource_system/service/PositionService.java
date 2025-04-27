@@ -1,7 +1,7 @@
-package main.java.hrms.human_resource_system.service;
+package hrms.human_resource_system.service;
 
-import main.java.hrms.human_resource_system.model.Position;
-import main.java.hrms.human_resource_system.repository.PositionDAO;
+import hrms.human_resource_system.model.Position;
+import hrms.human_resource_system.repository.PositionDAO;
 import java.util.List;
 import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;

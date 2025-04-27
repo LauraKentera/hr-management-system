@@ -1,11 +1,11 @@
-package main.java.hrms.human_resource_system.controller;
+package hrms.human_resource_system.controller;
 
-import main.java.hrms.human_resource_system.dto.AbsenceTypeResponseDTO;
-import main.java.hrms.human_resource_system.exception.CustomErrorResponse;
-import main.java.hrms.human_resource_system.exception.DLException;
-import main.java.hrms.human_resource_system.mapper.AbsenceTypeMapper;
-import main.java.hrms.human_resource_system.model.AbsenceType;
-import main.java.hrms.human_resource_system.service.AbsenceTypeService;
+import hrms.human_resource_system.dto.AbsenceTypeResponseDTO;
+import hrms.human_resource_system.exception.CustomErrorResponse;
+import hrms.human_resource_system.exception.DLException;
+import hrms.human_resource_system.mapper.AbsenceTypeMapper;
+import hrms.human_resource_system.model.AbsenceType;
+import hrms.human_resource_system.service.AbsenceTypeService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
