@@ -8,9 +8,7 @@ import hrms.human_resource_system.mapper.PositionMapper;
 import hrms.human_resource_system.model.Position;
 import hrms.human_resource_system.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,9 +65,7 @@ public class PositionController {
     public ResponseEntity<?> createPosition(@RequestBody PositionRequestDTO positionRequestDTO) {
         try {
             Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
-
-            // Assuming you're using Spring Security to get the current user
-            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+            int performedBy = getCurrentUserId(); // Simulated user ID
 
             Position created = positionService.addPosition(position, performedBy);
             PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(created);
@@ -91,9 +87,7 @@ public class PositionController {
         try {
             Position position = PositionMapper.fromRequestDTO(positionRequestDTO);
             position.setPositionId(id);
-
-            // Assuming you're using Spring Security to get the current user
-            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+            int performedBy = getCurrentUserId(); // Simulated user ID
 
             Position updated = positionService.updatePosition(position, performedBy);
             PositionResponseDTO responseDTO = PositionMapper.toResponseDTO(updated);
@@ -113,8 +107,7 @@ public class PositionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePosition(@PathVariable int id) {
         try {
-            // Assuming you're using Spring Security to get the current user
-            int performedBy = getCurrentUserId();  // Implement this method or use SecurityContext if using Spring Security
+            int performedBy = getCurrentUserId(); // Simulated user ID
 
             positionService.deletePosition(id, performedBy);
             return ResponseEntity.noContent().build();
@@ -133,9 +126,8 @@ public class PositionController {
         }
     }
 
-    // Assuming you have a method to get the current logged-in user's ID
+    // Dummy method: replace with actual user ID retrieval later
     private int getCurrentUserId() {
-        // For example, if you're using Spring Security, you can fetch the user's ID from the SecurityContext
-        return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        return 1; // simulate an "admin" user
     }
 }
