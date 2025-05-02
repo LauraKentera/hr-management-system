@@ -10,6 +10,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import EmployeesView from './views/EmployeesView';
 import EmployeeDetailsView from './views/EmployeeDetailsView';
+import PayrollPage from "./views/PayrollPage";
+import BenefitsListPage from "./views/BenefitListPage";
 
 
 function App() {
@@ -91,6 +93,29 @@ function App() {
                     <Route path="/employees/:id" element={<EmployeeDetailsView />} />
 
                     {/* Add more routes here as necessary */}
+
+                    <Route
+                        path="/payrolls"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <PayrollPage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/benefits"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
+                                <Layout>
+                                    <BenefitsListPage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+
 
                 </Routes>
             </Router>

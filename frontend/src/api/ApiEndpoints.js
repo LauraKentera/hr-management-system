@@ -25,15 +25,42 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/api/employee-absences`,
         create: `${BASE_URL}/api/employee-absences`,
     },
-    benefit: {
-        getAll: `${BASE_URL}/api/benefits`,
-        create: `${BASE_URL}/api/benefits`,
-    },
     role: {
         getAll: `${BASE_URL}/api/roles`,
         create: `${BASE_URL}/api/roles`,
     },
+    payroll: {
+        getAll: `${BASE_URL}/api/payrolls`,
+        getById: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        create: `${BASE_URL}/api/payrolls`,
+        update: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        delete: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        generate: `${BASE_URL}/api/payrolls/generate`,
+    },
+    benefit: {
+        getAll: `${BASE_URL}/api/benefits`,
+        getById: (id) => `${BASE_URL}/api/benefits/${id}`,
+        create: `${BASE_URL}/api/benefits`,
+        update: (id) => `${BASE_URL}/api/benefits/${id}`,
+        delete: (id) => `${BASE_URL}/api/benefits/${id}`,
+    },
 
+    benefitItem: {
+        getAll: `${BASE_URL}/api/benefit-items`,
+        getById: (id) => `${BASE_URL}/api/benefit-items/${id}`,
+        getByBenefitId: (benefitId) => `${BASE_URL}/api/benefit-items/benefit/${benefitId}`,
+        create: `${BASE_URL}/api/benefit-items`,
+        update: (id) => `${BASE_URL}/api/benefit-items/${id}`,
+        delete: (id) => `${BASE_URL}/api/benefit-items/${id}`,
+    },
+
+    employeeBenefit: {
+        getAll: `${BASE_URL}/api/employee-benefits`,
+        getById: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
+        create: `${BASE_URL}/api/employee-benefits`,
+        update: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
+        delete: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
+    },
 };
 
 export default ApiEndpoints;
