@@ -4,11 +4,14 @@ import { SnackbarProvider } from "notistack"; // Import SnackbarProvider
 import Dashboard from "./views/DashboardPage";
 import UsersPage from "./views/UsersPage";
 import RolesPage from "./views/RolesPage";
-import EmployeesPage from "./views/EmployeesPage";
-import AbsencePage from "./views/AbsencePage";  // Import AbsencePage
+import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import EmployeesView from './views/EmployeeView';
+import EmployeeDetailsView from './views/EmployeeDetailsView';
+import SettingsView from './views/SettingsView';
+
 
 function App() {
     return (
@@ -55,9 +58,9 @@ function App() {
                     <Route
                         path="/employees"
                         element={
-                            <ProtectedRoute allowedRoles={["HR", "Admin"]}>
+                            <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Layout>
-                                    <EmployeesPage />
+                                    <EmployeesView />
                                 </Layout>
                             </ProtectedRoute>
                         }
@@ -75,11 +78,26 @@ function App() {
                         }
                     />
 
+                    <Route
+                        path="/absences"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
+                                <Layout>
+                                    <AbsencePage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
+
+                    <Route path="/settings" element={<SettingsView />} />
+
                     {/* Add more routes here as necessary */}
 
                 </Routes>
             </Router>
-        </SnackbarProvider>
+        </SnackbarProvider >
     );
 }
 

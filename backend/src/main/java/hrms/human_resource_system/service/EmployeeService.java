@@ -1,5 +1,6 @@
 package hrms.human_resource_system.service;
 
+import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.Employee;
 import hrms.human_resource_system.repository.DepartmentDAO;
 import hrms.human_resource_system.repository.EmployeeDAO;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class EmployeeService {
@@ -135,4 +137,20 @@ public class EmployeeService {
                 .filter(this::isEligibleForRetirement)
                 .toList();
     }
+
+    private <T> T wrap(Supplier<T> action) {
+        try {
+            return action.get();
+        } catch (DLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DLException("Unexpected error: " + e.getMessage(), e);
+        }
+    }
+
+
+    public Employee getByUserId(int userId) {
+        return wrap(() -> employeeDAO.getByUserId(userId));
+    }
+
 }

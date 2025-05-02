@@ -11,10 +11,10 @@ const ApiEndpoints = {
         delete: (id) => `http://localhost:8080/api/users/${id}`,
     },
     employee: {
-        getAll: `${BASE_URL}/employees`,
-        create: `${BASE_URL}/employees`,
-        update: (id) => `${BASE_URL}/employees/${id}`,
-        delete: (id) => `${BASE_URL}/employees/${id}`,
+        getAll: `${BASE_URL}/api/employees`,
+        create: `${BASE_URL}/api/employees`,
+        update: (id) => `${BASE_URL}/api/employees/${id}`,
+        delete: (id) => `${BASE_URL}/api/employees/${id}`,
     },
     department: {
         getAll: `${BASE_URL}/departments`,
@@ -28,7 +28,7 @@ const ApiEndpoints = {
     benefit: {
         getAll: `${BASE_URL}/api/benefits`,
         create: `${BASE_URL}/api/benefits`,
-
+    },
     role: {
         getAll: `${BASE_URL}/api/roles`, // New endpoint to fetch all roles
         create: `${BASE_URL}/api/roles`, // New endpoint to create a role

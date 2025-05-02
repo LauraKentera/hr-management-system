@@ -37,52 +37,58 @@ const Sidebar = () => {
                     <ListItem button onClick={toggleSidebar}>
                         <ListItemIcon>
 
-                            {isOpen ? <ChevronLeft/> : <ChevronRight/>} {/* Toggle icon */}
+                            {isOpen ? <ChevronLeft /> : <ChevronRight />} {/* Toggle icon */}
                         </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Collapse' : ''}/>
+                        <ListItemText primary={isOpen ? 'Collapse' : ''} />
                     </ListItem>
 
                     {/* Absences Section */}
                     <ListItem button component={Link} to="/absences"> {/* Use Link to navigate */}
                         <ListItemIcon>
-                            <CalendarToday/>
+                            <CalendarToday />
                         </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Absences' : ''}/>
+                        <ListItemText primary={isOpen ? 'Absences' : ''} />
                     </ListItem>
 
-                    <Divider/>
+                    <Divider />
 
                     {/* Benefits Section */}
                     <ListItem button component={Link} to="/benefits"> {/* Use Link to navigate */}
                         <ListItemIcon>
-                            <AttachMoney/>
+                            <AttachMoney />
                         </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Benefits' : ''}/>
+                        <ListItemText primary={isOpen ? 'Benefits' : ''} />
                     </ListItem>
 
 
-                    <Divider/>
+                    <Divider />
 
                     {/* Contracts Section */}
                     <ListItem button component={Link} to="/contracts">
                         <ListItemIcon>
-                            <InsertChart/>
+                            <InsertChart />
                         </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Contracts' : ''}/>
+                        <ListItemText primary={isOpen ? 'Contracts' : ''} />
                     </ListItem>
 
-                    <Divider/>
+                    <Divider />
 
                     {/* Employees Section */}
                     <ListItem button component={Link} to="/employees">
-                        <ListItemIcon>
-                            <People/>
-
-                            {isOpen ? <ChevronLeft /> : <ChevronRight />}
-
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Collapse' : ''} />
+                        <ListItemIcon><People /></ListItemIcon>
+                        <ListItemText
+                            primary={
+                                isOpen
+                                    ? <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>Employees</span>
+                                        {isOpen ? <ChevronLeft /> : <ChevronRight />}
+                                    </Box>
+                                    : ''
+                            }
+                        />
                     </ListItem>
+
+
 
                     {/* Common: Absences */}
                     <ListItem button component={Link} to="/absence">
@@ -150,6 +156,16 @@ const Sidebar = () => {
                             </ListItem>
                         </>
                     )}
+
+                    <Divider />
+
+                    {/* Logout Section */}
+                    <ListItem button component={Link} to="/settings">
+                        <ListItemIcon>
+                            <AttachMoney />
+                        </ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Settings' : ''} />
+                    </ListItem>
 
                     <Divider />
 
