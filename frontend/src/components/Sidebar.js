@@ -43,8 +43,6 @@ const Sidebar = () => {
                         <ListItemText primary={isOpen ? 'Collapse' : ''} />
                     </ListItem>
 
-
-
                     {/* Common: Absences */}
                     <ListItem button component={Link} to="/absences">
                         <ListItemIcon><CalendarToday /></ListItemIcon>
@@ -111,16 +109,6 @@ const Sidebar = () => {
                             </ListItem>
                         </>
                     )}
-
-                    <Divider />
-
-                    {/* Logout Section */}
-                    <ListItem button component={Link} to="/settings">
-                        <ListItemIcon>
-                            <AttachMoney />
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Settings' : ''} />
-                    </ListItem>
 
                     <Divider />
 
