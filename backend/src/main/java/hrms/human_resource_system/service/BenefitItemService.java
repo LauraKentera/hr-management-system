@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.BenefitItem;
 import hrms.human_resource_system.repository.BenefitItemDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,16 +12,20 @@ import java.util.function.Supplier;
 @Service
 public class BenefitItemService {
 
-    private final BenefitItemDAO dao = new BenefitItemDAO();
+    private final BenefitItemDAO dao;
 
-    // Wrapper method for consistent exception handling
+    @Autowired
+    public BenefitItemService(BenefitItemDAO dao) {
+        this.dao = dao;
+    }
+
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
         } catch (DLException e) {
             throw new RuntimeException("Database error: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -35,10 +40,9 @@ public class BenefitItemService {
     }
 
     public List<BenefitItem> getByBenefitId(int benefitId) {
-        return dao.getByBenefitId(benefitId);
+        return wrap(() -> dao.getByBenefitId(benefitId));
     }
 
-    // Insert with audit logging
     public BenefitItem create(BenefitItem item, int performedBy) {
         wrap(() -> {
             validate(item);
@@ -48,7 +52,6 @@ public class BenefitItemService {
         return item;
     }
 
-    // Update with audit logging
     public BenefitItem update(int id, BenefitItem item, int performedBy) {
         wrap(() -> {
             validate(item);

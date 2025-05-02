@@ -2,6 +2,7 @@ package hrms.human_resource_system.service;
 
 import hrms.human_resource_system.model.EmployeeBankAccount;
 import hrms.human_resource_system.repository.EmployeeBankAccountDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +11,18 @@ import java.util.function.Supplier;
 @Service
 public class EmployeeBankAccountService {
 
-    private final EmployeeBankAccountDAO dao = new EmployeeBankAccountDAO();
+    private final EmployeeBankAccountDAO dao;
 
-    // Wrapper method for consistent exception handling
+    @Autowired
+    public EmployeeBankAccountService(EmployeeBankAccountDAO dao) {
+        this.dao = dao;
+    }
+
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -33,8 +38,16 @@ public class EmployeeBankAccountService {
 
     public void insert(EmployeeBankAccount entity) {
         wrap(() -> {
-            validateEmployeeBankAccount(entity);  // Validate before inserting
+            validateEmployeeBankAccount(entity);
             dao.insert(entity);
+            return null;
+        });
+    }
+
+    public void update(int id, EmployeeBankAccount account) {
+        wrap(() -> {
+            validateEmployeeBankAccount(account);
+            dao.update(account);
             return null;
         });
     }
@@ -46,9 +59,7 @@ public class EmployeeBankAccountService {
         });
     }
 
-    // Validation method for EmployeeBankAccount
     private void validateEmployeeBankAccount(EmployeeBankAccount entity) {
-        // Validate required fields
         if (entity.getEmployeeId() <= 0) {
             throw new IllegalArgumentException("Employee ID is required.");
         }
@@ -58,23 +69,11 @@ public class EmployeeBankAccountService {
         if (entity.getAccountNumber() == null || entity.getAccountNumber().trim().isEmpty()) {
             throw new IllegalArgumentException("Account number is required.");
         }
-
-        // Optional: Validate account number format, e.g., length, digits, etc.
         if (entity.getAccountNumber().length() < 10 || entity.getAccountNumber().length() > 20) {
             throw new IllegalArgumentException("Account number must be between 10 and 20 characters.");
         }
-
-        // Optional: Validate IBAN if provided
         if (entity.getIban() != null && entity.getIban().length() != 22) {
             throw new IllegalArgumentException("IBAN must be 22 characters long.");
         }
     }
-
-    public void update(int id, EmployeeBankAccount account) {
-        wrap(() -> {
-            dao.update(account);  // Call the DAO update method
-            return null;
-        });
-    }
-
 }

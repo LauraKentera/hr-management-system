@@ -105,7 +105,6 @@
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/BenefitItemDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/ContractAnnexDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/ContractDAO.java
-/Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/DatabaseConnection.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/DepartmentDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/DisabilityCategoryDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/EducationLevelDAO.java

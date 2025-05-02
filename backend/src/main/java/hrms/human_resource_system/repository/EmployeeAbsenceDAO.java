@@ -3,113 +3,105 @@ package hrms.human_resource_system.repository;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.AbsenceType;
 import hrms.human_resource_system.model.EmployeeAbsence;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class EmployeeAbsenceDAO {
 
-    AbsenceTypeDAO absenceTypeDAO = new AbsenceTypeDAO();
-    EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final JdbcTemplate jdbcTemplate;
+    private final AbsenceTypeDAO absenceTypeDAO;
+    private final EmployeeDAO employeeDAO;
 
+    @Autowired
+    public EmployeeAbsenceDAO(JdbcTemplate jdbcTemplate,
+                              AbsenceTypeDAO absenceTypeDAO,
+                              EmployeeDAO employeeDAO) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.absenceTypeDAO = absenceTypeDAO;
+        this.employeeDAO = employeeDAO;
+    }
 
     public EmployeeAbsence getById(int id) {
         String sql = "SELECT * FROM EmployeeAbsence WHERE absence_id = ?";
-        EmployeeAbsence absence = null;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                absence = mapResultSet(rs);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapResultSet(rs), id);
+        } catch (Exception e) {
+            throw new DLException("Error retrieving absence with ID " + id, e);
         }
-
-        return absence;
     }
 
     public List<EmployeeAbsence> getAll() {
         String sql = "SELECT * FROM EmployeeAbsence";
-        List<EmployeeAbsence> list = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                list.add(mapResultSet(rs));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            return jdbcTemplate.query(sql, (rs, rowNum) -> mapResultSet(rs));
+        } catch (Exception e) {
+            throw new DLException("Error retrieving all employee absences", e);
         }
-
-        return list;
     }
 
     public List<EmployeeAbsence> getByEmployeeId(int employeeId) {
         String sql = "SELECT * FROM EmployeeAbsence WHERE employee_id = ?";
-        List<EmployeeAbsence> list = new ArrayList<>();
-    
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-    
-            ps.setInt(1, employeeId);
-            ResultSet rs = ps.executeQuery();
-    
-            while (rs.next()) {
-                list.add(mapResultSet(rs));
-            }
-    
-        } catch (SQLException e) {
+        try {
+            return jdbcTemplate.query(sql, (rs, rowNum) -> mapResultSet(rs), employeeId);
+        } catch (Exception e) {
             throw new DLException("Error retrieving absences for employee ID " + employeeId, e);
         }
-    
-        return list;
     }
-    
 
     public void insert(EmployeeAbsence absence) {
-        String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            ps.setInt(1, absence.getEmployeeId());
-            ps.setInt(2, absence.getAbsenceTypeId());
-            ps.setDate(3, Date.valueOf(absence.getStartDate()));
-            ps.setDate(4, Date.valueOf(absence.getEndDate()));
-            ps.setString(5, absence.getNotes());
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, absence.getEmployeeId());
+                ps.setInt(2, absence.getAbsenceTypeId());
+                ps.setDate(3, Date.valueOf(absence.getStartDate()));
+                ps.setDate(4, Date.valueOf(absence.getEndDate()));
+                ps.setString(5, absence.getNotes());
+                return ps;
+            }, keyHolder);
 
-            ps.executeUpdate();
+            if (keyHolder.getKey() != null) {
+                absence.setAbsenceId(keyHolder.getKey().intValue());
+            }
+        } catch (Exception e) {
+            throw new DLException("Error inserting employee absence", e);
+        }
+    }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void update(int id, EmployeeAbsence absence) {
+        String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ? WHERE absence_id = ?";
+        try {
+            jdbcTemplate.update(sql,
+                    absence.getEmployeeId(),
+                    absence.getAbsenceTypeId(),
+                    Date.valueOf(absence.getStartDate()),
+                    Date.valueOf(absence.getEndDate()),
+                    absence.getNotes(),
+                    id
+            );
+        } catch (Exception e) {
+            throw new DLException("Error updating employee absence with ID " + id, e);
         }
     }
 
     public void delete(int id) {
         String sql = "DELETE FROM EmployeeAbsence WHERE absence_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (Exception e) {
+            throw new DLException("Error deleting employee absence with ID " + id, e);
         }
     }
 
@@ -122,34 +114,10 @@ public class EmployeeAbsenceDAO {
         ea.setEndDate(rs.getDate("end_date").toLocalDate());
         ea.setNotes(rs.getString("notes"));
 
-        // fetch and set AbsenceType
-        AbsenceType type = absenceTypeDAO.getById(ea.getAbsenceTypeId());
-        ea.setAbsenceType(type);
-
+        // fetch and set AbsenceType and Employee
+        ea.setAbsenceType(absenceTypeDAO.getById(ea.getAbsenceTypeId()));
         ea.setEmployee(employeeDAO.getById(ea.getEmployeeId()));
 
         return ea;
     }
-
-
-    public void update(int id, EmployeeAbsence absence) {
-        String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ? WHERE absence_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, absence.getEmployeeId());
-            ps.setInt(2, absence.getAbsenceTypeId());
-            ps.setDate(3, Date.valueOf(absence.getStartDate()));
-            ps.setDate(4, Date.valueOf(absence.getEndDate()));
-            ps.setString(5, absence.getNotes());
-            ps.setInt(6, id);
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new DLException("Error updating employee absence with ID " + id, e);
-        }
-    }
 }
-

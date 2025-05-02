@@ -6,6 +6,7 @@ import hrms.human_resource_system.model.Payroll;
 import hrms.human_resource_system.repository.ContractDAO;
 import hrms.human_resource_system.repository.EmployeeAbsenceDAO;
 import hrms.human_resource_system.repository.PayrollDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,12 +17,17 @@ import java.util.function.Supplier;
 @Service
 public class PayrollService {
 
-    private final EmployeeAbsenceDAO employeeAbsenceDAO = new EmployeeAbsenceDAO();
-    private final ContractDAO contractDAO = new ContractDAO();
+    private final EmployeeAbsenceDAO employeeAbsenceDAO;
+    private final ContractDAO contractDAO;
     private final PayrollDAO payrollDAO;
 
-    public PayrollService() {
-        this.payrollDAO = new PayrollDAO();
+    @Autowired
+    public PayrollService(EmployeeAbsenceDAO employeeAbsenceDAO,
+                          ContractDAO contractDAO,
+                          PayrollDAO payrollDAO) {
+        this.employeeAbsenceDAO = employeeAbsenceDAO;
+        this.contractDAO = contractDAO;
+        this.payrollDAO = payrollDAO;
     }
 
     private <T> T wrap(Supplier<T> action) {

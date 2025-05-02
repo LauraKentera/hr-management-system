@@ -5,7 +5,6 @@ hrms/human_resource_system/service/DepartmentService.class
 hrms/human_resource_system/service/EmployeeBankAccountService.class
 hrms/human_resource_system/service/EmployeeEvaluationService.class
 hrms/human_resource_system/dto/UserUpdateRequestDTO.class
-hrms/human_resource_system/repository/DatabaseConnection.class
 hrms/human_resource_system/security/JwtResponse.class
 hrms/human_resource_system/dto/RoleResponseDTO.class
 hrms/human_resource_system/controller/AbsenceTypeController.class

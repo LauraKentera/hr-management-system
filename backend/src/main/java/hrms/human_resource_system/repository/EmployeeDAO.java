@@ -1,79 +1,187 @@
 package hrms.human_resource_system.repository;
 
 import hrms.human_resource_system.exception.DLException;
-import hrms.human_resource_system.model.*;
-import org.springframework.stereotype.Repository;
+import hrms.human_resource_system.model.Employee;
 import hrms.human_resource_system.util.AuditLogger;
+import hrms.human_resource_system.model.Nationality;
+import hrms.human_resource_system.model.Department;
+import hrms.human_resource_system.model.Position;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class EmployeeDAO {
 
-    private final NationalityDAO nationalityDAO = new NationalityDAO();
-    private final DepartmentDAO departmentDAO = new DepartmentDAO();
-    private final PositionDAO positionDAO = new PositionDAO();
+    private final JdbcTemplate jdbcTemplate;
+    private final NationalityDAO nationalityDAO;
+    private final DepartmentDAO departmentDAO;
+    private final PositionDAO positionDAO;
+    private final AuditLogger auditLogger;
 
-    // Check if an employee exists by their ID
+    @Autowired
+    public EmployeeDAO(JdbcTemplate jdbcTemplate,
+                       NationalityDAO nationalityDAO,
+                       DepartmentDAO departmentDAO,
+                       PositionDAO positionDAO,
+                       AuditLogger auditLogger) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.nationalityDAO = nationalityDAO;
+        this.departmentDAO = departmentDAO;
+        this.positionDAO = positionDAO;
+        this.auditLogger = auditLogger;
+    }
+
     public boolean existsById(int employeeId) {
         String sql = "SELECT COUNT(*) FROM Employee WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, employeeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
+        try {
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, employeeId);
+            return count != null && count > 0;
+        } catch (Exception e) {
             throw new DLException("Error checking if employee exists with ID " + employeeId, e);
         }
-        return false;
     }
 
-    // Retrieve employee by ID
     public Employee getById(int id) {
         String sql = "SELECT * FROM Employee WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToEmployee(rs);
-                }
-            }
-        } catch (SQLException e) {
+        try {
+            return jdbcTemplate.queryForObject(sql, this::mapResultSetToEmployee, id);
+        } catch (Exception e) {
             throw new DLException("Error retrieving employee with ID " + id, e);
         }
-        return null;
     }
 
-    // Retrieve all employees
     public List<Employee> getAll() {
         String sql = "SELECT * FROM Employee";
-        List<Employee> employees = new ArrayList<>();
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                employees.add(mapResultSetToEmployee(rs));
-            }
-        } catch (SQLException e) {
+        try {
+            return jdbcTemplate.query(sql, this::mapResultSetToEmployee);
+        } catch (Exception e) {
             throw new DLException("Error fetching all employees", e);
         }
-        return employees;
     }
 
-    // Map ResultSet to Employee object
-    private Employee mapResultSetToEmployee(ResultSet rs) throws SQLException {
+    public Employee insert(Employee employee, int performedBy) {
+        String sql = """
+            INSERT INTO Employee 
+            (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, 
+            gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, 
+            emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, employee.getPIN());
+                ps.setString(2, employee.getLastName());
+                ps.setString(3, employee.getFirstName());
+                ps.setDate(4, Date.valueOf(employee.getBirthDate()));
+                ps.setDate(5, Date.valueOf(employee.getDateOfHire()));
+                ps.setObject(6, employee.getDateOfDismissal() != null ? Date.valueOf(employee.getDateOfDismissal()) : null);
+                ps.setString(7, employee.getPhoneNumber());
+                ps.setString(8, employee.getEmail());
+                ps.setString(9, employee.getAddress());
+                ps.setString(10, employee.getGender());
+                ps.setInt(11, employee.getNationality().getNationalityId());
+                ps.setInt(12, employee.getDepartment().getDepartmentId());
+                ps.setInt(13, employee.getPosition().getPositionId());
+                ps.setString(14, employee.getEmploymentStatus());
+                ps.setString(15, employee.getEmergencyContactName());
+                ps.setString(16, employee.getEmergencyContactPhone());
+                ps.setString(17, employee.getMaritalStatus());
+                ps.setString(18, employee.getEmploymentType());
+                if (employee.getManager() != null)
+                    ps.setInt(19, employee.getManager().getId());
+                else
+                    ps.setNull(19, Types.INTEGER);
+                ps.setString(20, employee.getTaxId());
+                ps.setString(21, employee.getBankAccountNumber());
+                return ps;
+            }, keyHolder);
+
+            if (keyHolder.getKey() != null) {
+                employee.setId(keyHolder.getKey().intValue());
+            }
+
+            auditLogger.logChange("Employee", employee.getId(), "INSERT", performedBy, null, employee);
+            return employee;
+
+        } catch (Exception e) {
+            throw new DLException("Error inserting employee", e);
+        }
+    }
+
+    public Employee update(int id, Employee employee, int performedBy) {
+        String sql = """
+            UPDATE Employee SET 
+            PIN = ?, last_name = ?, first_name = ?, birth_date = ?, date_of_hire = ?, date_of_dismissal = ?, 
+            phone_number = ?, email = ?, address = ?, gender = ?, nationality_id = ?, department_id = ?, 
+            position_id = ?, employment_status = ?, emergency_contact_name = ?, emergency_contact_phone = ?, 
+            marital_status = ?, employment_type = ?, manager_id = ?, tax_id = ?, bank_account_number = ? 
+            WHERE id = ?
+        """;
+
+        Employee oldEmployee = getById(id);
+
+        try {
+            jdbcTemplate.update(sql,
+                    employee.getPIN(),
+                    employee.getLastName(),
+                    employee.getFirstName(),
+                    Date.valueOf(employee.getBirthDate()),
+                    Date.valueOf(employee.getDateOfHire()),
+                    employee.getDateOfDismissal() != null ? Date.valueOf(employee.getDateOfDismissal()) : null,
+                    employee.getPhoneNumber(),
+                    employee.getEmail(),
+                    employee.getAddress(),
+                    employee.getGender(),
+                    employee.getNationality().getNationalityId(),
+                    employee.getDepartment().getDepartmentId(),
+                    employee.getPosition().getPositionId(),
+                    employee.getEmploymentStatus(),
+                    employee.getEmergencyContactName(),
+                    employee.getEmergencyContactPhone(),
+                    employee.getMaritalStatus(),
+                    employee.getEmploymentType(),
+                    employee.getManager() != null ? employee.getManager().getId() : null,
+                    employee.getTaxId(),
+                    employee.getBankAccountNumber(),
+                    id
+            );
+
+            auditLogger.logChange("Employee", id, "UPDATE", performedBy, oldEmployee, employee);
+            return employee;
+
+        } catch (Exception e) {
+            throw new DLException("Error updating employee with ID " + id, e);
+        }
+    }
+
+    public void delete(int id, int performedBy) {
+        String sql = "DELETE FROM Employee WHERE id = ?";
+        Employee oldEmployee = getById(id);
+
+        try {
+            jdbcTemplate.update(sql, id);
+            auditLogger.logChange("Employee", id, "DELETE", performedBy, oldEmployee, null);
+        } catch (Exception e) {
+            throw new DLException("Error deleting employee with ID " + id, e);
+        }
+    }
+
+    private Employee mapResultSetToEmployee(ResultSet rs, int rowNum) throws SQLException {
+        int nationalityId = rs.getInt("nationality_id");
+        int departmentId = rs.getInt("department_id");
+        int positionId = rs.getInt("position_id");
         int managerId = rs.getInt("manager_id");
-        Employee manager = (managerId != 0) ? getById(managerId) : null;
 
         return new Employee(
                 rs.getInt("id"),
@@ -87,114 +195,17 @@ public class EmployeeDAO {
                 rs.getString("email"),
                 rs.getString("address"),
                 rs.getString("gender"),
-                nationalityDAO.getById(rs.getInt("nationality_id")),
-                departmentDAO.getById(rs.getInt("department_id")),
-                positionDAO.getById(rs.getInt("position_id")),
+                nationalityDAO.getById(nationalityId),
+                departmentDAO.getById(departmentId),
+                positionDAO.getById(positionId),
                 rs.getString("employment_status"),
                 rs.getString("emergency_contact_name"),
                 rs.getString("emergency_contact_phone"),
                 rs.getString("marital_status"),
                 rs.getString("employment_type"),
-                manager,
+                (managerId != 0 ? getById(managerId) : null),
                 rs.getString("tax_id"),
-                rs.getString("bank_account_number"));
-    }
-
-    // Insert new employee into the database
-    public Employee insert(Employee employee, int performedBy) {
-        String sql = "INSERT INTO Employee (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, employee.getPIN());
-            ps.setString(2, employee.getLastName());
-            ps.setString(3, employee.getFirstName());
-            ps.setDate(4, Date.valueOf(employee.getBirthDate()));
-            ps.setDate(5, Date.valueOf(employee.getDateOfHire()));
-            ps.setDate(6, employee.getDateOfDismissal() != null ? Date.valueOf(employee.getDateOfDismissal()) : null);
-            ps.setString(7, employee.getPhoneNumber());
-            ps.setString(8, employee.getEmail());
-            ps.setString(9, employee.getAddress());
-            ps.setString(10, employee.getGender());
-            ps.setInt(11, employee.getNationality().getNationalityId());
-            ps.setInt(12, employee.getDepartment().getDepartmentId());
-            ps.setInt(13, employee.getPosition().getPositionId());
-            ps.setString(14, employee.getEmploymentStatus());
-            ps.setString(15, employee.getEmergencyContactName());
-            ps.setString(16, employee.getEmergencyContactPhone());
-            ps.setString(17, employee.getMaritalStatus());
-            ps.setString(18, employee.getEmploymentType());
-            ps.setObject(19, employee.getManager() != null ? employee.getManager().getId() : null);
-            ps.setString(20, employee.getTaxId());
-            ps.setString(21, employee.getBankAccountNumber());
-            ps.executeUpdate();
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    employee.setId(generatedKeys.getInt(1));  // Set the generated ID for the employee
-                }
-            }
-            AuditLogger.logChange("Employee", employee.getId(), "INSERT", performedBy, null, employee);
-        } catch (SQLException e) {
-            throw new DLException("Error inserting employee", e);
-        }
-        return employee;
-    }
-
-    // Delete employee by ID
-    public void delete(int id, int performedBy) {
-        String sql = "DELETE FROM Employee WHERE id = ?";
-        Employee oldEmployee = getById(id);  // Retrieve the old employee before deletion
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-            AuditLogger.logChange("Employee", id, "DELETE", performedBy, oldEmployee, null);
-        } catch (SQLException e) {
-            throw new DLException("Error deleting employee with ID " + id, e);
-        }
-    }
-
-    // Update existing employee details
-    public Employee update(int id, Employee employee, int performedBy) {
-        String sql = "UPDATE Employee SET PIN = ?, last_name = ?, first_name = ?, birth_date = ?, date_of_hire = ?, date_of_dismissal = ?, phone_number = ?, email = ?, address = ?, gender = ?, nationality_id = ?, department_id = ?, position_id = ?, employment_status = ?, emergency_contact_name = ?, emergency_contact_phone = ?, marital_status = ?, employment_type = ?, manager_id = ?, tax_id = ?, bank_account_number = ? WHERE id = ?";
-
-        Employee oldEmployee = getById(id);  // Fetch old data for logging
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, employee.getPIN());
-            ps.setString(2, employee.getLastName());
-            ps.setString(3, employee.getFirstName());
-            ps.setDate(4, Date.valueOf(employee.getBirthDate()));
-            ps.setDate(5, Date.valueOf(employee.getDateOfHire()));
-            ps.setDate(6, employee.getDateOfDismissal() != null ? Date.valueOf(employee.getDateOfDismissal()) : null);
-            ps.setString(7, employee.getPhoneNumber());
-            ps.setString(8, employee.getEmail());
-            ps.setString(9, employee.getAddress());
-            ps.setString(10, employee.getGender());
-            ps.setInt(11, employee.getNationality().getNationalityId());
-            ps.setInt(12, employee.getDepartment().getDepartmentId());
-            ps.setInt(13, employee.getPosition().getPositionId());
-            ps.setString(14, employee.getEmploymentStatus());
-            ps.setString(15, employee.getEmergencyContactName());
-            ps.setString(16, employee.getEmergencyContactPhone());
-            ps.setString(17, employee.getMaritalStatus());
-            ps.setString(18, employee.getEmploymentType());
-            ps.setObject(19, employee.getManager() != null ? employee.getManager().getId() : null);
-            ps.setString(20, employee.getTaxId());
-            ps.setString(21, employee.getBankAccountNumber());
-            ps.setInt(22, id);  // Ensure you update the correct employee ID
-
-            ps.executeUpdate();
-            AuditLogger.logChange("Employee", id, "UPDATE", performedBy, oldEmployee, employee);
-        } catch (SQLException e) {
-            throw new DLException("Error updating employee with ID " + id, e);
-        }
-        return employee;
+                rs.getString("bank_account_number")
+        );
     }
 }

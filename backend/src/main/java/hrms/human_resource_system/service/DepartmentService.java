@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.model.Department;
 import hrms.human_resource_system.repository.DepartmentDAO;
 import hrms.human_resource_system.repository.EmployeeDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,15 +12,20 @@ import java.util.function.Supplier;
 @Service
 public class DepartmentService {
 
-    private final DepartmentDAO dao = new DepartmentDAO();
-    private final EmployeeDAO employeeDAO = new EmployeeDAO(); // Check if the manager exists
+    private final DepartmentDAO dao;
+    private final EmployeeDAO employeeDAO;
 
-    // Wrapper method for consistent exception handling
+    @Autowired
+    public DepartmentService(DepartmentDAO dao, EmployeeDAO employeeDAO) {
+        this.dao = dao;
+        this.employeeDAO = employeeDAO;
+    }
+
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -44,24 +50,23 @@ public class DepartmentService {
     public void update(Department department) {
         wrap(() -> {
             validateDepartment(department);
-            dao.update(department.getDepartmentId(), department, 0); // assuming `0` is the `performedBy`
+            dao.update(department.getDepartmentId(), department, 0); // `0` is a placeholder for `performedBy`
             return null;
         });
     }
 
     public void delete(int id) {
         wrap(() -> {
-            dao.delete(id, 0); // assuming `0` is the `performedBy`
+            dao.delete(id, 0); // `0` is a placeholder for `performedBy`
             return null;
         });
     }
 
     private void validateDepartment(Department department) {
-        if (department.getName() == null || department.getName().isEmpty()) {
+        if (department.getName() == null || department.getName().isBlank()) {
             throw new IllegalArgumentException("Department name is required.");
         }
 
-        // Check if manager exists
         if (department.getManagerId() != null && !employeeDAO.existsById(department.getManagerId())) {
             throw new IllegalArgumentException("Manager with ID " + department.getManagerId() + " does not exist.");
         }
