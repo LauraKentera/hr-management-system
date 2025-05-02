@@ -2,6 +2,7 @@ package hrms.human_resource_system.service;
 
 import hrms.human_resource_system.model.DisabilityCategory;
 import hrms.human_resource_system.repository.DisabilityCategoryDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +11,18 @@ import java.util.function.Supplier;
 @Service
 public class DisabilityCategoryService {
 
-    private final DisabilityCategoryDAO dao = new DisabilityCategoryDAO();
+    private final DisabilityCategoryDAO dao;
 
-    // Wrapper method for consistent exception handling
+    @Autowired
+    public DisabilityCategoryService(DisabilityCategoryDAO dao) {
+        this.dao = dao;
+    }
+
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -55,22 +60,14 @@ public class DisabilityCategoryService {
     }
 
     private void validateDisabilityCategory(DisabilityCategory category) {
-        // Validate required fields
-        if (category.getName() == null || category.getName().isEmpty()) {
+        if (category.getName() == null || category.getName().isBlank()) {
             throw new IllegalArgumentException("Category name is required.");
         }
-
-        if (category.getDescription() == null || category.getDescription().isEmpty()) {
+        if (category.getDescription() == null || category.getDescription().isBlank()) {
             throw new IllegalArgumentException("Category description is required.");
         }
-
-        if (category.getLegalCode() == null || category.getLegalCode().isEmpty()) {
+        if (category.getLegalCode() == null || category.getLegalCode().isBlank()) {
             throw new IllegalArgumentException("Category legal code is required.");
         }
-
-        // Example additional validation: Check if the name is unique (this can be done in the DAO)
-        // Optional: if (dao.existsByName(category.getName())) {
-        //     throw new IllegalArgumentException("Category name must be unique.");
-        // }
     }
 }

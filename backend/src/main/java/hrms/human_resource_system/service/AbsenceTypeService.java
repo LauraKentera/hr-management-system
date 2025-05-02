@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.AbsenceType;
 import hrms.human_resource_system.repository.AbsenceTypeDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,12 @@ import java.util.function.Supplier;
 @Service
 public class AbsenceTypeService {
 
-    private final AbsenceTypeDAO dao = new AbsenceTypeDAO();
+    private final AbsenceTypeDAO dao;
+
+    @Autowired
+    public AbsenceTypeService(AbsenceTypeDAO dao) {
+        this.dao = dao;
+    }
 
     // Wrapper method for consistent exception handling
     private <T> T wrap(Supplier<T> action) {
@@ -27,58 +33,47 @@ public class AbsenceTypeService {
     }
 
     public AbsenceType getById(int id) {
-        return wrap(() -> dao.getById(id)); // Only passing id
+        return wrap(() -> dao.getById(id));
     }
 
     public List<AbsenceType> getAll() {
-        return wrap(dao::getAll); // No parameters for getAll
+        return wrap(dao::getAll);
     }
 
-    // Insert method now requires performed_by argument
     public void insert(AbsenceType absenceType, int performedBy) {
         wrap(() -> {
-            // Validation
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Name is required.");
             }
-
             if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Code is required.");
             }
-
-            // Insert into database
-            dao.insert(absenceType, performedBy); // Pass performedBy to DAO
+            dao.insert(absenceType, performedBy);
             return null;
         });
     }
 
-    // Update method now requires performed_by argument
     public void update(int id, AbsenceType absenceType, int performedBy) {
         wrap(() -> {
-            // Validation
             if (absenceType.getName() == null || absenceType.getName().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Name is required.");
             }
-
             if (absenceType.getCode() == null || absenceType.getCode().isEmpty()) {
                 throw new IllegalArgumentException("Absence Type Code is required.");
             }
-
-            absenceType.setAbsenceTypeId(id); // Set the ID
-            dao.update(absenceType, performedBy); // Pass performedBy to DAO
+            absenceType.setAbsenceTypeId(id);
+            dao.update(absenceType, performedBy);
             return null;
         });
     }
 
-    // Delete method now requires performed_by argument
     public void delete(int id, int performedBy) {
         wrap(() -> {
             AbsenceType existing = dao.getById(id);
             if (existing == null) {
                 throw new IllegalArgumentException("Absence Type with ID " + id + " does not exist.");
             }
-
-            dao.delete(id, performedBy); // Pass performedBy to DAO
+            dao.delete(id, performedBy);
             return null;
         });
     }

@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.Benefit;
 import hrms.human_resource_system.repository.BenefitDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,12 @@ import java.util.function.Supplier;
 @Service
 public class BenefitService {
 
-    private final BenefitDAO dao = new BenefitDAO();
+    private final BenefitDAO dao;
+
+    @Autowired
+    public BenefitService(BenefitDAO dao) {
+        this.dao = dao;
+    }
 
     // Wrapper method for consistent exception handling
     private <T> T wrap(Supplier<T> action) {
@@ -34,21 +40,19 @@ public class BenefitService {
         return wrap(dao::getAll);
     }
 
-    // Updated to handle performedBy argument
     public Benefit create(Benefit benefit, int performedBy) {
         wrap(() -> {
             validate(benefit);
-            dao.insert(benefit, performedBy); // Passing performedBy for audit logging
+            dao.insert(benefit, performedBy);
             return benefit;
         });
         return benefit;
     }
 
-    // Updated to handle performedBy argument
     public Benefit update(int id, Benefit benefit, int performedBy) {
         wrap(() -> {
             validate(benefit);
-            dao.update(id, benefit, performedBy); // Passing performedBy for audit logging
+            dao.update(id, benefit, performedBy);
             return benefit;
         });
         return benefit;

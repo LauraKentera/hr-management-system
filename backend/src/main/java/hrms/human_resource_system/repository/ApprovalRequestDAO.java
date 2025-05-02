@@ -1,6 +1,7 @@
 package hrms.human_resource_system.repository;
 
 import hrms.human_resource_system.model.ApprovalRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,28 +13,49 @@ public class ApprovalRequestDAO {
 
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public ApprovalRequestDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     // Insert a new approval request
     public void insert(ApprovalRequest approvalRequest) {
-        String sql = "INSERT INTO ApprovalRequest (request_type, employee_id, related_id, status, requested_by, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, approvalRequest.getRequestType(), approvalRequest.getEmployeeId(),
-                            approvalRequest.getRelatedId(), approvalRequest.getStatus(), approvalRequest.getRequestedBy(),
-                            approvalRequest.getTimestamp());
+        String sql = """
+            INSERT INTO ApprovalRequest 
+            (request_type, employee_id, related_id, status, requested_by, timestamp) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        """;
+
+        jdbcTemplate.update(sql,
+                approvalRequest.getRequestType(),
+                approvalRequest.getEmployeeId(),
+                approvalRequest.getRelatedId(),
+                approvalRequest.getStatus(),
+                approvalRequest.getRequestedBy(),
+                approvalRequest.getTimestamp()
+        );
     }
 
     // Update the approval request status
     public void update(ApprovalRequest approvalRequest) {
-        String sql = "UPDATE ApprovalRequest SET status = ?, approved_by = ?, timestamp = ? WHERE request_id = ?";
-        jdbcTemplate.update(sql, approvalRequest.getStatus(), approvalRequest.getApprovedBy(),
-                            approvalRequest.getTimestamp(), approvalRequest.getRequestId());
+        String sql = """
+            UPDATE ApprovalRequest 
+            SET status = ?, approved_by = ?, timestamp = ? 
+            WHERE request_id = ?
+        """;
+
+        jdbcTemplate.update(sql,
+                approvalRequest.getStatus(),
+                approvalRequest.getApprovedBy(),
+                approvalRequest.getTimestamp(),
+                approvalRequest.getRequestId()
+        );
     }
 
     // Retrieve an approval request by ID
     public Optional<ApprovalRequest> getById(int requestId) {
         String sql = "SELECT * FROM ApprovalRequest WHERE request_id = ?";
+
         try {
             ApprovalRequest approvalRequest = jdbcTemplate.queryForObject(sql, new Object[]{requestId}, (rs, rowNum) -> {
                 ApprovalRequest request = new ApprovalRequest();
@@ -47,15 +69,17 @@ public class ApprovalRequestDAO {
                 request.setTimestamp(rs.getTimestamp("timestamp"));
                 return request;
             });
-            return Optional.ofNullable(approvalRequest); // Wrap in Optional to handle the case where result is null
+
+            return Optional.ofNullable(approvalRequest);
         } catch (Exception e) {
-            return Optional.empty(); // Return an empty Optional if no result found or error occurred
+            return Optional.empty();
         }
     }
 
     // Get all approval requests with a specific status
     public List<ApprovalRequest> getByStatus(String status) {
         String sql = "SELECT * FROM ApprovalRequest WHERE status = ?";
+
         return jdbcTemplate.query(sql, new Object[]{status}, (rs, rowNum) -> {
             ApprovalRequest approvalRequest = new ApprovalRequest();
             approvalRequest.setRequestId(rs.getInt("request_id"));

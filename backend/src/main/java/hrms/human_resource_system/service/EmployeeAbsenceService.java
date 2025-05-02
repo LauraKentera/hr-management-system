@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.EmployeeAbsence;
 import hrms.human_resource_system.repository.EmployeeAbsenceDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,12 @@ import java.util.function.Supplier;
 @Service
 public class EmployeeAbsenceService {
 
-    private final EmployeeAbsenceDAO dao = new EmployeeAbsenceDAO();
+    private final EmployeeAbsenceDAO dao;
+
+    @Autowired
+    public EmployeeAbsenceService(EmployeeAbsenceDAO dao) {
+        this.dao = dao;
+    }
 
     private <T> T wrap(Supplier<T> action) {
         try {
@@ -34,7 +40,7 @@ public class EmployeeAbsenceService {
     public EmployeeAbsence create(EmployeeAbsence absence) {
         return wrap(() -> {
             validateEmployeeAbsence(absence);
-            dao.insert(absence);   // only pass absence
+            dao.insert(absence);
             return absence;
         });
     }
@@ -42,7 +48,7 @@ public class EmployeeAbsenceService {
     public EmployeeAbsence update(int id, EmployeeAbsence absence) {
         return wrap(() -> {
             validateEmployeeAbsence(absence);
-            dao.update(id, absence);  // pass id and absence
+            dao.update(id, absence);
             return absence;
         });
     }

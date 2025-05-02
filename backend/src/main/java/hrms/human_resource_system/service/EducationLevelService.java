@@ -2,6 +2,7 @@ package hrms.human_resource_system.service;
 
 import hrms.human_resource_system.model.EducationLevel;
 import hrms.human_resource_system.repository.EducationLevelDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +11,18 @@ import java.util.function.Supplier;
 @Service
 public class EducationLevelService {
 
-    private final EducationLevelDAO dao = new EducationLevelDAO();
+    private final EducationLevelDAO dao;
 
-    // Wrapper method for consistent exception handling
+    @Autowired
+    public EducationLevelService(EducationLevelDAO dao) {
+        this.dao = dao;
+    }
+
     private <T> T wrap(Supplier<T> action) {
         try {
             return action.get();
         } catch (IllegalArgumentException e) {
-            throw e;  // Let validation errors bubble up
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
@@ -55,7 +60,7 @@ public class EducationLevelService {
     }
 
     private void validateEducationLevel(EducationLevel educationLevel) {
-        if (educationLevel.getName() == null || educationLevel.getName().isEmpty()) {
+        if (educationLevel.getName() == null || educationLevel.getName().isBlank()) {
             throw new IllegalArgumentException("Education Level name is required.");
         }
         if (educationLevel.getUserId() <= 0) {
