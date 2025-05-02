@@ -5,8 +5,10 @@ const ApiEndpoints = {
         login: `${BASE_URL}/auth/login`,
     },
     user: {
-        getAll: `${BASE_URL}/users`,
-        getById: (id) => `${BASE_URL}/users/${id}`,
+        getAll: "http://localhost:8080/api/users", // adjust port if needed
+        create: "http://localhost:8080/api/users",
+        update: (id) => `http://localhost:8080/api/users/${id}`,
+        delete: (id) => `http://localhost:8080/api/users/${id}`,
     },
     employee: {
         getAll: `${BASE_URL}/employees`,
@@ -18,7 +20,10 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/departments`,
         create: `${BASE_URL}/departments`,
     },
-    // Add more modules as needed
+    role: {
+        getAll: `${BASE_URL}/api/roles`, // New endpoint to fetch all roles
+        create: `${BASE_URL}/api/roles`, // New endpoint to create a role
+    },
 };
 
 export default ApiEndpoints;
