@@ -7,7 +7,6 @@ import hrms.human_resource_system.service.UserService;
 import hrms.human_resource_system.dto.UserCreateRequest;
 import hrms.human_resource_system.model.Role;
 import org.springframework.http.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +44,6 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllUsers() {
         try {
             List<User> users = userService.getAllUsers();
@@ -60,7 +58,6 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<?> getUserById(@PathVariable int id) {
         try {
             User user = userService.getUserById(id);
@@ -77,7 +74,6 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) {
         try {
@@ -99,7 +95,6 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody UserCreateRequest request) {
         try {
             User updatedUser = userService.updateUser(

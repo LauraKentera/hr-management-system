@@ -1,53 +1,35 @@
 package hrms.human_resource_system.controller;
 
 import hrms.human_resource_system.dto.LoginRequestDTO;
-import hrms.human_resource_system.security.JwtUtils;
-import hrms.human_resource_system.security.JwtResponse;
-import hrms.human_resource_system.service.UserDetailsServiceImpl;
+import hrms.human_resource_system.model.User;
+import hrms.human_resource_system.repository.UserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtUtils jwtUtils;
+    private final UserDAO userDAO;
 
-    // Constructor injection
-    public AuthenticationController(AuthenticationManager authenticationManager,
-                                    UserDetailsServiceImpl userDetailsService,
-                                    JwtUtils jwtUtils) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.jwtUtils = jwtUtils;
+    public AuthenticationController(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
-        // Authenticate the user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+        try {
+            User user = userDAO.getByUsername(loginRequest.getUsername());
 
-        // Set authentication in the security context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (user != null && BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
+                return ResponseEntity.ok("Login successful");
+            } else {
+                return ResponseEntity.status(401).body("Invalid username or password");
+            }
 
-        // Generate JWT token
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getUsername());
-
-        // Return the JWT token in the response
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error processing login: " + e.getMessage());
+        }
     }
 }
