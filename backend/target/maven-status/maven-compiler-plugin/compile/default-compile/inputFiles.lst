@@ -120,6 +120,7 @@
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/PositionDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/RoleDAO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/repository/UserDAO.java
+/Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/security/JwtLoginResponse.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/security/JwtResponse.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/security/JwtUtils.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/security/SecurityConfig.java

@@ -28,7 +28,6 @@ hrms/human_resource_system/model/Position.class
 hrms/human_resource_system/service/EducationLevelService.class
 hrms/human_resource_system/service/EmployeeDisabilityService.class
 hrms/human_resource_system/repository/ContractAnnexDAO.class
-hrms/human_resource_system/service/UserDetailsServiceImpl.class
 hrms/human_resource_system/controller/UserController.class
 hrms/human_resource_system/dto/BenefitItemResponseDTO.class
 hrms/human_resource_system/mapper/DepartmentMapper.class
@@ -64,7 +63,6 @@ hrms/human_resource_system/dto/EmployeeDisabilityResponseDTO.class
 hrms/human_resource_system/model/Employee.class
 hrms/human_resource_system/repository/EmployeeAbsenceDAO.class
 hrms/human_resource_system/mapper/BenefitMapper.class
-hrms/human_resource_system/security/SecurityConfig.class
 hrms/human_resource_system/controller/PositionController.class
 hrms/human_resource_system/service/DisabilityCategoryService.class
 hrms/human_resource_system/service/EmployeeService.class
@@ -74,6 +72,7 @@ hrms/human_resource_system/config/CorsConfig$1.class
 hrms/human_resource_system/exception/DLException.class
 hrms/human_resource_system/service/AbsenceTypeService.class
 hrms/human_resource_system/dto/PositionResponseDTO.class
+hrms/human_resource_system/security/JwtLoginResponse.class
 hrms/human_resource_system/model/Department.class
 hrms/human_resource_system/controller/EmployeeBankAccountController.class
 hrms/human_resource_system/controller/ApprovalRequestController.class
