@@ -195,3 +195,12 @@ UPDATE Employee
 SET user_id = 1
 WHERE id = 2; -- or whichever Employee ID should be linked
 
+INSERT INTO Payroll (
+    employee_id, period_start, period_end,
+    base_salary, bonus, deductions, net_pay,
+    payment_date, status
+) VALUES
+      (1, '2024-04-01', '2024-04-30', 1000.00, 150.00, 50.00, 1100.00, '2024-05-01', 'Paid'),
+      (2, '2024-04-01', '2024-04-30', 1200.00, 100.00, 80.00, 1220.00, '2024-05-01', 'Paid');
+
+
