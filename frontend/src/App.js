@@ -9,6 +9,7 @@ import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import PayrollPage from "./views/PayrollPage";
 
 function App() {
     return (
@@ -87,6 +88,17 @@ function App() {
                     />
 
                     {/* Add more routes here as necessary */}
+
+                    <Route
+                        path="/payrolls"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <PayrollPage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
                 </Routes>
             </Router>

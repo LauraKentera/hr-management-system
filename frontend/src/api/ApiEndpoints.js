@@ -33,6 +33,14 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/api/roles`,
         create: `${BASE_URL}/api/roles`,
     },
+    payroll: {
+        getAll: `${BASE_URL}/api/payrolls`,
+        getById: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        create: `${BASE_URL}/api/payrolls`,
+        update: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        delete: (id) => `${BASE_URL}/api/payrolls/${id}`,
+        generate: `${BASE_URL}/api/payrolls/generate`,
+    },
 
 };
 
