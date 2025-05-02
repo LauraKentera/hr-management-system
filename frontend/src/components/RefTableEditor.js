@@ -1,115 +1,195 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Paper, Typography, Table, TableHead, TableBody, TableRow, TableCell,
-  IconButton, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions
+  Table, TableBody, TableCell, TableHead, TableRow, Button, Typography, Paper,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Snackbar
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-const RefTableEditor = ({
-  title,
-  fetchList,
-  createItem,
-  updateItem,
-  deleteItem,
-  itemLabel = 'Name'
-}) => {
-  const [items, setItems] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Topbar';
+import ApiEndpoints from '../api/ApiEndpoints';
+import '../styles/Dashboard.css';
 
-  const load = async () => {
-    const res = await fetchList();
-    setItems(res.data);
-  };
+const RefTableEditor = () => {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    load();
+    fetch(ApiEndpoints.employee.getAll)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch employees: ${res.status}`);
+        return res.json();
+      })
+      .then(setEmployees)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async (values, { setSubmitting }) => {
-    try {
-      if (editing) {
-        await updateItem(editing.id, values);
-      } else {
-        await createItem(values);
-      }
-      await load();
-      setOpen(false);
-    } finally {
-      setSubmitting(false);
-    }
+  const handleViewDetails = (id) => {
+    navigate(`/employees/${id}`);
   };
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Required'),
-  });
+  const handleDelete = (id) => {
+    if (!window.confirm('Are you sure you want to delete this employee?')) return;
+    fetch(`${ApiEndpoints.employee.base}/${id}`, { method: 'DELETE' })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to delete employee');
+        setEmployees(employees.filter(emp => emp.id !== id));
+        setSnackbar('Employee deleted successfully');
+      })
+      .catch(err => setError(`Error: ${err.message}`));
+  };
+
+  const handleSubmit = (values, { setSubmitting, resetForm }) => {
+    const payload = {
+      ...values,
+      department: { name: values.department }
+    };
+
+    const method = editing ? 'PUT' : 'POST';
+    const url = editing
+      ? ApiEndpoints.employee.update(editing.id)
+      : ApiEndpoints.employee.create;
+
+    fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to save employee');
+        return res.json();
+      })
+      .then((data) => {
+        if (editing) {
+          setEmployees(prev => prev.map(emp => emp.id === data.id ? data : emp));
+        } else {
+          setEmployees(prev => [...prev, data]);
+        }
+        setOpenDialog(false);
+        setEditing(null);
+        resetForm();
+        setSnackbar(`Employee ${editing ? 'updated' : 'added'} successfully`);
+      })
+      .catch(err => setError(`Error: ${err.message}`))
+      .finally(() => setSubmitting(false));
+  };
+
+
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <Paper sx={{ p: 2, mb: 4 }}>
-      <Typography variant="h6" gutterBottom>{title}</Typography>
-      <Button variant="outlined" onClick={() => { setEditing(null); setOpen(true); }} sx={{ mb: 1 }}>
-        Add {itemLabel}
-      </Button>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>{itemLabel}</TableCell>
-            <TableCell align="right">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.map(i => (
-            <TableRow key={i.id}>
-              <TableCell>{i.name}</TableCell>
-              <TableCell align="right">
-                <IconButton size="small" onClick={() => { setEditing(i); setOpen(true); }}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => deleteItem(i.id).then(load)}>
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="dashboard-page">
+      <Sidebar />
+      <Header />
+      <div className="dashboard-container">
+        <Typography variant="h4" gutterBottom>Employees</Typography>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
-        <DialogTitle>{editing ? `Edit ${itemLabel}` : `Add ${itemLabel}`}</DialogTitle>
-        <Formik
-          initialValues={{ name: editing?.name || '' }}
-          validationSchema={validationSchema}
-          onSubmit={handleSave}
-          enableReinitialize
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => { setEditing(null); setOpenDialog(true); }}
+          sx={{ mb: 2 }}
         >
-          {({ values, handleChange, errors, touched, isSubmitting }) => (
-            <Form>
-              <DialogContent>
-                <TextField
-                  label={itemLabel}
-                  name="name"
-                  value={values.name}
-                  onChange={handleChange}
-                  error={touched.name && Boolean(errors.name)}
-                  helperText={touched.name && errors.name}
-                  fullWidth
-                  margin="dense"
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {editing ? 'Update' : 'Create'}
-                </Button>
-              </DialogActions>
-            </Form>
-          )}
-        </Formik>
-      </Dialog>
-    </Paper>
+          Add Employee
+        </Button>
+
+        <Snackbar
+          open={!!snackbar}
+          autoHideDuration={4000}
+          onClose={() => setSnackbar('')}
+          message={snackbar}
+        />
+
+        <Paper sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Department</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {employees.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>{employee.id}</TableCell>
+                  <TableCell>{`${employee.firstName} ${employee.lastName}`}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{employee.department?.name || 'N/A'}</TableCell>
+                  <TableCell>{employee.employmentStatus}</TableCell>
+                  <TableCell>
+                    <Button variant="contained" size="small" sx={{ mr: 1 }} onClick={() => handleViewDetails(employee.id)}>View</Button>
+                    <Button variant="outlined" size="small" sx={{ mr: 1 }} onClick={() => { setEditing(employee); setOpenDialog(true); }}>Edit</Button>
+                    <Button variant="outlined" color="error" size="small" onClick={() => handleDelete(employee.id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
+
+        {/* Dialog for Add/Edit */}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
+          <DialogTitle>{editing ? 'Edit Employee' : 'Add Employee'}</DialogTitle>
+          <Formik
+            initialValues={{
+              firstName: editing?.firstName || '',
+              lastName: editing?.lastName || '',
+              email: editing?.email || '',
+              department: editing?.department?.name || '',
+              employmentStatus: editing?.employmentStatus || ''
+            }}
+            validationSchema={Yup.object({
+              firstName: Yup.string().required('Required'),
+              lastName: Yup.string().required('Required'),
+              email: Yup.string().email('Invalid email').required('Required'),
+              department: Yup.string().required('Required'),
+              employmentStatus: Yup.string().required('Required')
+            })}
+            onSubmit={handleSubmit}
+            enableReinitialize
+          >
+            {({ values, handleChange, errors, touched, isSubmitting }) => (
+              <Form>
+                <DialogContent>
+                  {['firstName', 'lastName', 'email', 'department', 'employmentStatus'].map(field => (
+                    <TextField
+                      key={field}
+                      label={field.replace(/([A-Z])/g, ' $1')}
+                      name={field}
+                      fullWidth
+                      margin="dense"
+                      value={values[field]}
+                      onChange={handleChange}
+                      error={touched[field] && Boolean(errors[field])}
+                      helperText={touched[field] && errors[field]}
+                    />
+                  ))}
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                  <Button type="submit" variant="contained" disabled={isSubmitting}>
+                    {editing ? 'Update' : 'Add'}
+                  </Button>
+                </DialogActions>
+              </Form>
+            )}
+          </Formik>
+        </Dialog>
+      </div>
+    </div>
   );
 };
 
