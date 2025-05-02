@@ -12,6 +12,9 @@ import EmployeesView from './views/EmployeesView';
 import EmployeeDetailsView from './views/EmployeeDetailsView';
 import PayrollPage from "./views/PayrollPage";
 import BenefitsListPage from "./views/BenefitListPage";
+import DepartmentsView from './views/DepartmentsView';
+
+
 
 
 function App() {
@@ -66,6 +69,7 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
 
                     {/* Absences route accessible by HR, Admin, and Employee */}
                     <Route
@@ -79,18 +83,7 @@ function App() {
                         }
                     />
 
-                    <Route
-                        path="/absences"
-                        element={
-                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
-                                <Layout>
-                                    <AbsencePage />
-                                </Layout>
-                            </ProtectedRoute>
-                        }
-                    />
 
-                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
 
                     {/* Add more routes here as necessary */}
 
@@ -115,7 +108,16 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
+                    <Route
+                        path="/departments"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <DepartmentsView />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
                 </Routes>
             </Router>

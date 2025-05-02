@@ -182,6 +182,7 @@ public class EmployeeDAO {
         }
     }
     
+    
 
     private Employee mapResultSetToEmployee(ResultSet rs, int rowNum) throws SQLException {
         int nationalityId = rs.getInt("nationality_id");
@@ -223,6 +224,12 @@ public class EmployeeDAO {
             throw new DLException("Error retrieving employee by user ID: " + userId, e);
         }
     }
+    public boolean existsByDepartment(int departmentId) {
+        String sql = "SELECT COUNT(*) FROM Employee WHERE department_id = ? AND is_deleted = FALSE";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, departmentId);
+        return count != null && count > 0;
+    }
+    
 
     private Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
         return mapResultSetToEmployee(rs, rowNum);
