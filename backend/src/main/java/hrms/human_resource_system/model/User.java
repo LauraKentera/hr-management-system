@@ -5,7 +5,7 @@ public class User {
     private String username;
     private String password;
     private Role role;
-    private int employeeId;
+    private Integer employeeId;
 
     public User() {}
 
@@ -16,7 +16,7 @@ public class User {
         this.role = role;
     }
 
-    public User(int id, String username, String password, Role role, int employeeId) {
+    public User(int id, String username, String password, Role role, Integer employeeId) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -37,7 +37,12 @@ public class User {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
 
-    public int getEmployeeId() { return employeeId; }
-    public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
 }
 

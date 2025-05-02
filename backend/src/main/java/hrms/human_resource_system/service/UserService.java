@@ -3,6 +3,7 @@ package hrms.human_resource_system.service;
 import hrms.human_resource_system.model.User;
 import hrms.human_resource_system.repository.RoleDAO;
 import hrms.human_resource_system.repository.UserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,13 +47,13 @@ public class UserService {
         }
     }
 
-    public User createUser(String username, String password, int roleId, int employeeId) {
+    public User createUser(String username, String password, int roleId) {
         return wrap(() -> {
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt()); // Hash password
             User newUser = new User();
             newUser.setUsername(username);
-            newUser.setPassword(password); // Assume hashed
+            newUser.setPassword(hashedPassword);
             newUser.setRole(roleDAO.getById(roleId));
-            newUser.setEmployeeId(employeeId);
 
             validateUser(newUser, -1);
             userDAO.insert(newUser);
@@ -60,7 +61,7 @@ public class UserService {
         });
     }
 
-    public User updateUser(int id, String username, String password, int roleId, int employeeId) {
+    public User updateUser(int id, String username, String password, int roleId) {
         return wrap(() -> {
             User existingUser = userDAO.getById(id);
             if (existingUser == null) {
@@ -68,9 +69,8 @@ public class UserService {
             }
 
             existingUser.setUsername(username);
-            existingUser.setPassword(password); // Assume hashed
+            existingUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt())); // Hash password
             existingUser.setRole(roleDAO.getById(roleId));
-            existingUser.setEmployeeId(employeeId);
 
             validateUser(existingUser, id);
             userDAO.update(id, existingUser);

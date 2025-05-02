@@ -1,121 +1,121 @@
-import React, {useState} from 'react';
-import {Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton} from '@mui/material';
+import React, { useState } from 'react';
 import {
-    People,
-    Work,
-    AccountBox,
-    ExitToApp,
-    ChevronLeft,
-    ChevronRight,
-    AttachMoney,
-    CalendarToday,
-    InsertChart
-} from '@mui/icons-material';  // Add icons
-import {Link} from 'react-router-dom'; // Import Link
+    Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider
+} from '@mui/material';
+import {
+    People, Work, AccountBox, ExitToApp, ChevronLeft, ChevronRight,
+    AttachMoney, CalendarToday, InsertChart, Dashboard, AdminPanelSettings
+} from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+import { getRole } from '../utils/auth'; // Adjust path if needed
 
 const Sidebar = () => {
-    const [isOpen, setIsOpen] = useState(true);  // State to control sidebar visibility
+    const [isOpen, setIsOpen] = useState(true);
+    const role = getRole(); // "Admin", "HR", "Employee"
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);  // Toggle sidebar open/close
-    };
+    const toggleSidebar = () => setIsOpen(!isOpen);
 
     return (
         <Drawer
             sx={{
-                width: isOpen ? 240 : 60,  // Collapsed width is 60px
+                width: isOpen ? 240 : 60,
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
-                    width: isOpen ? 240 : 60,  // Set the width based on state
+                    width: isOpen ? 240 : 60,
                     boxSizing: 'border-box',
-                    transition: 'width 0.3s',  // Smooth transition for collapsing
-                    position: 'fixed',  // Fix sidebar position
-                    top: '90px',  // Adjust this value based on your top bar height (e.g., 64px for Material UI's AppBar height)
-                    height: 'calc(100% - 64px)',  // Make sidebar full height minus top bar height
+                    transition: 'width 0.3s',
+                    position: 'fixed',
+                    top: '90px',
+                    height: 'calc(100% - 64px)',
                 },
             }}
             variant="permanent"
             anchor="left"
         >
-            <Box sx={{width: '100%', height: '100%'}}>
+            <Box sx={{ width: '100%', height: '100%' }}>
                 <List>
-                    {/* Toggle Sidebar Button */}
                     <ListItem button onClick={toggleSidebar}>
                         <ListItemIcon>
-                            {isOpen ? <ChevronLeft/> : <ChevronRight/>} {/* Toggle icon */}
+                            {isOpen ? <ChevronLeft /> : <ChevronRight />}
                         </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Collapse' : ''}/>
+                        <ListItemText primary={isOpen ? 'Collapse' : ''} />
                     </ListItem>
 
-                    {/* Absences Section */}
-                    <ListItem button component={Link} to="/absence"> {/* Use Link to navigate */}
-                        <ListItemIcon>
-                            <CalendarToday/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Absences' : ''}/>
+                    {/* Common: Absences */}
+                    <ListItem button component={Link} to="/absence">
+                        <ListItemIcon><CalendarToday /></ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Absences' : ''} />
                     </ListItem>
 
-                    <Divider/>
+                    <Divider />
 
-                    {/* Benefits Section */}
-                    <ListItem button component={Link} to="/benefits"> {/* Use Link to navigate */}
-                        <ListItemIcon>
-                            <AttachMoney/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Benefits' : ''}/>
-                    </ListItem>
+                    {/* HR + Admin: Benefits */}
+                    {(role === 'HR' || role === 'Admin') && (
+                        <ListItem button component={Link} to="/benefits">
+                            <ListItemIcon><AttachMoney /></ListItemIcon>
+                            <ListItemText primary={isOpen ? 'Benefits' : ''} />
+                        </ListItem>
+                    )}
 
+                    {/* HR + Admin: Contracts */}
+                    {(role === 'HR' || role === 'Admin') && (
+                        <ListItem button component={Link} to="/contracts">
+                            <ListItemIcon><InsertChart /></ListItemIcon>
+                            <ListItemText primary={isOpen ? 'Contracts' : ''} />
+                        </ListItem>
+                    )}
 
-                    <Divider/>
+                    {/* HR + Admin: Employees */}
+                    {(role === 'HR' || role === 'Admin') && (
+                        <ListItem button component={Link} to="/employees">
+                            <ListItemIcon><People /></ListItemIcon>
+                            <ListItemText primary={isOpen ? 'Employees' : ''} />
+                        </ListItem>
+                    )}
 
-                    {/* Contracts Section */}
-                    <ListItem button component={Link} to="/contracts">
-                        <ListItemIcon>
-                            <InsertChart/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Contracts' : ''}/>
-                    </ListItem>
+                    {/* HR + Admin: Departments */}
+                    {(role === 'HR' || role === 'Admin') && (
+                        <ListItem button component={Link} to="/departments">
+                            <ListItemIcon><Work /></ListItemIcon>
+                            <ListItemText primary={isOpen ? 'Departments' : ''} />
+                        </ListItem>
+                    )}
 
-                    <Divider/>
+                    {/* HR + Admin: Salaries/Payroll */}
+                    {(role === 'HR' || role === 'Admin') && (
+                        <ListItem button component={Link} to="/salaries">
+                            <ListItemIcon><AttachMoney /></ListItemIcon>
+                            <ListItemText primary={isOpen ? 'Salaries' : ''} />
+                        </ListItem>
+                    )}
 
-                    {/* Employees Section */}
-                    <ListItem button component={Link} to="/employees">
-                        <ListItemIcon>
-                            <People/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Employees' : ''}/>
-                    </ListItem>
+                    {/* Admin Only: Users/Roles/Dashboard */}
+                    {role === 'Admin' && (
+                        <>
+                            <Divider />
+                            <ListItem button component={Link} to="/dashboard">
+                                <ListItemIcon><Dashboard /></ListItemIcon>
+                                <ListItemText primary={isOpen ? 'Dashboard' : ''} />
+                            </ListItem>
+                            <ListItem button component={Link} to="/users">
+                                <ListItemIcon><AccountBox /></ListItemIcon>
+                                <ListItemText primary={isOpen ? 'Users' : ''} />
+                            </ListItem>
+                            <ListItem button component={Link} to="/roles">
+                                <ListItemIcon><AdminPanelSettings /></ListItemIcon>
+                                <ListItemText primary={isOpen ? 'Roles' : ''} />
+                            </ListItem>
+                        </>
+                    )}
 
+                    <Divider />
 
-                    <Divider/>
-
-                    {/* Departments Section */}
-                    <ListItem button component={Link} to="/departments">
-                        <ListItemIcon>
-                            <Work/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Departments' : ''}/>
-                    </ListItem>
-
-                    <Divider/>
-
-                    {/* Salaries Section */}
-                    <ListItem button component={Link} to="/salaries">
-                        <ListItemIcon>
-                            <AttachMoney/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Salaries' : ''}/>
-                    </ListItem>
-
-
-                    <Divider/>
-
-                    {/* Logout Section */}
-                    <ListItem button>
-                        <ListItemIcon>
-                            <ExitToApp/>
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Logout' : ''}/>
+                    <ListItem button onClick={() => {
+                        localStorage.clear();
+                        window.location.href = "/login";
+                    }}>
+                        <ListItemIcon><ExitToApp /></ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Logout' : ''} />
                     </ListItem>
                 </List>
             </Box>
