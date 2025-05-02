@@ -55,12 +55,18 @@ public class DepartmentService {
         });
     }
 
-    public void delete(int id) {
-        wrap(() -> {
-            dao.delete(id, 0); // `0` is a placeholder for `performedBy`
-            return null;
-        });
+    public void delete(int departmentId) {
+        if (!dao.existsById(departmentId)) {
+            throw new IllegalArgumentException("Department does not exist.");
+        }
+    
+        if (employeeDAO.existsByDepartment(departmentId)) {
+            throw new IllegalStateException("Cannot delete department: employees are assigned to it.");
+        }
+    
+        dao.delete(departmentId); // this is soft-delete now
     }
+    
 
     private void validateDepartment(Department department) {
         if (department.getName() == null || department.getName().isBlank()) {
