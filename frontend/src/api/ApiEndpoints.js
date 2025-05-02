@@ -11,11 +11,11 @@ const ApiEndpoints = {
         delete: (id) => `${BASE_URL}/api/users/${id}`,
     },
     employee: {
-        getAll: `${BASE_URL}/employees`,
-        getByUserId: (userId) => `${BASE_URL}/api/employees/by-user/${userId}`,
-        create: `${BASE_URL}/employees`,
-        update: (id) => `${BASE_URL}/employees/${id}`,
-        delete: (id) => `${BASE_URL}/employees/${id}`,
+        getAll: `${BASE_URL}/api/employees`,
+        getByUserId: (userId) => `${BASE_URL}/api/employees/${userId}`,
+        create: `${BASE_URL}/api/employees`,
+        update: (id) => `${BASE_URL}/api/employees/${id}`,
+        delete: (id) => `${BASE_URL}/api/employees/${id}`,
     },
     department: {
         getAll: `${BASE_URL}/departments`,

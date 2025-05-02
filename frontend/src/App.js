@@ -4,11 +4,13 @@ import { SnackbarProvider } from "notistack"; // Import SnackbarProvider
 import Dashboard from "./views/DashboardPage";
 import UsersPage from "./views/UsersPage";
 import RolesPage from "./views/RolesPage";
-import EmployeesPage from "./views/EmployeesPage";
 import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import EmployeesView from './views/EmployeesView';
+import EmployeeDetailsView from './views/EmployeeDetailsView';
+
 
 function App() {
     return (
@@ -55,9 +57,9 @@ function App() {
                     <Route
                         path="/employees"
                         element={
-                            <ProtectedRoute allowedRoles={["HR", "Admin"]}>
+                            <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Layout>
-                                    <EmployeesPage />
+                                    <EmployeesView />
                                 </Layout>
                             </ProtectedRoute>
                         }
@@ -86,11 +88,13 @@ function App() {
                         }
                     />
 
+                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
+
                     {/* Add more routes here as necessary */}
 
                 </Routes>
             </Router>
-        </SnackbarProvider>
+        </SnackbarProvider >
     );
 }
 

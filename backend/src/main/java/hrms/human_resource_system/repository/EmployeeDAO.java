@@ -49,22 +49,24 @@ public class EmployeeDAO {
     }
 
     public Employee getById(int id) {
-        String sql = "SELECT * FROM Employee WHERE id = ?";
+        String sql = "SELECT * FROM Employee WHERE id = ? AND is_deleted = FALSE";
         try {
             return jdbcTemplate.queryForObject(sql, this::mapResultSetToEmployee, id);
         } catch (Exception e) {
             throw new DLException("Error retrieving employee with ID " + id, e);
         }
     }
+    
 
     public List<Employee> getAll() {
-        String sql = "SELECT * FROM Employee";
+        String sql = "SELECT * FROM Employee WHERE is_deleted = FALSE";
         try {
             return jdbcTemplate.query(sql, this::mapResultSetToEmployee);
         } catch (Exception e) {
             throw new DLException("Error fetching all employees", e);
         }
     }
+    
 
     public Employee insert(Employee employee, int performedBy) {
         String sql = """
@@ -111,7 +113,8 @@ public class EmployeeDAO {
                 employee.setId(keyHolder.getKey().intValue());
             }
 
-            auditLogger.logChange("Employee", employee.getId(), "INSERT", performedBy, null, employee);
+            auditLogger.logChange("Employee", employee.getId(), "CREATE", performedBy, null, employee);
+
             return employee;
 
         } catch (Exception e) {
@@ -166,16 +169,17 @@ public class EmployeeDAO {
     }
 
     public void delete(int id, int performedBy) {
-        String sql = "DELETE FROM Employee WHERE id = ?";
+        String sql = "UPDATE Employee SET is_deleted = TRUE WHERE id = ?";
         Employee oldEmployee = getById(id);
-
+    
         try {
             jdbcTemplate.update(sql, id);
             auditLogger.logChange("Employee", id, "DELETE", performedBy, oldEmployee, null);
         } catch (Exception e) {
-            throw new DLException("Error deleting employee with ID " + id, e);
+            throw new DLException("Error soft-deleting employee with ID " + id, e);
         }
     }
+    
 
     private Employee mapResultSetToEmployee(ResultSet rs, int rowNum) throws SQLException {
         int nationalityId = rs.getInt("nationality_id");
