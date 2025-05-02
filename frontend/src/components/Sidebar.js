@@ -36,7 +36,50 @@ const Sidebar = () => {
                 <List>
                     <ListItem button onClick={toggleSidebar}>
                         <ListItemIcon>
+
+                            {isOpen ? <ChevronLeft/> : <ChevronRight/>} {/* Toggle icon */}
+                        </ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Collapse' : ''}/>
+                    </ListItem>
+
+                    {/* Absences Section */}
+                    <ListItem button component={Link} to="/absences"> {/* Use Link to navigate */}
+                        <ListItemIcon>
+                            <CalendarToday/>
+                        </ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Absences' : ''}/>
+                    </ListItem>
+
+                    <Divider/>
+
+                    {/* Benefits Section */}
+                    <ListItem button component={Link} to="/benefits"> {/* Use Link to navigate */}
+                        <ListItemIcon>
+                            <AttachMoney/>
+                        </ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Benefits' : ''}/>
+                    </ListItem>
+
+
+                    <Divider/>
+
+                    {/* Contracts Section */}
+                    <ListItem button component={Link} to="/contracts">
+                        <ListItemIcon>
+                            <InsertChart/>
+                        </ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Contracts' : ''}/>
+                    </ListItem>
+
+                    <Divider/>
+
+                    {/* Employees Section */}
+                    <ListItem button component={Link} to="/employees">
+                        <ListItemIcon>
+                            <People/>
+
                             {isOpen ? <ChevronLeft /> : <ChevronRight />}
+
                         </ListItemIcon>
                         <ListItemText primary={isOpen ? 'Collapse' : ''} />
                     </ListItem>

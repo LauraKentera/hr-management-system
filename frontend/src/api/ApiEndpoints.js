@@ -20,9 +20,19 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/departments`,
         create: `${BASE_URL}/departments`,
     },
+
+    absences: {
+        getAll: `${BASE_URL}/api/employee-absences`,
+        create: `${BASE_URL}/api/employee-absences`,
+    },
+    benefit: {
+        getAll: `${BASE_URL}/api/benefits`,
+        create: `${BASE_URL}/api/benefits`,
+
     role: {
         getAll: `${BASE_URL}/api/roles`, // New endpoint to fetch all roles
         create: `${BASE_URL}/api/roles`, // New endpoint to create a role
+
     },
 };
 

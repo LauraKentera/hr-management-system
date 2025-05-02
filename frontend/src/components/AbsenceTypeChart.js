@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import ApiEndpoints from '../api/ApiEndpoints'; // Import API endpoints
+import axios from 'axios'; // Import axios for API calls
 
 const AbsenceTypeChart = () => {
-    const [absenceData, setAbsenceData] = useState({
-        sickLeave: 50,
-        personalLeave: 30,
-        vacation: 20,
-    });
+    const [absenceData, setAbsenceData] = useState(null); // Initialize with null to handle loading state
 
     useEffect(() => {
-        // Simulating fetching absence data
-        setAbsenceData({
-            sickLeave: 50,
-            personalLeave: 30,
-            vacation: 20,
-        });
+        // Fetch absence data from the API
+        const fetchAbsenceData = async () => {
+            try {
+                const response = await axios.get(ApiEndpoints.absencses.getAll);
+                const absences = response.data;
+
+                // Transform the API response to match the chart data structure
+                const transformedData = {
+                    sickLeave: absences.sickLeave || 0,
+                    personalLeave: absences.personalLeave || 0,
+                    vacation: absences.vacation || 0,
+                };
+
+                setAbsenceData(transformedData);
+            } catch (error) {
+                console.error('Error fetching absence data:', error);
+            }
+        };
+
+        fetchAbsenceData();
     }, []);
+
+    // Handle loading state
+    if (!absenceData) {
+        return <p>Loading...</p>;
+    }
 
     const data = [
         { name: 'Sick Leave', value: absenceData.sickLeave },
