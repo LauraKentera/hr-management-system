@@ -10,6 +10,7 @@ import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import PayrollPage from "./views/PayrollPage";
+import BenefitsListPage from "./views/BenefitListPage";
 
 function App() {
     return (
@@ -99,6 +100,18 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+
+                    <Route
+                        path="/benefits"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
+                                <Layout>
+                                    <BenefitsListPage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+
 
                 </Routes>
             </Router>
