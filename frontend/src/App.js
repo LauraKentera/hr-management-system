@@ -5,7 +5,7 @@ import Dashboard from "./views/DashboardPage";
 import UsersPage from "./views/UsersPage";
 import RolesPage from "./views/RolesPage";
 import EmployeesPage from "./views/EmployeesPage";
-import AbsencePage from "./views/AbsencePage";  // Import AbsencePage
+import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
@@ -64,6 +64,17 @@ function App() {
                     />
 
                     {/* Absences route accessible by HR, Admin, and Employee */}
+                    <Route
+                        path="/absences"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
+                                <Layout>
+                                    <AbsencePage />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+
                     <Route
                         path="/absences"
                         element={

@@ -74,4 +74,16 @@ public class EmployeeAbsenceService {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
     }
+
+    public void approveAbsence(int absenceId, String status, int approvedBy) {
+        EmployeeAbsence absence = dao.getById(absenceId);
+        if (absence != null) {
+            absence.setStatus(status);  // 'Approved' or 'Rejected'
+            absence.setApprovedBy(approvedBy); // The user who approves
+            dao.update(absenceId, absence);  // Update the absence status in the DB
+        } else {
+            throw new IllegalArgumentException("Absence not found.");
+        }
+    }
+
 }

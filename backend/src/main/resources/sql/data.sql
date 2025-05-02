@@ -191,3 +191,7 @@ VALUES
 
 
 
+UPDATE Employee
+SET user_id = 1
+WHERE id = 2; -- or whichever Employee ID should be linked
+

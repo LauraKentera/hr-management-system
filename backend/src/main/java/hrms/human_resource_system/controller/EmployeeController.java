@@ -148,4 +148,22 @@ public class EmployeeController {
                     .body(new CustomErrorResponse("Error deleting employee", 500));
         }
     }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<?> getByUserId(@PathVariable int userId) {
+        try {
+            Employee employee = employeeService.getByUserId(userId);
+            return employee != null
+                    ? ResponseEntity.ok(employee)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CustomErrorResponse("Employee not found for user ID: " + userId, 404));
+        } catch (DLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CustomErrorResponse("Error retrieving employee by user ID", 500));
+        }
+    }
+
 }

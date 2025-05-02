@@ -57,7 +57,7 @@ public class EmployeeAbsenceDAO {
     }
 
     public void insert(EmployeeAbsence absence) {
-        String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO EmployeeAbsence (employee_id, absence_type_id, start_date, end_date, notes, status, approved_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -69,6 +69,12 @@ public class EmployeeAbsenceDAO {
                 ps.setDate(3, Date.valueOf(absence.getStartDate()));
                 ps.setDate(4, Date.valueOf(absence.getEndDate()));
                 ps.setString(5, absence.getNotes());
+                ps.setString(6, absence.getStatus()); // Insert the status
+                if (absence.getApprovedBy() != null) {
+                    ps.setInt(7, absence.getApprovedBy());
+                } else {
+                    ps.setNull(7, Types.INTEGER);
+                }
                 return ps;
             }, keyHolder);
 
@@ -81,7 +87,7 @@ public class EmployeeAbsenceDAO {
     }
 
     public void update(int id, EmployeeAbsence absence) {
-        String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ? WHERE absence_id = ?";
+        String sql = "UPDATE EmployeeAbsence SET employee_id = ?, absence_type_id = ?, start_date = ?, end_date = ?, notes = ?, status = ?, approved_by = ? WHERE absence_id = ?";
         try {
             jdbcTemplate.update(sql,
                     absence.getEmployeeId(),
@@ -89,6 +95,8 @@ public class EmployeeAbsenceDAO {
                     Date.valueOf(absence.getStartDate()),
                     Date.valueOf(absence.getEndDate()),
                     absence.getNotes(),
+                    absence.getStatus(),  // Update the status
+                    absence.getApprovedBy(),  // Update the approvedBy field
                     id
             );
         } catch (Exception e) {
@@ -113,6 +121,8 @@ public class EmployeeAbsenceDAO {
         ea.setStartDate(rs.getDate("start_date").toLocalDate());
         ea.setEndDate(rs.getDate("end_date").toLocalDate());
         ea.setNotes(rs.getString("notes"));
+        ea.setStatus(rs.getString("status")); // Map status
+        ea.setApprovedBy(rs.getInt("approved_by")); // Map approvedBy
 
         // fetch and set AbsenceType and Employee
         ea.setAbsenceType(absenceTypeDAO.getById(ea.getAbsenceTypeId()));

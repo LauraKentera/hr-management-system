@@ -10,6 +10,8 @@ public class EmployeeAbsence {
     private LocalDate startDate;
     private LocalDate endDate;
     private String notes;
+    private String status;  // New field for status
+    private Integer approvedBy;  // New field for approvedBy
     private AbsenceType absenceType;
     private Employee employee;
 
@@ -17,23 +19,18 @@ public class EmployeeAbsence {
     }
 
     public EmployeeAbsence(Integer absenceId, int employeeId, int absenceTypeId,
-                           LocalDate startDate, LocalDate endDate, String notes) {
+                           LocalDate startDate, LocalDate endDate, String notes, String status, Integer approvedBy) {
         this.absenceId = absenceId;
         this.employeeId = employeeId;
         this.absenceTypeId = absenceTypeId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.notes = notes;
+        this.status = status;
+        this.approvedBy = approvedBy;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
+    // Getters and Setters
     public Integer getAbsenceId() {
         return absenceId;
     }
@@ -82,11 +79,35 @@ public class EmployeeAbsence {
         this.notes = notes;
     }
 
+    public String getStatus() {
+        return status;  // Getter for status
+    }
+
+    public void setStatus(String status) {
+        this.status = status;  // Setter for status
+    }
+
+    public Integer getApprovedBy() {
+        return approvedBy;  // Getter for approvedBy
+    }
+
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;  // Setter for approvedBy
+    }
+
     public AbsenceType getAbsenceType() {
         return absenceType;
     }
 
     public void setAbsenceType(AbsenceType absenceType) {
         this.absenceType = absenceType;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }

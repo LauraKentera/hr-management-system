@@ -208,4 +208,18 @@ public class EmployeeDAO {
                 rs.getString("bank_account_number")
         );
     }
+
+    public Employee getByUserId(int userId) {
+        try {
+            String sql = "SELECT * FROM Employee WHERE user_id = ?";
+            return jdbcTemplate.queryForObject(sql, this::mapRow, userId);
+        } catch (Exception e) {
+            throw new DLException("Error retrieving employee by user ID: " + userId, e);
+        }
+    }
+
+    private Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return mapResultSetToEmployee(rs, rowNum);
+    }
+
 }
