@@ -102,13 +102,15 @@ public class UserDAO {
     }
 
     public void update(int id, User user) {
-        String sql = "UPDATE User SET username = ?, password = ?, role_id = ? WHERE id = ?";
+        String sql = "UPDATE User SET username = ?, password = ?, role_id = ?, employee_id = ? WHERE id = ?";
         try {
             jdbcTemplate.update(sql,
                     user.getUsername(),
                     user.getPassword(), // hashed password
                     user.getRole().getId(),
-                    id);
+                    user.getEmployeeId(),
+                    id
+            );
         } catch (Exception e) {
             throw new DLException("Error updating user with ID " + id, e);
         }
@@ -162,4 +164,14 @@ public class UserDAO {
             throw new DLException("Error checking employee_id during update", e);
         }
     }
+
+    public void linkEmployee(int userId, int employeeId) {
+        String sql = "UPDATE User SET employee_id = ? WHERE id = ?";
+        try {
+            jdbcTemplate.update(sql, employeeId, userId);
+        } catch (Exception e) {
+            throw new DLException("Failed to link employee to user", e);
+        }
+    }
+
 }

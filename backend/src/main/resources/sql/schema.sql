@@ -179,6 +179,11 @@ CREATE TABLE
         FOREIGN KEY (absence_type_id) REFERENCES AbsenceType (absence_type_id)
     );
 
+ALTER TABLE EmployeeAbsence
+    ADD COLUMN status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+    ADD COLUMN approved_by INT;
+
+
 CREATE TABLE
     IF NOT EXISTS EmployeeChange (
         change_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -253,3 +258,7 @@ CREATE TABLE
         old_value TEXT,
         new_value TEXT
     );
+
+ALTER TABLE Employee ADD COLUMN user_id INT,
+                     ADD CONSTRAINT fk_employee_user FOREIGN KEY (user_id) REFERENCES User(id);
+

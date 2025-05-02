@@ -25,6 +25,12 @@ public class Employee {
     private Employee manager;
     private String taxId;
     private String bankAccountNumber;
+    private boolean active;
+    private Integer userId;
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
 
     // Constructor
     public Employee(Integer id, String PIN, String lastName, String firstName, LocalDate birthDate,
@@ -126,4 +132,13 @@ public class Employee {
 
     public String getBankAccountNumber() { return bankAccountNumber; }
     public void setBankAccountNumber(String bankAccountNumber) { this.bankAccountNumber = bankAccountNumber; }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
 }

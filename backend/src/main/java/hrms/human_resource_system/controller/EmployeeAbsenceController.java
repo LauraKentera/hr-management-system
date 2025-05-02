@@ -97,4 +97,29 @@ public class EmployeeAbsenceController {
     private ResponseEntity<CustomErrorResponse> error(String message, HttpStatus status) {
         return ResponseEntity.status(status).body(new CustomErrorResponse(message, status.value()));
     }
+
+    @PutMapping("/{id}/{action}")
+    public ResponseEntity<?> approveOrDenyAbsence(@PathVariable int id, @PathVariable String action, @RequestParam int approvedBy) {
+        try {
+            // Validate the action and ensure it's either 'approve' or 'deny'
+            if (!action.equals("approve") && !action.equals("deny")) {
+                return error("Invalid action. It must be 'approve' or 'deny'.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Determine the status based on the action
+            String status = (action.equals("approve")) ? "Approved" : "Rejected";
+
+            // Call the service to update the absence status
+            service.approveAbsence(id, status, approvedBy);
+
+            return ResponseEntity.ok("Absence request has been " + status);
+        } catch (IllegalArgumentException e) {
+            return error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DLException e) {
+            return error("Database error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return error("Error processing absence", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

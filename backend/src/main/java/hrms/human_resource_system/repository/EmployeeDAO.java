@@ -70,12 +70,13 @@ public class EmployeeDAO {
 
     public Employee insert(Employee employee, int performedBy) {
         String sql = """
-            INSERT INTO Employee 
-            (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, 
-            gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, 
-            emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+                    INSERT INTO Employee 
+                    (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, 
+                     gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, 
+                     emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number, user_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -106,6 +107,7 @@ public class EmployeeDAO {
                     ps.setNull(19, Types.INTEGER);
                 ps.setString(20, employee.getTaxId());
                 ps.setString(21, employee.getBankAccountNumber());
+                ps.setInt(22, employee.getUserId());
                 return ps;
             }, keyHolder);
 
@@ -124,13 +126,13 @@ public class EmployeeDAO {
 
     public Employee update(int id, Employee employee, int performedBy) {
         String sql = """
-            UPDATE Employee SET 
-            PIN = ?, last_name = ?, first_name = ?, birth_date = ?, date_of_hire = ?, date_of_dismissal = ?, 
-            phone_number = ?, email = ?, address = ?, gender = ?, nationality_id = ?, department_id = ?, 
-            position_id = ?, employment_status = ?, emergency_contact_name = ?, emergency_contact_phone = ?, 
-            marital_status = ?, employment_type = ?, manager_id = ?, tax_id = ?, bank_account_number = ? 
-            WHERE id = ?
-        """;
+                    UPDATE Employee SET 
+                    PIN = ?, last_name = ?, first_name = ?, birth_date = ?, date_of_hire = ?, date_of_dismissal = ?, 
+                    phone_number = ?, email = ?, address = ?, gender = ?, nationality_id = ?, department_id = ?, 
+                    position_id = ?, employment_status = ?, emergency_contact_name = ?, emergency_contact_phone = ?, 
+                    marital_status = ?, employment_type = ?, manager_id = ?, tax_id = ?, bank_account_number = ? 
+                    WHERE id = ?
+                """;
 
         Employee oldEmployee = getById(id);
 

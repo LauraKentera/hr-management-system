@@ -7,7 +7,7 @@ import {
     AttachMoney, CalendarToday, InsertChart, Dashboard, AdminPanelSettings
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { getRole } from '../utils/auth'; // Adjust path if needed
+import { getRole } from '../utils/auth';
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -34,93 +34,48 @@ const Sidebar = () => {
         >
             <Box sx={{ width: '100%', height: '100%' }}>
                 <List>
+
+                    {/* Sidebar Toggle */}
                     <ListItem button onClick={toggleSidebar}>
                         <ListItemIcon>
-
-                            {isOpen ? <ChevronLeft /> : <ChevronRight />} {/* Toggle icon */}
+                            {isOpen ? <ChevronLeft /> : <ChevronRight />}
                         </ListItemIcon>
                         <ListItemText primary={isOpen ? 'Collapse' : ''} />
-                    </ListItem>
-
-                    {/* Absences Section */}
-                    <ListItem button component={Link} to="/absences"> {/* Use Link to navigate */}
-                        <ListItemIcon>
-                            <CalendarToday />
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Absences' : ''} />
-                    </ListItem>
-
-                    <Divider />
-
-                    {/* Benefits Section */}
-                    <ListItem button component={Link} to="/benefits"> {/* Use Link to navigate */}
-                        <ListItemIcon>
-                            <AttachMoney />
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Benefits' : ''} />
-                    </ListItem>
-
-
-                    <Divider />
-
-                    {/* Contracts Section */}
-                    <ListItem button component={Link} to="/contracts">
-                        <ListItemIcon>
-                            <InsertChart />
-                        </ListItemIcon>
-                        <ListItemText primary={isOpen ? 'Contracts' : ''} />
-                    </ListItem>
-
-                    <Divider />
-
-                    {/* Employees Section */}
-                    <ListItem button component={Link} to="/employees">
-                        <ListItemIcon><People /></ListItemIcon>
-                        <ListItemText
-                            primary={
-                                isOpen
-                                    ? <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span>Employees</span>
-                                        {isOpen ? <ChevronLeft /> : <ChevronRight />}
-                                    </Box>
-                                    : ''
-                            }
-                        />
                     </ListItem>
 
 
 
                     {/* Common: Absences */}
-                    <ListItem button component={Link} to="/absence">
+                    <ListItem button component={Link} to="/absences">
                         <ListItemIcon><CalendarToday /></ListItemIcon>
                         <ListItemText primary={isOpen ? 'Absences' : ''} />
                     </ListItem>
 
                     <Divider />
 
-                    {/* HR + Admin: Benefits */}
-                    {(role === 'HR' || role === 'Admin') && (
-                        <ListItem button component={Link} to="/benefits">
-                            <ListItemIcon><AttachMoney /></ListItemIcon>
-                            <ListItemText primary={isOpen ? 'Benefits' : ''} />
-                        </ListItem>
-                    )}
+                    {/* General Access: Benefits */}
+                    <ListItem button component={Link} to="/benefits">
+                        <ListItemIcon><AttachMoney /></ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Benefits' : ''} />
+                    </ListItem>
 
-                    {/* HR + Admin: Contracts */}
-                    {(role === 'HR' || role === 'Admin') && (
-                        <ListItem button component={Link} to="/contracts">
-                            <ListItemIcon><InsertChart /></ListItemIcon>
-                            <ListItemText primary={isOpen ? 'Contracts' : ''} />
-                        </ListItem>
-                    )}
+                    <Divider />
 
-                    {/* HR + Admin: Employees */}
-                    {(role === 'HR' || role === 'Admin') && (
-                        <ListItem button component={Link} to="/employees">
-                            <ListItemIcon><People /></ListItemIcon>
-                            <ListItemText primary={isOpen ? 'Employees' : ''} />
-                        </ListItem>
-                    )}
+                    {/* General Access: Contracts */}
+                    <ListItem button component={Link} to="/contracts">
+                        <ListItemIcon><InsertChart /></ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Contracts' : ''} />
+                    </ListItem>
+
+                    <Divider />
+
+                    {/* General Access: Employees */}
+                    <ListItem button component={Link} to="/employees">
+                        <ListItemIcon><People /></ListItemIcon>
+                        <ListItemText primary={isOpen ? 'Employees' : ''} />
+                    </ListItem>
+
+                    <Divider />
 
                     {/* HR + Admin: Departments */}
                     {(role === 'HR' || role === 'Admin') && (
@@ -132,13 +87,13 @@ const Sidebar = () => {
 
                     {/* HR + Admin: Salaries/Payroll */}
                     {(role === 'HR' || role === 'Admin') && (
-                        <ListItem button component={Link} to="/salaries">
+                        <ListItem button component={Link} to="/payrolls">
                             <ListItemIcon><AttachMoney /></ListItemIcon>
                             <ListItemText primary={isOpen ? 'Salaries' : ''} />
                         </ListItem>
                     )}
 
-                    {/* Admin Only: Users/Roles/Dashboard */}
+                    {/* Admin Only: Users, Roles, Dashboard */}
                     {role === 'Admin' && (
                         <>
                             <Divider />
@@ -169,6 +124,7 @@ const Sidebar = () => {
 
                     <Divider />
 
+                    {/* Logout */}
                     <ListItem button onClick={() => {
                         localStorage.clear();
                         window.location.href = "/login";

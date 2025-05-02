@@ -1,6 +1,7 @@
 package hrms.human_resource_system.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import hrms.human_resource_system.exception.DLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class AuditLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
