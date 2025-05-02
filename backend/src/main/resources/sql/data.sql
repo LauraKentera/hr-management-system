@@ -204,3 +204,5 @@ INSERT INTO Payroll (
       (2, '2024-04-01', '2024-04-30', 1200.00, 100.00, 80.00, 1220.00, '2024-05-01', 'Paid');
 
 
+SELECT * FROM Employee WHERE user_id = 18;
+
