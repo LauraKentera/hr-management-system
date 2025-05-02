@@ -55,6 +55,7 @@
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/PositionRequestDTO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/PositionResponseDTO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/RoleResponseDTO.java
+/Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/SimpleLoginResponse.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/UserCreateRequest.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/UserResponseDTO.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/dto/UserUpdateRequestDTO.java
@@ -145,7 +146,6 @@
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/PayrollService.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/PositionService.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/RoleService.java
-/Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/UserDetailsServiceImpl.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/UserService.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/service/VacationService.java
 /Users/laurakentera/Desktop/ISTE330_DatabaseConnectivityAndAccess/hr-management-system/backend/src/main/java/hrms/human_resource_system/test/EmployeeEvaluationControllerTest.java

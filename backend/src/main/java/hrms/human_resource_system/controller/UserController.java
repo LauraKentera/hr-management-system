@@ -6,6 +6,7 @@ import hrms.human_resource_system.model.User;
 import hrms.human_resource_system.service.UserService;
 import hrms.human_resource_system.dto.UserCreateRequest;
 import hrms.human_resource_system.model.Role;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +25,11 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
         try {
+            String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt());  // Hash password here
             User createdUser = userService.createUser(
-                request.getUsername(),
-                request.getPassword(),
-                request.getRoleId(),
-                request.getEmployeeId()
+                    request.getUsername(),
+                    hashedPassword,
+                    request.getRoleId()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (IllegalArgumentException e) {
@@ -101,8 +102,7 @@ public class UserController {
                 id,
                 request.getUsername(),
                 request.getPassword(),
-                request.getRoleId(),
-                request.getEmployeeId()
+                request.getRoleId()
             );
             return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException e) {

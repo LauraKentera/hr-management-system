@@ -1,29 +1,34 @@
-import axios from 'axios';
+import ApiEndpoints from "../api/ApiEndpoints";
 
-const BASE_URL = '/api/users';
-const ROLE_URL = '/api/roles';
+export async function fetchUsers() {
+  const res = await fetch(ApiEndpoints.user.getAll);
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json();
+}
 
-// User endpoints
-export const getUsers = () => axios.get(BASE_URL);
-export const getUser = (id) => axios.get(`${BASE_URL}/${id}`);
-export const createUser = (data) => axios.post(BASE_URL, data);
-export const updateUser = (id, data) => axios.put(`${BASE_URL}/${id}`, data);
-export const deleteUser = (id) => axios.delete(`${BASE_URL}/${id}`);
+export async function deleteUser(id) {
+  const res = await fetch(ApiEndpoints.user.delete(id), {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete user");
+}
 
-// Role endpoints
-export const getRoles = () => axios.get(ROLE_URL);
-export const createRole = (data) => axios.post(ROLE_URL, data);
-export const updateRole = (id, data) => axios.put(`${ROLE_URL}/${id}`, data);
-export const deleteRole = (id) => axios.delete(`${ROLE_URL}/${id}`);
+export async function createUser(userData) {
+  const res = await fetch(ApiEndpoints.user.create, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  if (!res.ok) throw new Error("Failed to create user");
+  return res.json();
+}
 
-export default {
-  getUsers,
-  getUser,
-  createUser,
-  updateUser,
-  deleteUser,
-  getRoles,
-  createRole,
-  updateRole,
-  deleteRole,
-};
+export async function updateUser(id, userData) {
+  const res = await fetch(ApiEndpoints.user.update(id), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  if (!res.ok) throw new Error("Failed to update user");
+  return res.json();
+}

@@ -4,11 +4,16 @@ import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.Role;
 import hrms.human_resource_system.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -25,12 +30,14 @@ public class UserDAO {
 
     private User mapRow(ResultSet rs, int rowNum) throws SQLException {
         Role role = roleDAO.getById(rs.getInt("role_id"));
+        Integer employeeId = rs.getObject("employee_id") != null ? rs.getInt("employee_id") : null;
+
         return new User(
                 rs.getInt("id"),
                 rs.getString("username"),
                 rs.getString("password"),
                 role,
-                rs.getObject("employee_id") != null ? rs.getInt("employee_id") : null
+                employeeId
         );
     }
 
@@ -53,13 +60,16 @@ public class UserDAO {
     }
 
     public User getByUsername(String username) {
-        String sql = "SELECT * FROM User WHERE username = ?";
+        String sql = "SELECT * FROM User WHERE LOWER(username) = LOWER(?)";
         try {
             return jdbcTemplate.queryForObject(sql, this::mapRow, username);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // no user found, safe fallback
         } catch (Exception e) {
             throw new DLException("Error retrieving user by username: " + username, e);
         }
     }
+
 
     public User getByEmployeeId(int employeeId) {
         String sql = "SELECT * FROM User WHERE employee_id = ?";
@@ -71,26 +81,33 @@ public class UserDAO {
     }
 
     public void insert(User user) {
-        String sql = "INSERT INTO User (username, password, role_id, employee_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO User (username, password, role_id) VALUES (?, ?, ?)";
         try {
-            jdbcTemplate.update(sql,
-                    user.getUsername(),
-                    user.getPassword(),
-                    user.getRole().getId(),
-                    user.getEmployeeId());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword()); // hashed password
+                ps.setInt(3, user.getRole().getId());
+                return ps;
+            }, keyHolder);
+
+            if (keyHolder.getKey() != null) {
+                user.setId(keyHolder.getKey().intValue());
+            }
         } catch (Exception e) {
             throw new DLException("Error inserting user: " + user.getUsername(), e);
         }
     }
 
     public void update(int id, User user) {
-        String sql = "UPDATE User SET username = ?, password = ?, role_id = ?, employee_id = ? WHERE id = ?";
+        String sql = "UPDATE User SET username = ?, password = ?, role_id = ? WHERE id = ?";
         try {
             jdbcTemplate.update(sql,
                     user.getUsername(),
-                    user.getPassword(),
+                    user.getPassword(), // hashed password
                     user.getRole().getId(),
-                    user.getEmployeeId(),
                     id);
         } catch (Exception e) {
             throw new DLException("Error updating user with ID " + id, e);
