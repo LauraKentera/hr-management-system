@@ -149,3 +149,7 @@ frontend/target/
 # System files
 .DS_Store
 
+# build output
+/target/
+
+
