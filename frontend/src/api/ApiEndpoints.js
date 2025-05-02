@@ -18,7 +18,14 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/departments`,
         create: `${BASE_URL}/departments`,
     },
-    // Add more modules as needed
+    absences: {
+        getAll: `${BASE_URL}/api/employee-absences`,
+        create: `${BASE_URL}/api/employee-absences`,
+    },
+    benefit: {
+        getAll: `${BASE_URL}/api/benefits`,
+        create: `${BASE_URL}/api/benefits`,
+    },
 };
 
 export default ApiEndpoints;

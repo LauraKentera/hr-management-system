@@ -48,7 +48,7 @@ const Sidebar = () => {
                     </ListItem>
 
                     {/* Absences Section */}
-                    <ListItem button component={Link} to="/absence"> {/* Use Link to navigate */}
+                    <ListItem button component={Link} to="/absences"> {/* Use Link to navigate */}
                         <ListItemIcon>
                             <CalendarToday/>
                         </ListItemIcon>
