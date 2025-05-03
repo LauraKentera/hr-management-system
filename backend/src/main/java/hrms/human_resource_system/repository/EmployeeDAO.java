@@ -248,4 +248,14 @@ public class EmployeeDAO {
         return mapResultSetToEmployee(rs, rowNum);
     }
 
+    public void unlinkUser(int employeeId) {
+        String sql = "UPDATE Employee SET user_id = NULL WHERE id = ?";
+        try {
+            jdbcTemplate.update(sql, employeeId);
+        } catch (Exception e) {
+            throw new DLException("Error unlinking user from employee with ID " + employeeId, e);
+        }
+    }
+
+
 }
