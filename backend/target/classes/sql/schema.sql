@@ -58,15 +58,14 @@ CREATE TABLE
         is_active BOOLEAN DEFAULT TRUE
     );
 
-CREATE TABLE
-    IF NOT EXISTS Department (
-        department_id INT PRIMARY KEY AUTO_INCREMENT,
-        name VARCHAR(50) NOT NULL UNIQUE,
-        manager_id INT
-    );
+CREATE TABLE IF NOT EXISTS Department (
+    department_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    manager_id INT
+);
 
 CREATE TABLE
-    IF NOT EXISTS Position(
+    IF NOT EXISTS Position (
         position_id INT PRIMARY KEY AUTO_INCREMENT,
         parent_id INT,
         name VARCHAR(100) NOT NULL,
@@ -75,7 +74,7 @@ CREATE TABLE
         benefits VARCHAR(255),
         requires_licensing BOOLEAN DEFAULT FALSE,
         is_active BOOLEAN DEFAULT TRUE,
-        FOREIGN KEY (parent_id) REFERENCES Position(position_id),
+        FOREIGN KEY (parent_id) REFERENCES Position (position_id),
         FOREIGN KEY (education_level_id) REFERENCES EducationLevel (education_level_id)
     );
 
@@ -108,9 +107,10 @@ CREATE TABLE
         bank_account_number VARCHAR(50),
         FOREIGN KEY (nationality_id) REFERENCES Nationality (nationality_id),
         FOREIGN KEY (department_id) REFERENCES Department (department_id),
-        FOREIGN KEY (position_id) REFERENCES Position(position_id),
+        FOREIGN KEY (position_id) REFERENCES Position (position_id),
         FOREIGN KEY (manager_id) REFERENCES Employee (id)
     );
+ALTER TABLE Employee ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
 
 CREATE TABLE
     IF NOT EXISTS User (
@@ -194,8 +194,8 @@ CREATE TABLE
         old_salary DECIMAL(10, 2),
         new_salary DECIMAL(10, 2) NOT NULL,
         FOREIGN KEY (employee_id) REFERENCES Employee (id),
-        FOREIGN KEY (old_position_id) REFERENCES Position(position_id),
-        FOREIGN KEY (new_position_id) REFERENCES Position(position_id)
+        FOREIGN KEY (old_position_id) REFERENCES Position (position_id),
+        FOREIGN KEY (new_position_id) REFERENCES Position (position_id)
     );
 
 CREATE TABLE
@@ -234,7 +234,7 @@ CREATE TABLE
         signed_date DATE,
         document_path VARCHAR(255),
         FOREIGN KEY (employee_id) REFERENCES Employee (id),
-        FOREIGN KEY (position_id) REFERENCES Position(position_id)
+        FOREIGN KEY (position_id) REFERENCES Position (position_id)
     );
 
 CREATE TABLE
@@ -261,4 +261,7 @@ CREATE TABLE
 
 ALTER TABLE Employee ADD COLUMN user_id INT,
                      ADD CONSTRAINT fk_employee_user FOREIGN KEY (user_id) REFERENCES User(id);
+
+ALTER TABLE Employee ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+ALTER TABLE Department ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
 

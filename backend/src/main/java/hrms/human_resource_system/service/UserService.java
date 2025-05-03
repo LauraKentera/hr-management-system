@@ -66,10 +66,12 @@ public class UserService {
             newUser.setRole(roleDAO.getById(roleId));
 
             validateUser(newUser, -1);
-            userDAO.insert(newUser); // gets ID here
+            userDAO.insert(newUser); // sets ID
 
             String roleName = newUser.getRole().getName();
-            if ("HR".equalsIgnoreCase(roleName) || "Employee".equalsIgnoreCase(roleName)) {
+            List<String> employeeRoles = List.of("Admin", "HR", "Employee");
+
+            if (employeeRoles.contains(roleName)) {
                 Employee employee = new Employee();
                 long timestamp = System.currentTimeMillis();
 
@@ -99,13 +101,15 @@ public class UserService {
 
                 employee.setUserId(newUser.getId());
                 employeeDAO.insert(employee, newUser.getId());
+
+                // Link in User table too
                 userDAO.linkEmployee(newUser.getId(), employee.getId());
+                newUser.setEmployeeId(employee.getId());
             }
 
             return newUser;
         });
     }
-
 
     public User updateUser(int id, String username, String password, int roleId) {
         return wrap(() -> {

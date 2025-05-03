@@ -1,31 +1,61 @@
 package hrms.human_resource_system.controller;
 
+import hrms.human_resource_system.dto.ContractResponseDTO;
 import hrms.human_resource_system.exception.CustomErrorResponse;
 import hrms.human_resource_system.exception.DLException;
 import hrms.human_resource_system.model.EmploymentContract;
 import hrms.human_resource_system.model.ContractAnnex;
 import hrms.human_resource_system.service.ContractService;
+import hrms.human_resource_system.service.EmployeeService;
+import hrms.human_resource_system.service.PositionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/contracts")
 public class ContractController {
 
     private final ContractService contractService;
+    private final EmployeeService employeeService;  // Inject EmployeeService
+    private final PositionService positionService;
 
-    public ContractController(ContractService contractService) {
+    public ContractController(ContractService contractService, EmployeeService employeeService, PositionService positionService) {
         this.contractService = contractService;
+        this.employeeService = employeeService;
+        this.positionService = positionService;
     }
 
     @GetMapping
     public ResponseEntity<?> getAllContracts() {
         try {
             List<EmploymentContract> contracts = contractService.getAllContracts();
-            return ResponseEntity.ok(contracts);
+
+            // Transform EmploymentContract to ContractResponseDTO for employee and position details
+            List<ContractResponseDTO> contractDtos = contracts.stream()
+                    .map(contract -> {
+                        String employeeName = employeeService.getEmployeeNameById(contract.getEmployeeId());
+                        String positionName = positionService.getPositionNameById(contract.getPositionId());
+                        return new ContractResponseDTO(
+                                contract.getContractId(),
+                                contract.getEmployeeId(),
+                                employeeName,
+                                contract.getStartDate(),
+                                contract.getEndDate(),
+                                contract.getPositionId(),
+                                positionName,
+                                contract.getSalary(),
+                                contract.getContractType(),
+                                contract.getSignedDate(),
+                                contract.getDocumentPath()
+                        );
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(contractDtos);
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));

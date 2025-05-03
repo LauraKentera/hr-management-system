@@ -72,6 +72,25 @@ const ApiEndpoints = {
         update: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
         delete: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
     },
+    contract: {
+        getAll: `${BASE_URL}/api/contracts`,
+        getById: (id) => `${BASE_URL}/api/contracts/${id}`,
+        create: `${BASE_URL}/api/contracts`,
+        update: (id) => `${BASE_URL}/api/contracts/${id}`,
+        delete: (id) => `${BASE_URL}/api/contracts/${id}`,
+        getAnnexesByContractId: (id) => `${BASE_URL}/api/contracts/${id}/annexes`,
+    },
+    nationality: {
+        getAll: `${BASE_URL}/api/nationalities`,
+        getById: (id) => `${BASE_URL}/api/nationalities/${id}`,
+        create: `${BASE_URL}/api/nationalities`,
+        update: (id) => `${BASE_URL}/api/nationalities/${id}`,
+        delete: (id) => `${BASE_URL}/api/nationalities/${id}`,
+    },
+    position: {
+        getAll: `${BASE_URL}/api/positions`,
+        getById: (id) => `${BASE_URL}/api/positions/${id}`,
+    }
 };
 
 export default ApiEndpoints;

@@ -153,4 +153,13 @@ public class EmployeeService {
         return wrap(() -> employeeDAO.getByUserId(userId));
     }
 
+    // Method to fetch employee name by ID
+    public String getEmployeeNameById(int employeeId) {
+        Employee employee = employeeDAO.getById(employeeId);
+        if (employee != null) {
+            return employee.getFirstName() + " " + employee.getLastName(); // Full Name
+        }
+        return null;  // Or throw an exception if needed
+    }
+
 }

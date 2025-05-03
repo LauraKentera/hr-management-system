@@ -8,11 +8,13 @@ import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
-import EmployeesView from './views/EmployeesView';
-import EmployeeDetailsView from './views/EmployeeDetailsView';
+import EmployeesView from './views/EmployeePage';
 import PayrollPage from "./views/PayrollPage";
 import BenefitsListPage from "./views/BenefitListPage";
-
+import DepartmentsView from './views/DepartmentsView';
+import ContractListPage from './views/ContractList';  // Import Contract List page
+import ContractFormPage from './views/ContractFormPage';
+import EmployeePage from "./views/EmployeePage"; // Import Contract Form page
 
 function App() {
     return (
@@ -61,7 +63,7 @@ function App() {
                         element={
                             <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Layout>
-                                    <EmployeesView />
+                                    <EmployeePage />
                                 </Layout>
                             </ProtectedRoute>
                         }
@@ -79,21 +81,43 @@ function App() {
                         }
                     />
 
+                    {/* Contracts Route - Accessible by Admin and HR */}
                     <Route
-                        path="/absences"
+                        path="/contracts"
                         element={
-                            <ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]}>
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
                                 <Layout>
-                                    <AbsencePage />
+                                    <ContractListPage /> {/* Contract List page */}
                                 </Layout>
                             </ProtectedRoute>
                         }
                     />
 
-                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
+                    {/* Create Contract Route - Accessible by Admin and HR */}
+                    <Route
+                        path="/contracts/create"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <ContractFormPage /> {/* Contract Form for creating */}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
-                    {/* Add more routes here as necessary */}
+                    {/* Edit Contract Route - Accessible by Admin and HR */}
+                    <Route
+                        path="/contracts/edit/:id"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <ContractFormPage /> {/* Contract Form for editing */}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
+                    {/* Payroll and Benefits routes */}
                     <Route
                         path="/payrolls"
                         element={
@@ -115,7 +139,16 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
+                    <Route
+                        path="/departments"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <DepartmentsView />
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
                 </Routes>
             </Router>

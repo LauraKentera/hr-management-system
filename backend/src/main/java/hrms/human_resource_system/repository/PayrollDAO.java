@@ -57,7 +57,7 @@ public class PayrollDAO {
         }
     }
 
-    public void insert(Payroll payroll) {
+    public void insert(Payroll payroll, int performedBy) {
         String sql = """
             INSERT INTO Payroll 
             (employee_id, period_start, period_end, base_salary, bonus, deductions, net_pay, payment_date, status)
@@ -65,6 +65,7 @@ public class PayrollDAO {
         """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -87,14 +88,18 @@ public class PayrollDAO {
                 payroll.setPayrollId(keyHolder.getKey().intValue());
             }
 
-            auditLogger.logChange("Payroll", payroll.getPayrollId(), "INSERT", 1, null, payroll);
+            try {
+                auditLogger.logChange("Payroll", payroll.getPayrollId(), "CREATE", performedBy, null, payroll);
+            } catch (Exception logEx) {
+                System.err.println("Audit log failed: " + logEx.getMessage());
+            }
 
         } catch (Exception e) {
             throw new DLException("Error inserting payroll", e);
         }
     }
 
-    public void update(Payroll payroll) {
+    public void update(Payroll payroll, int performedBy) {
         String sql = """
             UPDATE Payroll SET 
             employee_id = ?, period_start = ?, period_end = ?, base_salary = ?, bonus = ?, deductions = ?, 
@@ -118,20 +123,30 @@ public class PayrollDAO {
                     payroll.getPayrollId()
             );
 
-            auditLogger.logChange("Payroll", payroll.getPayrollId(), "UPDATE", 1, oldPayroll, payroll);
+            try {
+                auditLogger.logChange("Payroll", payroll.getPayrollId(), "UPDATE", performedBy, oldPayroll, payroll);
+            } catch (Exception logEx) {
+                System.err.println("Audit log failed: " + logEx.getMessage());
+            }
 
         } catch (Exception e) {
             throw new DLException("Error updating payroll", e);
         }
     }
 
-    public void delete(int payrollId) {
+    public void delete(int payrollId, int performedBy) {
         String sql = "DELETE FROM Payroll WHERE payroll_id = ?";
         Payroll oldPayroll = getById(payrollId);
 
         try {
             jdbcTemplate.update(sql, payrollId);
-            auditLogger.logChange("Payroll", payrollId, "DELETE", 1, oldPayroll, null);
+
+            try {
+                auditLogger.logChange("Payroll", payrollId, "DELETE", performedBy, oldPayroll, null);
+            } catch (Exception logEx) {
+                System.err.println("Audit log failed: " + logEx.getMessage());
+            }
+
         } catch (Exception e) {
             throw new DLException("Error deleting payroll", e);
         }

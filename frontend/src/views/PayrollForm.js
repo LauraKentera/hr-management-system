@@ -17,11 +17,11 @@ const PayrollForm = ({ open, onClose, refreshPayrolls, payroll }) => {
         deductions: '',
         netPay: '',
         paymentDate: '',
-        status: ''
+        status: 'Pending'
     });
 
     useEffect(() => {
-        if (isEdit) {
+        if (isEdit && payroll) {
             setFormData({ ...payroll });
         } else {
             setFormData({
@@ -33,18 +33,32 @@ const PayrollForm = ({ open, onClose, refreshPayrolls, payroll }) => {
                 deductions: '',
                 netPay: '',
                 paymentDate: '',
-                status: ''
+                status: 'Pending'
             });
         }
-    }, [payroll]);
+    }, [payroll, isEdit]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+    
+        const updated = {
+            ...formData,
+            [name]: name === 'baseSalary' || name === 'bonus' || name === 'deductions'
+                ? parseFloat(value || 0)
+                : name === 'employeeId'
+                ? parseInt(value || 0)
+                : value
+        };
+    
+        // Automatically recalculate net pay
+        const base = parseFloat(updated.baseSalary || 0);
+        const bonus = parseFloat(updated.bonus || 0);
+        const deductions = parseFloat(updated.deductions || 0);
+        updated.netPay = base + bonus - deductions;
+    
+        setFormData(updated);
     };
+    
 
     const handleSubmit = async () => {
         try {
@@ -56,7 +70,8 @@ const PayrollForm = ({ open, onClose, refreshPayrolls, payroll }) => {
             refreshPayrolls();
             onClose();
         } catch (err) {
-            alert('❌ Failed to save payroll.');
+            const msg = err.response?.data?.message || 'Failed to save payroll.';
+            alert('❌ ' + msg);
         }
     };
 
@@ -85,9 +100,9 @@ const PayrollForm = ({ open, onClose, refreshPayrolls, payroll }) => {
                             fullWidth
                             select
                         >
-                            <MenuItem value="Paid">Paid</MenuItem>
                             <MenuItem value="Pending">Pending</MenuItem>
-                            <MenuItem value="On Hold">On Hold</MenuItem>
+                            <MenuItem value="Processed">Processed</MenuItem>
+                            <MenuItem value="Paid">Paid</MenuItem>
                         </TextField>
                     </Grid>
                     <Grid item xs={6}>
@@ -171,7 +186,7 @@ const PayrollForm = ({ open, onClose, refreshPayrolls, payroll }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={handleSubmit} variant="contained">
+                <Button variant="contained" onClick={handleSubmit}>
                     {isEdit ? 'Update' : 'Create'}
                 </Button>
             </DialogActions>

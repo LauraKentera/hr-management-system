@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/AuthService";
+import "../styles/LoginView.css";
+
+import {
+    TextField,
+    Button,
+    IconButton,
+    InputAdornment,
+    Typography,
+    Box,
+    Paper,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const LoginView = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -25,27 +38,63 @@ const LoginView = () => {
 
     return (
         <div className="login-container">
-            <h2>Login</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit" disabled={loading}>
-                    {loading ? "Logging in..." : "Log In"}
-                </button>
-            </form>
+            <Paper elevation={6} className="login-form-wrapper">
+                <Typography variant="h4" align="center" gutterBottom>
+                    Welcome
+                </Typography>
+                <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
+                    Log in to access your account
+                </Typography>
+                {error && (
+                    <Typography color="error" align="center">
+                        {error}
+                    </Typography>
+                )}
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        margin="normal"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        margin="normal"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        disabled={loading}
+                    >
+                        {loading ? "Logging in..." : "Log In"}
+                    </Button>
+                </Box>
+            </Paper>
         </div>
     );
 };

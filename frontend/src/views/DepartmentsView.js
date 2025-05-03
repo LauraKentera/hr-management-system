@@ -1,101 +1,207 @@
-import React, { useState } from 'react';
-import DepartmentForm from '../components/DepartmentForm';  // Department form component
-import PositionTree from '../components/PositionTree';  // Position Tree component
-import Sidebar from '../components/Sidebar';  // Import Sidebar component
-import Header from '../components/Topbar';  // Import Header (Topbar) component
-import '../styles/Dashboard.css';  // Ensure Dashboard CSS is applied
-import { Box, Button, Grid, Typography, Card, CardContent, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Typography, Table, TableHead, TableRow, TableCell, TableBody,
+  Button, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Paper
+} from '@mui/material';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Topbar';
+import ApiEndpoints from "../api/ApiEndpoints";
 
 const DepartmentsView = () => {
-    const [showForm, setShowForm] = useState(false); // To control DepartmentForm visibility
-    const [selectedDepartment, setSelectedDepartment] = useState(null); // For editing department
+  const [departments, setDepartments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [newDepartmentName, setNewDepartmentName] = useState('');
+  const [managerId, setManagerId] = useState('');
+  const [selectedDept, setSelectedDept] = useState(null);
 
-    // Dummy departments data
-    const departments = [
-        { id: 1, name: 'Engineering', manager: { id: 1, firstName: 'John', lastName: 'Doe' } },
-        { id: 2, name: 'Marketing', manager: { id: 2, firstName: 'Jane', lastName: 'Smith' } },
-        { id: 3, name: 'Sales', manager: { id: 3, firstName: 'Michael', lastName: 'Brown' } },
-    ];
+  const API = '/api/departments';
 
-    return (
-        <div className="dashboard-page">
-            {/* Sidebar and Topbar */}
-            <Sidebar />
-            <Header />
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
-            {/* Main Content Area */}
-            <div className="dashboard-container">
-                <Typography variant="h4" gutterBottom>
-                    Departments Overview
-                </Typography>
+  const fetchDepartments = () => {
+    fetch(ApiEndpoints.department.getAll)
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to load departments');
+          return res.json();
+        })
+        .then(setDepartments)
+        .catch((err) => alert(err.message));
+  };
 
-                {/* Buttons to toggle the form */}
-                <Box sx={{ mb: 4 }}>
-                    <Button variant="contained" color="primary" onClick={() => setShowForm(true)} sx={{ mr: 2 }}>
-                        Add New Department
+
+  const handleAddDepartment = () => {
+    const payload = {
+      name: newDepartmentName,
+      managerId: managerId ? parseInt(managerId) : null
+    };
+
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) return res.text().then(text => { throw new Error(text); });
+        return res.json();
+      })
+      .then(() => {
+        setNewDepartmentName('');
+        setManagerId('');
+        setOpenAddModal(false);
+        fetchDepartments();
+      })
+      .catch((err) => alert(`Error adding department: ${err.message}`));
+  };
+
+  const handleEditManager = () => {
+    if (!selectedDept) return;
+
+    const payload = {
+      ...selectedDept,
+      managerId: managerId ? parseInt(managerId) : null,
+    };
+
+    fetch(`${API}/${selectedDept.departmentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) return res.text().then(text => { throw new Error(text); });
+        return res.json();
+      })
+      .then(() => {
+        setOpenEditModal(false);
+        setSelectedDept(null);
+        setManagerId('');
+        fetchDepartments();
+      })
+      .catch((err) => alert(`Error updating manager: ${err.message}`));
+  };
+
+  const handleDelete = (id) => {
+    if (!window.confirm('Are you sure you want to delete this department?')) return;
+
+    fetch(`${API}/${id}`, {
+      method: 'DELETE',
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to delete department');
+        fetchDepartments();
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  if (loading) return <Typography>Loading...</Typography>;
+
+  return (
+    <div className="dashboard-page">
+      <Sidebar />
+      <Header />
+      <div className="dashboard-container">
+        <Typography variant="h4" gutterBottom>Departments</Typography>
+
+        <Button variant="contained" color="success" onClick={() => setOpenAddModal(true)} sx={{ mb: 2 }}>
+          Add Department
+        </Button>
+
+        <Paper sx={{ p: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Manager ID</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {departments.map((dept) => (
+                <TableRow key={dept.departmentId}>
+                  <TableCell>{dept.departmentId}</TableCell>
+                  <TableCell>{dept.name}</TableCell>
+                  <TableCell>{dept.managerId || '—'}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => {
+                        setSelectedDept(dept);
+                        setManagerId(dept.managerId || '');
+                        setOpenEditModal(true);
+                      }}
+                      sx={{ mr: 1 }}
+                    >
+                      Edit Manager
                     </Button>
-                    {selectedDepartment && (
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => setShowForm(true)}
-                        >
-                            Edit Department
-                        </Button>
-                    )}
-                </Box>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDelete(dept.departmentId)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
 
-                {/* Department Form */}
-                {showForm && (
-                    <DepartmentForm
-                        onClose={() => setShowForm(false)}
-                        initialData={selectedDepartment}
-                        onSave={() => setSelectedDepartment(null)} // Reset selection after form success
-                    />
-                )}
+        {/* Add Department Modal */}
+        <Dialog open={openAddModal} onClose={() => setOpenAddModal(false)}>
+          <DialogTitle>Add Department</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Department Name"
+              fullWidth
+              margin="dense"
+              value={newDepartmentName}
+              onChange={(e) => setNewDepartmentName(e.target.value)}
+            />
+            <TextField
+              label="Manager ID (optional)"
+              fullWidth
+              margin="dense"
+              type="number"
+              value={managerId}
+              onChange={(e) => setManagerId(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenAddModal(false)}>Cancel</Button>
+            <Button variant="contained" onClick={handleAddDepartment}>Add</Button>
+          </DialogActions>
+        </Dialog>
 
-                {/* Grid layout for Department Cards */}
-                <Grid container spacing={4} sx={{ mb: 4 }}>
-                    <Grid item xs={12}>
-                        <Paper sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
-                            <Typography variant="h6" gutterBottom>
-                                Existing Departments
-                            </Typography>
-                            <Grid container spacing={2}>
-                                {departments.map(department => (
-                                    <Grid item xs={12} sm={6} md={4} key={department.id}>
-                                        <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                                            <CardContent>
-                                                <Typography variant="h6">{department.name}</Typography>
-                                                <Typography variant="body2" color="textSecondary">
-                                                    Manager: {department.manager.firstName} {department.manager.lastName}
-                                                </Typography>
-                                                <Button
-                                                    size="small"
-                                                    color="primary"
-                                                    onClick={() => { setSelectedDepartment(department); setShowForm(true); }}
-                                                >
-                                                    Edit
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Paper>
-                    </Grid>
-                </Grid>
-
-                {/* Position Tree */}
-                <Paper sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Position Tree
-                    </Typography>
-                    <PositionTree />
-                </Paper>
-            </div>
-        </div>
-    );
+        {/* Edit Manager Modal */}
+        <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)}>
+          <DialogTitle>Edit Manager</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="New Manager ID"
+              fullWidth
+              margin="dense"
+              type="number"
+              value={managerId}
+              onChange={(e) => setManagerId(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenEditModal(false)}>Cancel</Button>
+            <Button variant="contained" onClick={handleEditManager}>Save</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    </div>
+  );
 };
 
 export default DepartmentsView;

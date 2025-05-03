@@ -49,24 +49,29 @@ public class PayrollService {
     }
 
     public Payroll addPayroll(Payroll payroll) {
-        return wrap(() -> {
+        wrap(() -> {
             validatePayroll(payroll);
-            payrollDAO.insert(payroll);
-            return payroll;
+            int userId = 1; // Replace with actual authenticated user ID if needed
+            payrollDAO.insert(payroll, userId);
+            return null;
         });
+        return payroll;
     }
 
     public Payroll updatePayroll(Payroll payroll) {
-        return wrap(() -> {
+        wrap(() -> {
             validatePayroll(payroll);
-            payrollDAO.update(payroll);
-            return payroll;
+            int userId = 1;
+            payrollDAO.update(payroll, userId);
+            return null;
         });
+        return payroll;
     }
 
-    public void deletePayroll(int payrollId) {
+    public void deletePayroll(int id) {
         wrap(() -> {
-            payrollDAO.delete(payrollId);
+            int userId = 1;
+            payrollDAO.delete(id, userId);
             return null;
         });
     }
@@ -95,7 +100,6 @@ public class PayrollService {
         BigDecimal bonuses = getBonuses(employee, from, to);
         BigDecimal deductions = getDeductions(employee, from, to);
         BigDecimal benefits = getTaxableBenefits(employee, from, to);
-
         return baseSalary.add(bonuses).subtract(deductions).add(benefits);
     }
 

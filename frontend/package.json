@@ -22,7 +22,11 @@
     "web-vitals": "^2.1.4",
     "yup": "^1.6.1"
   },
+<<<<<<< HEAD
   "proxy": "http://localhost:3000",
+=======
+  "proxy": "http://localhost:8080",
+>>>>>>> 27416ae7c439b51407143bce6c1df5f888e5fdc6
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

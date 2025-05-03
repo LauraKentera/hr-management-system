@@ -27,7 +27,7 @@ public class Employee {
     private String bankAccountNumber;
     private boolean active;
     private Integer userId;
-
+    private boolean isDeleted;
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
@@ -65,8 +65,13 @@ public class Employee {
 
     public Employee() {
     }
-
     // Getters and Setters
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

@@ -39,7 +39,7 @@ public class DepartmentDAO {
     }
 
     public List<Department> getAll() {
-        String sql = "SELECT * FROM Department";
+        String sql = "SELECT * FROM Department WHERE is_deleted = FALSE";
         try {
             return jdbcTemplate.query(sql, this::mapRow);
         } catch (Exception e) {
@@ -85,12 +85,13 @@ public class DepartmentDAO {
         }
     }
 
-    public void delete(int id, int performedBy) {
-        String sql = "DELETE FROM Department WHERE department_id = ?";
+    public void delete(int departmentId) {
+        String sql = "UPDATE Department SET is_deleted = TRUE WHERE department_id = ?";
+
         try {
-            jdbcTemplate.update(sql, id);
+            jdbcTemplate.update(sql, departmentId);
         } catch (Exception e) {
-            throw new DLException("Error deleting department with ID " + id, e);
+            throw new DLException("Error deleting department with ID " + departmentId, e);
         }
     }
 
