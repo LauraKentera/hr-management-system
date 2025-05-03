@@ -99,12 +99,21 @@ const BenefitsListPage = () => {
             } else {
                 await createBenefit(formData, userId);
             }
-            await loadBenefits();
-            handleCloseForm();
         } catch (error) {
             console.error("Error saving benefit", error);
+    
+            // Optional: optimistic refresh if backend error is non-blocking
+            if (error.response?.status === 500) {
+                console.warn("Server error after creating benefit. Attempting to reload benefits...");
+            } else {
+                return; // for other errors, stop further execution
+            }
+        } finally {
+            await loadBenefits();
+            handleCloseForm();
         }
     };
+    
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this benefit?")) {
