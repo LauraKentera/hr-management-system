@@ -4,14 +4,15 @@ import ContractFormModal from '../components/ContractForm';
 import ContractAnnexes from '../components/ContractAnnexes';
 import Sidebar from '../components/Sidebar';  // Import Sidebar component
 import Header from '../components/Topbar';  // Import Header (Topbar) component
-import '../styles/Dashboard.css';  // Ensure Dashboard CSS is applied
 import { Button, Box, Typography } from '@mui/material';
-import '../styles/ContractsList.css';
+import { getRole } from '../utils/auth';
 
 const ContractsView = () => {
     const [selected, setSelected] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+
+    const role = getRole();  // Ensure role-based access is handled
 
     const onFormSuccess = () => setRefreshKey(k => k + 1);
 
@@ -22,29 +23,56 @@ const ContractsView = () => {
             <Header />
 
             {/* Main Content Area */}
-            <div className="dashboard-container">
+            <div className="dashboard-container" style={{ padding: '2rem' }}>
+                {/* Header Section */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h4">Contracts</Typography>
+                    <Typography variant="h4" sx={{ fontWeight: 600, color: '#004e92' }}>
+                        Contracts
+                    </Typography>
                     <Box>
-                        <Button variant="contained" color="primary" onClick={() => { setSelected(null); setShowForm(true); }} sx={{ mr: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => { setSelected(null); setShowForm(true); }}
+                            sx={{
+                                textTransform: 'none',
+                                backgroundColor: '#0077b6',
+                                '&:hover': { backgroundColor: '#005f8a' },
+                                marginRight: 2
+                            }}
+                        >
                             New Contract
                         </Button>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => selected && setShowForm(true)}
-                            disabled={!selected}
-                        >
-                            Edit Contract
-                        </Button>
+                        {role === 'Admin' && selected && (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => setShowForm(true)}
+                                disabled={!selected}
+                                sx={{
+                                    textTransform: 'none',
+                                    borderColor: '#0077b6',
+                                    color: '#0077b6',
+                                    '&:hover': { borderColor: '#005f8a', color: '#005f8a' }
+                                }}
+                            >
+                                Edit Contract
+                            </Button>
+                        )}
                     </Box>
                 </Box>
 
-                {/* Contract List */}
-                <ContractList key={refreshKey} onSelect={setSelected} />
+                {/* Contract List Section */}
+                <Box mb={3}>
+                    <ContractList key={refreshKey} onSelect={setSelected} />
+                </Box>
 
                 {/* Show Contract Annexes if a contract is selected */}
-                {selected && <ContractAnnexes contractId={selected.id} />}
+                {selected && (
+                    <Box mb={3}>
+                        <ContractAnnexes contractId={selected.id} />
+                    </Box>
+                )}
 
                 {/* Contract Form Modal */}
                 <ContractFormModal

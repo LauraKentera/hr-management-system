@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/AuthService";
 import "../styles/LoginView.css";
+import { useEffect } from "react";
 
 import {
     TextField,
@@ -13,6 +14,7 @@ import {
     Paper,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 const LoginView = () => {
     const [username, setUsername] = useState("");
@@ -36,6 +38,12 @@ const LoginView = () => {
         }
     };
 
+    useEffect(() => {
+        document.body.classList.add('login-background');
+        return () => {
+            document.body.classList.remove('login-background');
+        };
+    }, []);
     return (
         <div className="login-container">
             <Paper elevation={6} className="login-form-wrapper">

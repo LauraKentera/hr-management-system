@@ -21,6 +21,7 @@ import {
     TableCell,
     TableBody,
     Typography,
+    Divider
 } from "@mui/material";
 import { getRole } from "../utils/auth";
 
@@ -119,9 +120,20 @@ const BenefitsListPage = () => {
     return (
         <Box p={3}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">Benefits</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: '#004e92' }}>
+                    Benefits
+                </Typography>
                 {isEditable && (
-                    <Button variant="contained" color="primary" onClick={() => handleOpenForm()}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleOpenForm()}
+                        sx={{
+                            textTransform: "none",
+                            backgroundColor: "#0077b6",
+                            "&:hover": { backgroundColor: "#005f8a" },
+                        }}
+                    >
                         Add Benefit
                     </Button>
                 )}
@@ -133,11 +145,11 @@ const BenefitsListPage = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Taxable</TableCell>
-                            <TableCell>Active</TableCell>
-                            {isEditable && <TableCell>Actions</TableCell>}
+                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Name</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Description</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Taxable</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Active</TableCell>
+                            {isEditable && <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Actions</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -217,7 +229,14 @@ const BenefitsListPage = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseForm}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSubmit}>
+                    <Button
+                        variant="contained"
+                        onClick={handleSubmit}
+                        sx={{
+                            backgroundColor: "#0077b6",
+                            "&:hover": { backgroundColor: "#005f8a" },
+                        }}
+                    >
                         {editing ? "Update" : "Create"}
                     </Button>
                 </DialogActions>

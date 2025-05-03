@@ -42,17 +42,19 @@ const RolesPage = () => {
 
     return (
         <Box p={3}>
-            <Typography variant="h5" gutterBottom>Roles Management</Typography>
-            {error && <Typography color="error">{error}</Typography>}
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
+                Roles Management
+            </Typography>
+            {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
 
-            <Paper sx={{ mt: 3 }}>
+            <Paper sx={{ mt: 3, p: 2, boxShadow: 2 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Role ID</TableCell>
-                            <TableCell>Role Name</TableCell>
-                            <TableCell>Permissions</TableCell>
-                            <TableCell>Description</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Role ID</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Role Name</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Permissions</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Description</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

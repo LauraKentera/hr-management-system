@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Typography, Button,
-    Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
+    Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
     Paper, CircularProgress, Alert
 } from '@mui/material';
-
 import ApiEndpoints from '../api/ApiEndpoints'; // Import API endpoints
 import EmployeeModal from '../components/EmployeeModal'; // Import the modal component
 
@@ -35,7 +33,6 @@ const EmployeeView = () => {
         managerId: null,  // Optional
     });
 
-    // Fetch all employees when the page loads
     const fetchEmployees = async () => {
         setLoading(true);
         setError('');
@@ -56,11 +53,9 @@ const EmployeeView = () => {
         fetchEmployees();
     }, []);
 
-    // Handle modal open/close
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
 
-    // Handle input change in modal
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewEmployee((prevState) => ({
@@ -69,11 +64,9 @@ const EmployeeView = () => {
         }));
     };
 
-    // Handle creating a new employee
     const handleCreateEmployee = async (e) => {
         e.preventDefault();
 
-        // Check if all required fields are provided
         if (!newEmployee.pin || !newEmployee.lastName || !newEmployee.firstName || !newEmployee.birthDate || !newEmployee.dateOfHire || !newEmployee.nationalityId || !newEmployee.departmentId || !newEmployee.positionId || !newEmployee.taxId) {
             setError("Please fill all required fields.");
             return;
@@ -98,20 +91,30 @@ const EmployeeView = () => {
         }
     };
 
-    // Format date for display
     const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
     return (
-        <Box p={2}>
+        <Box p={3}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">All Employees</Typography>
-                <Button variant="contained" onClick={handleOpenModal}>
+                <Typography variant="h4" sx={{ fontWeight: 600, color: '#004e92' }}>All Employees</Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOpenModal}
+                    sx={{
+                        backgroundColor: '#0077b6',
+                        '&:hover': { backgroundColor: '#005f8a' },
+                        textTransform: 'none',
+                    }}
+                >
                     Add Employee
                 </Button>
             </Box>
 
             {loading ? (
-                <CircularProgress />
+                <Box display="flex" justifyContent="center" p={4}>
+                    <CircularProgress />
+                </Box>
             ) : error ? (
                 <Alert severity="error">{error}</Alert>
             ) : employees.length === 0 ? (
@@ -121,11 +124,11 @@ const EmployeeView = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell><strong>ID</strong></TableCell>
-                                <TableCell><strong>Name</strong></TableCell>
-                                <TableCell><strong>Email</strong></TableCell>
-                                <TableCell><strong>Phone</strong></TableCell>
-                                <TableCell><strong>Actions</strong></TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>ID</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Name</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Email</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Phone</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -139,11 +142,17 @@ const EmployeeView = () => {
                                         <Button
                                             variant="outlined"
                                             color="error"
+                                            size="small"
                                             onClick={async () => {
                                                 await fetch(`${ApiEndpoints.employee.delete(employee.id)}`, {
                                                     method: 'DELETE',
                                                 });
                                                 setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+                                            }}
+                                            sx={{
+                                                borderColor: '#d32f2f',
+                                                color: '#d32f2f',
+                                                '&:hover': { borderColor: '#b71c1c', color: '#b71c1c' },
                                             }}
                                         >
                                             Delete

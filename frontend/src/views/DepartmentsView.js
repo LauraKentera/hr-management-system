@@ -7,6 +7,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Topbar';
 import ApiEndpoints from "../api/ApiEndpoints";
+
 // At the top of DepartmentsView.js
 const API_BASE_URL = "http://localhost:8080/api/departments"; // Direct URL for certainty
 
@@ -18,8 +19,6 @@ const DepartmentsView = () => {
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [managerId, setManagerId] = useState('');
   const [selectedDept, setSelectedDept] = useState(null);
-
-  const API = '/api/departments';
 
   useEffect(() => {
     fetchDepartments();
@@ -84,7 +83,7 @@ const DepartmentsView = () => {
       managerId: managerId ? parseInt(managerId) : null,
     };
 
-    fetch(`${API}/${selectedDept.departmentId}`, {
+    fetch(`${API_BASE_URL}/${selectedDept.departmentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -105,7 +104,7 @@ const DepartmentsView = () => {
   const handleDelete = (id) => {
     if (!window.confirm('Are you sure you want to delete this department?')) return;
 
-    fetch(`${API}/${id}`, {
+    fetch(`${API_BASE_URL}/${id}`, {
       method: 'DELETE',
     })
       .then((res) => {
@@ -121,10 +120,20 @@ const DepartmentsView = () => {
     <div className="dashboard-page">
       <Sidebar />
       <Header />
-      <div className="dashboard-container">
-        <Typography variant="h4" gutterBottom>Departments</Typography>
+      <div className="dashboard-container" style={{ padding: '2rem' }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>Departments</Typography>
 
-        <Button variant="contained" color="success" onClick={() => setOpenAddModal(true)} sx={{ mb: 2 }}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => setOpenAddModal(true)}
+          sx={{
+            textTransform: 'none',
+            backgroundColor: '#0077b6',
+            '&:hover': { backgroundColor: '#005f8a' },
+            mb: 2,
+          }}
+        >
           Add Department
         </Button>
 
@@ -132,10 +141,10 @@ const DepartmentsView = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Manager ID</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Name</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Manager ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
