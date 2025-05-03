@@ -64,6 +64,9 @@ CREATE TABLE IF NOT EXISTS Department (
     manager_id INT
 );
 
+DESCRIBE Department;
+
+
 CREATE TABLE
     IF NOT EXISTS Position (
         position_id INT PRIMARY KEY AUTO_INCREMENT,

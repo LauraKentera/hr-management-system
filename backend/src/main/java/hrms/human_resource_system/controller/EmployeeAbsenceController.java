@@ -122,4 +122,36 @@ public class EmployeeAbsenceController {
         }
     }
 
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<?> approveAbsence(
+            @PathVariable int id,
+            @RequestParam int approvedBy) {
+        try {
+            service.approveOrDenyAbsence(id, "Approved", approvedBy);
+            return ResponseEntity.ok("Absence approved successfully");
+        } catch (IllegalArgumentException e) {
+            return error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DLException e) {
+            return error("Database error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return error("Error approving absence", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<?> rejectAbsence(
+            @PathVariable int id,
+            @RequestParam int approvedBy) {
+        try {
+            service.approveOrDenyAbsence(id, "Rejected", approvedBy);
+            return ResponseEntity.ok("Absence rejected successfully");
+        } catch (IllegalArgumentException e) {
+            return error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DLException e) {
+            return error("Database error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return error("Error rejecting absence", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
