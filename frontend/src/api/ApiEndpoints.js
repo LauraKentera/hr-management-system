@@ -72,6 +72,19 @@ const ApiEndpoints = {
         update: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
         delete: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
     },
+    dashboard: {
+        overview: `${BASE_URL}/api/dashboard/overview`,
+        totalEmployees: `${BASE_URL}/api/dashboard/total-employees`,
+        activeContracts: `${BASE_URL}/api/dashboard/active-contracts`,
+        pendingBenefits: `${BASE_URL}/api/dashboard/pending-benefits`,
+        absencesToday: `${BASE_URL}/api/dashboard/absences-today`,
+        averageSalary: `${BASE_URL}/api/dashboard/average-salary`,
+        retentionRate: `${BASE_URL}/api/dashboard/retention-rate`,
+        benefitsUtilization: `${BASE_URL}/api/dashboard/benefits-utilization`,
+        contractExpirations: `${BASE_URL}/api/dashboard/contract-expirations`,
+        nextPayCycle: `${BASE_URL}/api/dashboard/next-pay-cycle`,
+        payrollDistribution: "/api/dashboard/net-pay-by-employee" // New endpoint for payroll distribution
+    },
 };
 
 export default ApiEndpoints;

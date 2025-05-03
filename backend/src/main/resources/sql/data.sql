@@ -247,3 +247,46 @@ INSERT INTO EmploymentContract (employee_id, start_date, end_date, position_id, 
 VALUES
     (1, '2023-01-01', '2024-01-01', 1, 50000.00, 'Permanent', '2023-01-01', 'path/to/document1.pdf'),
     (2, '2022-06-01', '2023-06-01', 2, 45000.00, 'Temporary', '2022-06-01', 'path/to/document2.pdf');
+
+
+
+
+
+-- Insert unencrypted users for employees 4–8
+INSERT INTO User (username, password, role_id) VALUES
+                                                   ('employee4', 'LauraPass123', 3),
+                                                   ('employee5', 'MilanSecure456', 3),
+                                                   ('employee6', 'ArtaPwd789', 3),
+                                                   ('employee7', 'ElvisKey321', 3),
+                                                   ('employee8', 'TamaraAccess654', 3);
+
+-- Insert extra nationalities and departments if needed
+INSERT INTO Nationality (name, is_active) VALUES
+                                              ('Hungarian', TRUE),
+                                              ('Albanian', TRUE);
+
+INSERT INTO Department (name) VALUES
+                                  ('Marketing'),
+                                  ('Finance');
+
+-- Insert extra positions
+INSERT INTO Position (name, short_name, education_level_id, requires_licensing) VALUES
+                                                                                    ('Marketing Specialist', 'MS', 4, FALSE),
+                                                                                    ('Finance Analyst', 'FA', 4, TRUE);
+-- Insert new users with readable passwords (dummy data)
+INSERT INTO User (username, password, role_id) VALUES
+                                                   ('employee4', 'LauraPass123', 3),
+                                                   ('employee5', 'MilanSecure456', 3),
+                                                   ('employee6', 'ArtaPwd789', 3),
+                                                   ('employee7', 'ElvisKey321', 3),
+                                                   ('employee8', 'TamaraAccess654', 3);
+
+-- Add new nationalities and departments if not present
+INSERT IGNORE INTO Nationality (name, is_active) VALUES ('Hungarian', TRUE), ('Albanian', TRUE);
+INSERT IGNORE INTO Department (name) VALUES ('Marketing'), ('Finance');
+
+-- Add positions if not already in use
+INSERT IGNORE INTO Position (name, short_name, education_level_id, requires_licensing) VALUES
+                                                                                           ('Marketing Specialist', 'MS', 4, FALSE),
+                                                                                           ('Finance Analyst', 'FA', 4, TRUE),
+                                                                                           ('Senior Developer', 'SD', 4, FALSE);

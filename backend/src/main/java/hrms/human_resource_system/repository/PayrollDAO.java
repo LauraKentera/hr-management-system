@@ -151,4 +151,20 @@ public class PayrollDAO {
             throw new DLException("Error deleting payroll", e);
         }
     }
+
+    public List<Payroll> getAllWithEmployeeNames() {
+        String sql = """
+        SELECT p.*, e.first_name, e.last_name 
+        FROM Payroll p
+        JOIN Employee e ON p.employee_id = e.id
+    """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Payroll payroll = mapRow(rs, rowNum);
+            payroll.setEmployeeName(rs.getString("first_name") + " " + rs.getString("last_name"));
+            return payroll;
+        });
+    }
+
+
 }
