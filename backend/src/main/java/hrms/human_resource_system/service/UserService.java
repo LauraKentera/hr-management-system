@@ -136,9 +136,15 @@ public class UserService {
         return wrap(() -> userDAO.getById(id));
     }
 
+    @Transactional
     public void deleteUser(int id) {
         wrap(() -> {
-            userDAO.delete(id);
+            Employee employee = employeeDAO.getByUserId(id);
+            if (employee != null) {
+                employeeDAO.unlinkUser(employee.getId());      // ✨ THIS FIXES THE FK ERROR
+                employeeDAO.delete(employee.getId(), id);      // Soft delete
+            }
+            userDAO.delete(id);                                 // Hard delete
             return null;
         });
     }

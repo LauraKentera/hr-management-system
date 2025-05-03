@@ -24,6 +24,7 @@ import {
     Paper
 } from "@mui/material";
 import { getRole } from "../utils/auth";
+import Header from '../components/Topbar';
 
 // ✅ Pull role and userId directly from localStorage
 const role = getRole();
@@ -128,6 +129,7 @@ const BenefitsListPage = () => {
 
     return (
         <Box p={3}>
+            <Header />
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h5" sx={{ fontWeight: 600, color: '#004e92' }}>Benefits</Typography>
                 {isEditable && (

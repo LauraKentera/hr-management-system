@@ -6,6 +6,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'; // For collapsible icon
 import ApiEndpoints from '../api/ApiEndpoints'; // Import API endpoints
 import EmployeeModal from '../components/EmployeeModal'; // Import the modal component
+import Header from '../components/Topbar';
 
 const EmployeeView = () => {
     const [employees, setEmployees] = useState([]);

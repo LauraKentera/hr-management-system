@@ -6,6 +6,7 @@ import { Delete, Edit, Add } from "@mui/icons-material";
 import UserFormDialog from "../components/UserFormDialog";
 import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
 import { Chip } from "@mui/material";
+import Header from '../components/Topbar';
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -92,6 +93,7 @@ const UsersPage = () => {
 
     return (
         <Box p={3}>
+            <Header /> {/* Add the Header (Topbar) component */}
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>Users</Typography>
             {error && <Typography color="error">{error}</Typography>}
 

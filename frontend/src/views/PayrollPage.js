@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Button, CircularProgress, Snackbar, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
 import PayrollForm from './PayrollForm';
-import PayrollGenerator from './PayrollGenerator';
 import PayrollService from '../services/PayrollService';
 import { Box } from '@mui/material';
+import Header from '../components/Topbar';
 
 
 const PayrollPage = () => {
@@ -30,6 +30,7 @@ const PayrollPage = () => {
 
     return (
         <Container sx={{ paddingTop: 4 }}>
+            <Header /> {/* Add the Header (Topbar) component */}
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
                 Salaries
             </Typography>
@@ -47,7 +48,6 @@ const PayrollPage = () => {
                 Add Payroll
             </Button>
 
-            <PayrollGenerator refreshPayrolls={fetchPayrolls} />
 
             {loading ? (
                 <Box display="flex" justifyContent="center" p={4}>
