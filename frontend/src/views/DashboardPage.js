@@ -9,7 +9,7 @@ const Dashboard = () => {
 
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
-            {/* Header */}
+            {/* Header Section */}
             <Box mb={4}>
                 <Typography variant="h4" fontWeight={700} color="primary.main">
                     Hello, {username}
@@ -19,59 +19,69 @@ const Dashboard = () => {
                 </Typography>
             </Box>
 
-            <Grid container spacing={3}>
-                {/* KPI Cards */}
-                <Grid item xs={12}>
+            <Grid container spacing={4}>
+                {/* KPI Cards (Top Row) */}
+                <Grid item xs={12} sm={6} md={4}>
                     <Paper
-                        elevation={4}
+                        elevation={6}
                         sx={{
                             p: 3,
                             borderRadius: 3,
-                            backgroundColor: "#fdfdfd",
-                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.06)",
+                            backgroundColor: "#f9f9f9",
+                            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
                         }}
                     >
                         <DashboardKpi />
                     </Paper>
                 </Grid>
 
-                {/* Retention Chart */}
-                <Grid item xs={12} md={6}>
-                    <Paper
-                        elevation={4}
-                        sx={{
-                            p: 3,
-                            borderRadius: 3,
-                            backgroundColor: "#ffffff",
-                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.06)",
-                        }}
-                    >
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
-                            Retention Overview
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <RetentionChart />
-                    </Paper>
-                </Grid>
-
                 {/* Payroll Distribution Chart */}
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Paper
-                        elevation={4}
+                        elevation={6}
                         sx={{
                             p: 3,
                             borderRadius: 3,
                             backgroundColor: "#ffffff",
-                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.06)",
+                            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
                         }}
                     >
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" fontWeight={600} color="primary.main" gutterBottom>
                             Payroll Distribution
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
                         <PayrollDistributionChart />
                     </Paper>
                 </Grid>
+
+                {/* Retention Overview Chart */}
+                <Grid item xs={12} sm={6} md={4}>
+                    <Paper
+                        elevation={6}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            backgroundColor: "#ffffff",
+                            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+                        }}
+                    >
+                        <Typography variant="h6" fontWeight={600} color="primary.main" gutterBottom>
+                            Retention Overview
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <RetentionChart />
+                    </Paper>
+                </Grid>
+            </Grid>
+
+            {/* Additional Content Section (if necessary) */}
+            <Grid container spacing={4} sx={{ mt: 4 }}>
+                {/* Example for future additions */}
+                {/* <Grid item xs={12} sm={6} md={4}>
+                    <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 3 }}>
+                        {/* Additional content like charts, tables, etc. */}
+                {/*</Paper>
+                </Grid> */}
             </Grid>
         </Container>
     );
