@@ -182,3 +182,69 @@ VALUES (1, 'NLB Banka', '123456789', 'ME25505000012345678951'),
 INSERT INTO EmployeeChange (employee_id, change_date, old_position_id, new_position_id, old_salary, new_salary)
 VALUES (1, '2023-02-15', 2, 4, 1500.00, 1800.00),
        (2, '2023-05-01', 3, 5, 1600.00, 1900.00);
+
+
+UPDATE Employee
+SET user_id = 1
+WHERE id = 1; -- Link admin_user to Marko Petrovic (Employee ID 1)
+
+UPDATE Employee
+SET user_id = 2
+WHERE id = 2; -- Link hr_user to Anna Müller (Employee ID 2)
+
+UPDATE Employee
+SET user_id = 3
+WHERE id = 3; -- Link employee_user to Jelena Ivanovic (Employee ID 3)
+
+UPDATE Employee
+SET user_id = 4
+WHERE id = 4; -- Link employee4 to Laura Autogen (Employee ID 4)
+
+UPDATE Employee
+SET user_id = 5
+WHERE id = 5; -- Link employee5 to Milan Kovacs (Employee ID 5)
+
+UPDATE Employee
+SET user_id = 6
+WHERE id = 6; -- Link employee6 to Arta Gjini (Employee ID 6)
+
+UPDATE Employee
+SET user_id = 7
+WHERE id = 7; -- Link employee7 to Elvis Mehmedovic (Employee ID 7)
+
+UPDATE Employee
+SET user_id = 8
+WHERE id = 8; -- Link employee8 to Tamara Radic (Employee ID 8)
+
+
+UPDATE User
+SET employee_id = 1
+WHERE id = 1; -- Link admin_user to Employee ID 1
+
+UPDATE User
+SET employee_id = 2
+WHERE id = 2; -- Link hr_user to Employee ID 2
+
+UPDATE User
+SET employee_id = 3
+WHERE id = 3; -- Link employee_user to Employee ID 3
+
+UPDATE User
+SET employee_id = 4
+WHERE id = 4; -- Link employee4 to Employee ID 4
+
+UPDATE User
+SET employee_id = 5
+WHERE id = 5; -- Link employee5 to Employee ID 5
+
+UPDATE User
+SET employee_id = 6
+WHERE id = 6; -- Link employee6 to Employee ID 6
+
+UPDATE User
+SET employee_id = 7
+WHERE id = 7; -- Link employee7 to Employee ID 7
+
+UPDATE User
+SET employee_id = 8
+WHERE id = 8; -- Link employee8 to Employee ID 8
