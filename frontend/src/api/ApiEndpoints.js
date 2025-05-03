@@ -17,9 +17,11 @@ const ApiEndpoints = {
         update: (id) => `${BASE_URL}/api/employees/${id}`,
         delete: (id) => `${BASE_URL}/api/employees/${id}`,
     },
-    department: {
-        getAll: `${BASE_URL}/departments`,
-        create: `${BASE_URL}/departments`,
+    departments: {
+        getAll: `${BASE_URL}/api/departments`,  // Note the /api prefix
+        create: `${BASE_URL}/api/departments`,
+        update: (id) => `${BASE_URL}/api/departments/${id}`,
+        delete: (id) => `${BASE_URL}/api/departments/${id}`
     },
     absenceTypes: {
         getAll: `${BASE_URL}/api/absence-types`, // Added this missing endpoint
@@ -30,12 +32,12 @@ const ApiEndpoints = {
         updateStatus: (id) => `${BASE_URL}/api/employee-absences/${id}/status`,
         approve: (id) => `${BASE_URL}/api/employee-absences/${id}/approve`,
         reject: (id) => `${BASE_URL}/api/employee-absences/${id}/reject`
-      },  
-      approvals: {
+    },
+    approvals: {
         create: `${BASE_URL}/api/approvals`,
         updateByAbsence: (id) => `${BASE_URL}/api/approvals/by-absence/${id}`,
         getByAbsence: (id) => `${BASE_URL}/api/approvals/by-absence/${id}`
-      },    
+    },
     role: {
         getAll: `${BASE_URL}/api/roles`,
         create: `${BASE_URL}/api/roles`,

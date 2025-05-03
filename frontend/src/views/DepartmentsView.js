@@ -7,6 +7,8 @@ import {
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Topbar';
 import ApiEndpoints from "../api/ApiEndpoints";
+// At the top of DepartmentsView.js
+const API_BASE_URL = "http://localhost:8080/api/departments"; // Direct URL for certainty
 
 const DepartmentsView = () => {
   const [departments, setDepartments] = useState([]);
@@ -23,39 +25,55 @@ const DepartmentsView = () => {
     fetchDepartments();
   }, []);
 
-  const fetchDepartments = () => {
-    fetch(ApiEndpoints.department.getAll)
-        .then((res) => {
-          if (!res.ok) throw new Error('Failed to load departments');
-          return res.json();
-        })
-        .then(setDepartments)
-        .catch((err) => alert(err.message));
+  const fetchDepartments = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_BASE_URL);
+      
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      
+      const data = await response.json();
+      setDepartments(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Failed to load departments");
+    } finally {
+      setLoading(false);
+    }
   };
 
-
-  const handleAddDepartment = () => {
-    const payload = {
-      name: newDepartmentName,
-      managerId: managerId ? parseInt(managerId) : null
-    };
-
-    fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => {
-        if (!res.ok) return res.text().then(text => { throw new Error(text); });
-        return res.json();
-      })
-      .then(() => {
-        setNewDepartmentName('');
-        setManagerId('');
-        setOpenAddModal(false);
-        fetchDepartments();
-      })
-      .catch((err) => alert(`Error adding department: ${err.message}`));
+  const handleAddDepartment = async () => {
+    try {
+      const payload = {
+        name: newDepartmentName,
+        managerId: managerId ? parseInt(managerId) : null  // Ensure proper number conversion
+      };
+  
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add department');
+      }
+  
+      const result = await response.json();
+      console.log("Success:", result);
+      
+      setNewDepartmentName('');
+      setManagerId('');
+      setOpenAddModal(false);
+      fetchDepartments(); // Refresh the list
+    } catch (err) {
+      console.error('API Error:', err);
+      alert(`Error: ${err.message}`);
+    }
   };
 
   const handleEditManager = () => {

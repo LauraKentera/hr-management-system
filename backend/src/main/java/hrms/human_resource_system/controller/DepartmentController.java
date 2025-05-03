@@ -27,12 +27,10 @@ public class DepartmentController {
         try {
             List<Department> departments = service.getAll();
             return ResponseEntity.ok(departments);
-        } catch (DLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
         } catch (Exception e) {
+            e.printStackTrace(); // This will log the full error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CustomErrorResponse("Error retrieving departments", 500));
+                    .body(new CustomErrorResponse("Error retrieving departments: " + e.getMessage(), 500));
         }
     }
 
@@ -43,7 +41,7 @@ public class DepartmentController {
             return department != null
                     ? ResponseEntity.ok(department)
                     : ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CustomErrorResponse("Department not found with id: " + id, 404));
+                            .body(new CustomErrorResponse("Department not found with id: " + id, 404));
         } catch (DLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CustomErrorResponse("Database error: " + e.getMessage(), 500));
