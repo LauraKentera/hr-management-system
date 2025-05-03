@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Typography, Button, Grid, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, CircularProgress, Alert, Chip, Tabs, Tab, Divider
+    Box, Typography, Button, Grid, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, CircularProgress, Alert, Chip, Tabs, Tab
 } from '@mui/material';
 import ApiEndpoints from '../api/ApiEndpoints';
 import RequestAbsenceModal from '../components/RequestAbsenceModal';
@@ -20,6 +20,8 @@ const AbsenceView = () => {
         role: localStorage.getItem('role'),
         employeeId: localStorage.getItem('employeeId')
     };
+
+    const canManageAbsences = currentUser.role === 'Admin' || currentUser.role === 'HR';
 
     const fetchData = async () => {
         try {
@@ -180,13 +182,13 @@ const AbsenceView = () => {
             case 1: return absence.status === 'Approved';
             case 2: return absence.status === 'Rejected';
             case 3: return absence.status === 'Pending';
-            default: return true; // Show all for tab 0
+            default: return true;
         }
     });
 
     return (
         <Box p={3}>
-            <Header /> 
+            <Header />
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
                 Absence Management
             </Typography>
@@ -202,7 +204,7 @@ const AbsenceView = () => {
                     <Tab label="All" sx={{ fontWeight: 600, color: '#004e92' }} />
                     <Tab label="Approved" sx={{ fontWeight: 600, color: '#004e92' }} />
                     <Tab label="Rejected" sx={{ fontWeight: 600, color: '#004e92' }} />
-                    {currentUser.role === 'Admin' && <Tab label="Pending" sx={{ fontWeight: 600, color: '#004e92' }} />}
+                    {canManageAbsences && <Tab label="Pending" sx={{ fontWeight: 600, color: '#004e92' }} />}
                 </Tabs>
             </Box>
 
@@ -248,7 +250,7 @@ const AbsenceView = () => {
                                             <TableCell>Dates</TableCell>
                                             <TableCell>Days</TableCell>
                                             <TableCell>Status</TableCell>
-                                            {currentUser.role === 'Admin' && selectedTab === 3 && (
+                                            {canManageAbsences && selectedTab === 3 && (
                                                 <TableCell>Actions</TableCell>
                                             )}
                                         </TableRow>
@@ -269,7 +271,7 @@ const AbsenceView = () => {
                                                     ) + 1}
                                                 </TableCell>
                                                 <TableCell>{getStatusChip(absence.status)}</TableCell>
-                                                {currentUser.role === 'Admin' && absence.status === 'Pending' && (
+                                                {canManageAbsences && absence.status === 'Pending' && (
                                                     <TableCell>
                                                         <Button
                                                             size="small"
@@ -300,7 +302,6 @@ const AbsenceView = () => {
                         )}
                     </Paper>
                 </Grid>
-
             </Grid>
 
             <RequestAbsenceModal
@@ -311,7 +312,6 @@ const AbsenceView = () => {
                 loading={loading.action}
             />
         </Box>
-   
     );
 };
 
