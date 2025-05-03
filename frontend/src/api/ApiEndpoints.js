@@ -87,6 +87,14 @@ const ApiEndpoints = {
         nextPayCycle: `${BASE_URL}/api/dashboard/next-pay-cycle`,
         payrollDistribution: "/api/dashboard/net-pay-by-employee" // New endpoint for payroll distribution
     },
+    contract: {
+        getAll: `${BASE_URL}/api/contracts`,  // Define the endpoint to fetch all contracts
+        getById: (id) => `${BASE_URL}/api/contracts/${id}`,
+        create: `${BASE_URL}/api/contracts`,
+        update: (id) => `${BASE_URL}/api/contracts/${id}`,
+        delete: (id) => `${BASE_URL}/api/contracts/${id}`,
+        getAnnexesByContractId: (id) => `${BASE_URL}/api/contracts/${id}/annexes`
+    },
 };
 
 export default ApiEndpoints;
