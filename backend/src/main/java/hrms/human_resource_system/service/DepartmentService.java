@@ -74,7 +74,7 @@ public class DepartmentService {
         }
 
         if (department.getManagerId() != null && !employeeDAO.existsById(department.getManagerId())) {
-            throw new IllegalArgumentException("Manager with ID " + department.getManagerId() + " does not exist.");
+            throw new IllegalArgumentException("Manager with ID " + department.getManagerId() + " does not exist");
         }
     }
 }
