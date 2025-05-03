@@ -69,6 +69,17 @@ const ApiEndpoints = {
         delete: (id) => `${BASE_URL}/api/contracts/${id}`,
         getAnnexesByContractId: (id) => `${BASE_URL}/api/contracts/${id}/annexes`,
     },
+    nationality: {
+        getAll: `${BASE_URL}/api/nationalities`,
+        getById: (id) => `${BASE_URL}/api/nationalities/${id}`,
+        create: `${BASE_URL}/api/nationalities`,
+        update: (id) => `${BASE_URL}/api/nationalities/${id}`,
+        delete: (id) => `${BASE_URL}/api/nationalities/${id}`,
+    },
+    position: {
+        getAll: `${BASE_URL}/api/positions`,
+        getById: (id) => `${BASE_URL}/api/positions/${id}`,
+    }
 };
 
 export default ApiEndpoints;

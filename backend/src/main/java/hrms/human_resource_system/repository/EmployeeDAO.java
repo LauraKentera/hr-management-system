@@ -66,17 +66,21 @@ public class EmployeeDAO {
             throw new DLException("Error fetching all employees", e);
         }
     }
-    
+
 
     public Employee insert(Employee employee, int performedBy) {
-        String sql = """
-                    INSERT INTO Employee 
-                    (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, 
-                     gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, 
-                     emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number, user_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+        // Ensure the department exists before inserting the employee
+        if (employee.getDepartment() == null || !departmentExists(employee.getDepartment().getDepartmentId())) {
+            throw new IllegalArgumentException("Invalid department ID");
+        }
 
+        String sql = """
+                INSERT INTO Employee 
+                (PIN, last_name, first_name, birth_date, date_of_hire, date_of_dismissal, phone_number, email, address, 
+                 gender, nationality_id, department_id, position_id, employment_status, emergency_contact_name, 
+                 emergency_contact_phone, marital_status, employment_type, manager_id, tax_id, bank_account_number, user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -94,7 +98,7 @@ public class EmployeeDAO {
                 ps.setString(9, employee.getAddress());
                 ps.setString(10, employee.getGender());
                 ps.setInt(11, employee.getNationality().getNationalityId());
-                ps.setInt(12, employee.getDepartment().getDepartmentId());
+                ps.setInt(12, employee.getDepartment().getDepartmentId());  // Department ID here
                 ps.setInt(13, employee.getPosition().getPositionId());
                 ps.setString(14, employee.getEmploymentStatus());
                 ps.setString(15, employee.getEmergencyContactName());
@@ -115,13 +119,22 @@ public class EmployeeDAO {
                 employee.setId(keyHolder.getKey().intValue());
             }
 
+            // Log the change (if you have audit logging in place)
             auditLogger.logChange("Employee", employee.getId(), "CREATE", performedBy, null, employee);
 
             return employee;
 
+
         } catch (Exception e) {
             throw new DLException("Error inserting employee", e);
         }
+    }
+
+    // Helper method to check if department exists
+    private boolean departmentExists(int departmentId) {
+        String sql = "SELECT COUNT(*) FROM Department WHERE department_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, departmentId);
+        return count != null && count > 0;
     }
 
     public Employee update(int id, Employee employee, int performedBy) {

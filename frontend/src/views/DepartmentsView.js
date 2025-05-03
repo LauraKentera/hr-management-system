@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Topbar';
+import ApiEndpoints from "../api/ApiEndpoints";
 
 const DepartmentsView = () => {
   const [departments, setDepartments] = useState([]);
@@ -23,15 +24,15 @@ const DepartmentsView = () => {
   }, []);
 
   const fetchDepartments = () => {
-    fetch(API)
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load departments');
-        return res.json();
-      })
-      .then(setDepartments)
-      .catch((err) => alert(err.message))
-      .finally(() => setLoading(false));
+    fetch(ApiEndpoints.department.getAll)
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to load departments');
+          return res.json();
+        })
+        .then(setDepartments)
+        .catch((err) => alert(err.message));
   };
+
 
   const handleAddDepartment = () => {
     const payload = {
