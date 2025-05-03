@@ -9,11 +9,8 @@ import {
 } from "@mui/material";
 import RetentionChart from "../components/RetentionChart";
 import PayrollDistributionChart from "../components/PayrollDistributionChart";
-<<<<<<< HEAD
 import Header from '../components/Topbar';
-=======
 import DashboardService from "../services/dashboardService";
->>>>>>> 9cca9fd9eaffe346eb4422b7123efbf11e169ffa
 
 const Dashboard = () => {
     const username = localStorage.getItem("username") || "User";
