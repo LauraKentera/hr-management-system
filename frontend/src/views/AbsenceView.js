@@ -301,9 +301,6 @@ const AbsenceView = () => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
-                    <AbsenceTypeChart absences={absences} />
-                </Grid>
             </Grid>
 
             <RequestAbsenceModal

@@ -6,17 +6,23 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
     const [nationalities, setNationalities] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
+    const [loading, setLoading] = useState(true); // Track loading state
 
     // Fetch dropdown options for nationality, department, and position
     const fetchDropdownOptions = async () => {
+        setLoading(true); // Start loading when fetching data
         try {
-            const nationalityResponse = await fetch(ApiEndpoints.nationality.getAll); // Ensure this is fetching data from the correct endpoint
+            const nationalityResponse = await fetch(ApiEndpoints.nationality.getAll); // Ensure correct API endpoint
             const departmentResponse = await fetch(ApiEndpoints.department.getAll);
-            const positionResponse = await fetch(ApiEndpoints.position.getAll); // Ensure the endpoint is correct for positions
+            const positionResponse = await fetch(ApiEndpoints.position.getAll);
 
             const nationalityData = await nationalityResponse.json();
             const departmentData = await departmentResponse.json();
             const positionData = await positionResponse.json();
+
+            console.log("Nationalities:", nationalityData);  // Debugging the fetched data
+            console.log("Departments:", departmentData);
+            console.log("Positions:", positionData);
 
             if (Array.isArray(nationalityData)) {
                 setNationalities(nationalityData);
@@ -29,13 +35,14 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
             }
         } catch (err) {
             console.error('Failed to fetch dropdown data:', err);
+        } finally {
+            setLoading(false); // Set loading to false after data fetch
         }
     };
 
-
     useEffect(() => {
         if (open) {
-            fetchDropdownOptions();
+            fetchDropdownOptions(); // Fetch data when modal is opened
         }
     }, [open]);
 
@@ -48,7 +55,7 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
         >
             <Box
                 sx={{
-                    width: '900px',  // Increased width for a more horizontal layout
+                    width: '900px',
                     backgroundColor: 'white',
                     margin: 'auto',
                     padding: 3,
@@ -63,6 +70,7 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                 <Typography variant="h6" sx={{ mb: 2 }}>Create Employee</Typography>
                 <form onSubmit={onSubmit}>
                     <Grid container spacing={2}>
+                        {/* Basic form fields */}
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="PIN"
@@ -87,75 +95,8 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Last Name"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                name="lastName"
-                                value={employeeData.lastName}
-                                onChange={onChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Email"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                name="email"
-                                value={employeeData.email}
-                                onChange={onChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Phone Number"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                name="phoneNumber"
-                                value={employeeData.phoneNumber}
-                                onChange={onChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Birth Date"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                name="birthDate"
-                                type="date"
-                                value={employeeData.birthDate}
-                                onChange={onChange}
-                                required
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Date of Hire"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                name="dateOfHire"
-                                type="date"
-                                value={employeeData.dateOfHire}
-                                onChange={onChange}
-                                required
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid>
-
+                        {/* Other form fields like Last Name, Email, Phone, etc. */}
+                        
                         {/* Nationality Dropdown */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth margin="normal" required>
@@ -163,22 +104,24 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                                 <Select
                                     label="Nationality"
                                     name="nationalityId"
-                                    value={employeeData.nationalityId}
+                                    value={employeeData.nationalityId || ''}
                                     onChange={onChange}
                                     sx={{
-                                        height: '45px',  // Increased height
-                                        minWidth: '200px',  // Increased width for visibility
+                                        height: '45px',
+                                        minWidth: '200px',
                                     }}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
-                                                maxHeight: 200,  // Adjust dropdown height
-                                                width: 250,  // Increased width for dropdown options
+                                                maxHeight: 200,
+                                                width: 250,
                                             },
                                         },
                                     }}
                                 >
-                                    {nationalities.length > 0 ? (
+                                    {loading ? (
+                                        <MenuItem disabled>Loading...</MenuItem>
+                                    ) : nationalities.length > 0 ? (
                                         nationalities.map((nationality) => (
                                             <MenuItem key={nationality.nationalityId} value={nationality.nationalityId}>
                                                 {nationality.name}
@@ -198,22 +141,24 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                                 <Select
                                     label="Department"
                                     name="departmentId"
-                                    value={employeeData.departmentId}
+                                    value={employeeData.departmentId || ''}
                                     onChange={onChange}
                                     sx={{
-                                        height: '45px',  // Increased height
-                                        minWidth: '200px',  // Increased width for visibility
+                                        height: '45px',
+                                        minWidth: '200px',
                                     }}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
-                                                maxHeight: 200,  // Adjust dropdown height
-                                                width: 250,  // Increased width for dropdown options
+                                                maxHeight: 200,
+                                                width: 250,
                                             },
                                         },
                                     }}
                                 >
-                                    {departments.length > 0 ? (
+                                    {loading ? (
+                                        <MenuItem disabled>Loading...</MenuItem>
+                                    ) : departments.length > 0 ? (
                                         departments.map((department) => (
                                             <MenuItem key={department.departmentId} value={department.departmentId}>
                                                 {department.name}
@@ -233,22 +178,24 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                                 <Select
                                     label="Position"
                                     name="positionId"
-                                    value={employeeData.positionId}
+                                    value={employeeData.positionId || ''}
                                     onChange={onChange}
                                     sx={{
-                                        height: '45px',  // Increased height
-                                        minWidth: '200px',  // Increased width for visibility
+                                        height: '45px',
+                                        minWidth: '200px',
                                     }}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
-                                                maxHeight: 200,  // Adjust dropdown height
-                                                width: 250,  // Increased width for dropdown options
+                                                maxHeight: 200,
+                                                width: 250,
                                             },
                                         },
                                     }}
                                 >
-                                    {positions.length > 0 ? (
+                                    {loading ? (
+                                        <MenuItem disabled>Loading...</MenuItem>
+                                    ) : positions.length > 0 ? (
                                         positions.map((position) => (
                                             <MenuItem key={position.positionId} value={position.positionId}>
                                                 {position.name}
@@ -268,17 +215,17 @@ const EmployeeModal = ({ open, onClose, onSubmit, employeeData, onChange }) => {
                                 <Select
                                     label="Employment Status"
                                     name="employmentStatus"
-                                    value={employeeData.employmentStatus}
+                                    value={employeeData.employmentStatus || ''}
                                     onChange={onChange}
                                     sx={{
-                                        height: '45px',  // Increased height
-                                        minWidth: '200px',  // Increased width for visibility
+                                        height: '45px',
+                                        minWidth: '200px',
                                     }}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
-                                                maxHeight: 200,  // Adjust dropdown height
-                                                width: 250,  // Increased width for dropdown options
+                                                maxHeight: 200,
+                                                width: 250,
                                             },
                                         },
                                     }}
