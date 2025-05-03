@@ -5,6 +5,7 @@ import {
 import ApiEndpoints from '../api/ApiEndpoints';
 import RequestAbsenceModal from '../components/RequestAbsenceModal';
 import AbsenceTypeChart from '../components/AbsenceTypeChart';
+import Header from '../components/Topbar';
 
 const AbsenceView = () => {
     const [absences, setAbsences] = useState([]);
@@ -185,6 +186,7 @@ const AbsenceView = () => {
 
     return (
         <Box p={3}>
+            <Header /> 
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
                 Absence Management
             </Typography>
@@ -312,6 +314,7 @@ const AbsenceView = () => {
                 loading={loading.action}
             />
         </Box>
+   
     );
 };
 

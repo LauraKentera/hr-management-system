@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import ApiEndpoints from '../api/ApiEndpoints'; // Import API endpoints
 import EmployeeModal from '../components/EmployeeModal'; // Import the modal component
+import Header from '../components/Topbar';
 
 const EmployeeView = () => {
     const [employees, setEmployees] = useState([]);
@@ -95,6 +96,7 @@ const EmployeeView = () => {
 
     return (
         <Box p={3}>
+            <Header /> {/* Add the Header (Topbar) component */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h4" sx={{ fontWeight: 600, color: '#004e92' }}>All Employees</Typography>
                 <Button

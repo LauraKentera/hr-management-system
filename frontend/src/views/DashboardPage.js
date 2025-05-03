@@ -2,13 +2,14 @@ import React from "react";
 import { Grid, Box, Paper, Typography, Container, Divider } from "@mui/material";
 import RetentionChart from "../components/RetentionChart";
 import PayrollDistributionChart from "../components/PayrollDistributionChart";
+import Header from '../components/Topbar';
 
 const Dashboard = () => {
     const username = localStorage.getItem("username") || "User";
 
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
-            {/* Header */}
+           <Header /> {/* Add the Header (Topbar) component */}
             <Box mb={4}>
                 <Typography variant="h4" fontWeight={700} gutterBottom>
                     Welcome Back, {username}

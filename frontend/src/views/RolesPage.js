@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchRoles } from "../services/roleService"; // Your service to fetch roles
 import { Typography, Paper, Table, TableHead, TableBody, TableCell, TableRow, Box } from "@mui/material";
+import Header from '../components/Topbar';
 
 const RolesPage = () => {
     const [roles, setRoles] = useState([]);
@@ -42,6 +43,7 @@ const RolesPage = () => {
 
     return (
         <Box p={3}>
+            <Header /> {/* Add the Header (Topbar) component */}
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
                 Roles Management
             </Typography>

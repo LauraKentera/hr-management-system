@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import contractService from '../services/contractService';
 import { Link } from 'react-router-dom';
 import { Box, Button, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
-
+import Header from '../components/Topbar';
 const ContractListPage = () => {
     const [contracts, setContracts] = useState([]);
     const [error, setError] = useState('');
@@ -23,6 +23,7 @@ const ContractListPage = () => {
 
     return (
         <Box p={3}>
+            <Header /> {/* Add the Header (Topbar) component */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h4" sx={{ fontWeight: 600, color: '#004e92' }}>
                     Contract List
