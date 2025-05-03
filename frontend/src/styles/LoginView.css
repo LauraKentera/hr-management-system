@@ -3,12 +3,15 @@ body {
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100vh;
+  }
+  
+  body.login-background {
     background-image: url('../../public/images/background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-}
-
+  }
+  
 .login-container {
     display: flex;
     justify-content: center;

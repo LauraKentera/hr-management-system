@@ -92,26 +92,31 @@ const UsersPage = () => {
 
     return (
         <Box p={3}>
-            <Typography variant="h5" gutterBottom>Users</Typography>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>Users</Typography>
             {error && <Typography color="error">{error}</Typography>}
 
             <Button
                 variant="contained"
                 startIcon={<Add />}
                 onClick={openAdd}
-                sx={{ mb: 2 }}
+                sx={{
+                    mb: 2,
+                    backgroundColor: '#0077b6',
+                    '&:hover': { backgroundColor: '#005f8a' },
+                    textTransform: 'none',
+                }}
             >
                 Add User
             </Button>
 
-            <Paper>
+            <Paper sx={{ boxShadow: 2, p: 2 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Username</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>ID</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Username</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Role</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

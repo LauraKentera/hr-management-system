@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Typography, Button, Grid,
-    Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
-    Paper, CircularProgress, Alert, Chip, Tabs, Tab
+    Box, Typography, Button, Grid, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, CircularProgress, Alert, Chip, Tabs, Tab, Divider
 } from '@mui/material';
 import ApiEndpoints from '../api/ApiEndpoints';
 import RequestAbsenceModal from '../components/RequestAbsenceModal';
@@ -15,8 +13,7 @@ const AbsenceView = () => {
     const [error, setError] = useState('');
     const [openModal, setOpenModal] = useState(false);
     const [selectedTab, setSelectedTab] = useState(0);
-    
-    // Get user data from localStorage
+
     const currentUser = {
         id: localStorage.getItem('userId'),
         role: localStorage.getItem('role'),
@@ -27,14 +24,14 @@ const AbsenceView = () => {
         try {
             setLoading(prev => ({ ...prev, main: true }));
             setError('');
-            
+
             let endpoint = ApiEndpoints.absences.getAll;
             const statusMap = {
                 1: 'Approved',
                 2: 'Rejected',
                 3: 'Pending'
             };
-            
+
             if (statusMap[selectedTab]) {
                 endpoint += `?status=${statusMap[selectedTab]}`;
             }
@@ -67,7 +64,6 @@ const AbsenceView = () => {
                 setEmployees(employeesData);
             }
         } catch (err) {
-            console.error('Fetch error:', err);
             setError(err.message);
             setAbsences([]);
         } finally {
@@ -103,28 +99,6 @@ const AbsenceView = () => {
                 throw new Error(errorData.message || 'Failed to create absence');
             }
 
-            const newAbsence = await response.json();
-
-            const approvalResponse = await fetch(ApiEndpoints.approvals.create, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    requestType: 'Absence',
-                    employeeId: currentUser.employeeId,
-                    relatedId: newAbsence.absenceId,
-                    status: 'Pending',
-                    requestedBy: currentUser.id,
-                    timestamp: new Date().toISOString()
-                })
-            });
-
-            if (!approvalResponse.ok) {
-                throw new Error('Failed to create approval request');
-            }
-
             await fetchData();
             return true;
         } catch (err) {
@@ -138,50 +112,39 @@ const AbsenceView = () => {
     const handleApproveReject = async (absenceId, action) => {
         setLoading(prev => ({ ...prev, action: true }));
         setError('');
-        
+
         try {
-          // Convert currentUser.id to number if it's a string
-          const approverId = Number(currentUser.id);
-          
-          // Create query parameters
-          const queryParams = new URLSearchParams({
-            approvedBy: approverId
-          });
-      
-          const response = await fetch(
-            `http://localhost:8080/api/employee-absences/${absenceId}/${action}?${queryParams}`,
-            {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-              },
-              // Some APIs might expect an empty body for PUT requests with query params
-              body: JSON.stringify({}) // Or remove body entirely if not needed
-            }
-          );
-      
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Failed to ${action} absence`);
-          }
-      
-          // Update UI state
-          setAbsences(prev => prev.map(absence => 
-            absence.absenceId === absenceId
-              ? { 
-                  ...absence, 
-                  status: action === 'approve' ? 'Approved' : 'Rejected',
-                  approvedBy: approverId // Update with approver info if needed
+            const approverId = Number(currentUser.id);
+            const queryParams = new URLSearchParams({ approvedBy: approverId });
+
+            const response = await fetch(
+                `http://localhost:8080/api/employee-absences/${absenceId}/${action}?${queryParams}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
                 }
-              : absence
-          ));
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Failed to ${action} absence`);
+            }
+
+            setAbsences(prev => prev.map(absence =>
+                absence.absenceId === absenceId
+                    ? { ...absence, status: action === 'approve' ? 'Approved' : 'Rejected', approvedBy: approverId }
+                    : absence
+            ));
         } catch (err) {
-          setError(err.message);
+            setError(err.message);
         } finally {
-          setLoading(prev => ({ ...prev, action: false }));
+            setLoading(prev => ({ ...prev, action: false }));
         }
-      };
+    };
 
     const getEmployeeName = (employeeId) => {
         const employee = employees.find(e => e.id === employeeId);
@@ -222,7 +185,9 @@ const AbsenceView = () => {
 
     return (
         <Box p={3}>
-            <Typography variant="h4" gutterBottom>Absence Management</Typography>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: '#004e92' }}>
+                Absence Management
+            </Typography>
 
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -232,28 +197,32 @@ const AbsenceView = () => {
 
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                 <Tabs value={selectedTab} onChange={handleTabChange}>
-                    <Tab label="All" />
-                    <Tab label="Approved" />
-                    <Tab label="Rejected" />
-                    {currentUser.role === 'Admin' && <Tab label="Pending" />}
+                    <Tab label="All" sx={{ fontWeight: 600, color: '#004e92' }} />
+                    <Tab label="Approved" sx={{ fontWeight: 600, color: '#004e92' }} />
+                    <Tab label="Rejected" sx={{ fontWeight: 600, color: '#004e92' }} />
+                    {currentUser.role === 'Admin' && <Tab label="Pending" sx={{ fontWeight: 600, color: '#004e92' }} />}
                 </Tabs>
             </Box>
 
+            <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
-                    <Paper elevation={3} sx={{ p: 2 }}>
+                    <Paper elevation={4} sx={{ p: 3, borderRadius: 2 }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="h6">
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                 {selectedTab === 0 && 'All Absences'}
                                 {selectedTab === 1 && 'Approved Absences'}
                                 {selectedTab === 2 && 'Rejected Absences'}
                                 {selectedTab === 3 && 'Pending Approvals'}
                             </Typography>
-                            {/* Changed this line to show for all roles */}
                             <Button
                                 variant="contained"
                                 onClick={() => setOpenModal(true)}
                                 disabled={loading.main}
-                                sx={{ textTransform: 'none' }}
+                                sx={{
+                                    textTransform: 'none',
+                                    backgroundColor: '#0077b6',
+                                    '&:hover': { backgroundColor: '#005f8a' },
+                                }}
                             >
                                 + New Absence Request
                             </Button>
@@ -329,6 +298,11 @@ const AbsenceView = () => {
                         )}
                     </Paper>
                 </Grid>
+
+                <Grid item xs={12} md={4}>
+                    <AbsenceTypeChart absences={absences} />
+                </Grid>
+            </Grid>
 
             <RequestAbsenceModal
                 open={openModal}
