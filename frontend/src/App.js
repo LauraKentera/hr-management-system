@@ -8,13 +8,13 @@ import AbsencePage from "./views/AbsenceView";
 import LoginView from "./views/LoginView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
-import EmployeesView from './views/EmployeesView';
-import EmployeeDetailsView from './views/EmployeeDetailsView';
+import EmployeesView from './views/EmployeePage';
 import PayrollPage from "./views/PayrollPage";
 import BenefitsListPage from "./views/BenefitListPage";
 import DepartmentsView from './views/DepartmentsView';
 import ContractListPage from './views/ContractList';  // Import Contract List page
-import ContractFormPage from './views/ContractFormPage'; // Import Contract Form page
+import ContractFormPage from './views/ContractFormPage';
+import EmployeePage from "./views/EmployeePage"; // Import Contract Form page
 
 function App() {
     return (
@@ -63,12 +63,11 @@ function App() {
                         element={
                             <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Layout>
-                                    <EmployeesView />
+                                    <EmployeePage />
                                 </Layout>
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/employees/:id" element={<EmployeeDetailsView />} />
 
                     {/* Absences route accessible by HR, Admin, and Employee */}
                     <Route
