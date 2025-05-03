@@ -110,6 +110,7 @@ CREATE TABLE
         FOREIGN KEY (position_id) REFERENCES Position (position_id),
         FOREIGN KEY (manager_id) REFERENCES Employee (id)
     );
+ALTER TABLE Employee ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
 
 CREATE TABLE
     IF NOT EXISTS User (

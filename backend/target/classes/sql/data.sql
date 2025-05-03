@@ -206,3 +206,32 @@ INSERT INTO Payroll (
 
 SELECT * FROM Employee WHERE user_id = 18;
 
+UPDATE Employee
+SET user_id = 2
+WHERE id = 1; -- Link hr_user to Marko Petrovic (Employee ID 1)
+
+UPDATE Employee
+SET user_id = 3
+WHERE id = 2; -- Link employee_user to Anna Müller (Employee ID 2)
+
+SELECT id, first_name, last_name, user_id FROM Employee;
+
+-- Create a new employee for employee_user (user_id = 3)
+INSERT INTO Employee (
+    PIN, last_name, first_name, birth_date, date_of_hire,
+    email, gender, nationality_id, department_id, position_id,
+    employment_status, employment_type, tax_id
+) VALUES (
+             'EMP003', 'Ivanovic', 'Jelena', '1992-04-12', '2023-02-01',
+             'jelena@example.com', 'Female', 3, 1, 5,
+             'Active', 'Full-Time', 'TAX-003'
+         );
+
+-- Link the users to employees
+UPDATE Employee SET user_id = 1 WHERE id = 1;  -- admin_user → Marko
+UPDATE Employee SET user_id = 2 WHERE id = 2;  -- hr_user → Anna
+UPDATE Employee SET user_id = 3 WHERE id = 3;  -- employee_user → Jelena
+
+
+
+
