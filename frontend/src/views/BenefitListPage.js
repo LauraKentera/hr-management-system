@@ -21,7 +21,7 @@ import {
     TableCell,
     TableBody,
     Typography,
-    Divider
+    Paper
 } from "@mui/material";
 import { getRole } from "../utils/auth";
 
@@ -120,18 +120,16 @@ const BenefitsListPage = () => {
     return (
         <Box p={3}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5" sx={{ fontWeight: 600, color: '#004e92' }}>
-                    Benefits
-                </Typography>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: '#004e92' }}>Benefits</Typography>
                 {isEditable && (
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={() => handleOpenForm()}
                         sx={{
-                            textTransform: "none",
                             backgroundColor: "#0077b6",
                             "&:hover": { backgroundColor: "#005f8a" },
+                            textTransform: "none",
                         }}
                     >
                         Add Benefit
@@ -142,47 +140,49 @@ const BenefitsListPage = () => {
             {loading ? (
                 <Typography>Loading...</Typography>
             ) : (
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Name</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Description</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Taxable</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Active</TableCell>
-                            {isEditable && <TableCell sx={{ fontWeight: 600, color: "#004e92" }}>Actions</TableCell>}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {benefits.map((benefit) => (
-                            <TableRow key={benefit.benefitId}>
-                                <TableCell>{benefit.name}</TableCell>
-                                <TableCell>{benefit.description}</TableCell>
-                                <TableCell>{benefit.taxable ? "Yes" : "No"}</TableCell>
-                                <TableCell>{benefit.active ? "Yes" : "No"}</TableCell>
-                                {isEditable && (
-                                    <TableCell>
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => handleOpenForm(benefit)}
-                                            sx={{ mr: 1 }}
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            size="small"
-                                            onClick={() => handleDelete(benefit.benefitId)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </TableCell>
-                                )}
+                <Paper sx={{ p: 2, boxShadow: 2 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Name</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Description</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Taxable</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Active</TableCell>
+                                {isEditable && <TableCell sx={{ fontWeight: 600, color: '#004e92' }}>Actions</TableCell>}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {benefits.map((benefit) => (
+                                <TableRow key={benefit.benefitId}>
+                                    <TableCell>{benefit.name}</TableCell>
+                                    <TableCell>{benefit.description}</TableCell>
+                                    <TableCell>{benefit.taxable ? "Yes" : "No"}</TableCell>
+                                    <TableCell>{benefit.active ? "Yes" : "No"}</TableCell>
+                                    {isEditable && (
+                                        <TableCell>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => handleOpenForm(benefit)}
+                                                sx={{ mr: 1 }}
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                size="small"
+                                                onClick={() => handleDelete(benefit.benefitId)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Paper>
             )}
 
             <Dialog open={formOpen} onClose={handleCloseForm} fullWidth>
