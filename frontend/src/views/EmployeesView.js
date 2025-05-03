@@ -1,3 +1,4 @@
+// EmployeesView.js (Fixed)
 import React, { useEffect, useState } from 'react';
 import {
     Container, Typography, Button, Snackbar, Table, TableHead, TableRow, TableCell, TableBody,
@@ -5,34 +6,27 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-// Initial form state
 const initialFormData = () => ({
-    pin: '', firstName: '', lastName: '', birthDate: '', dateOfHire: '', phoneNumber: '', email: '', address: '',
-    gender: 'Male', nationalityId: '', departmentId: '', positionId: '', employmentStatus: 'Active',
-    emergencyContactName: '', emergencyContactPhone: '', maritalStatus: 'Single', employmentType: 'Full-Time',
-    managerId: null, taxId: '', bankAccountNumber: ''
+    pin: '', firstName: '', lastName: '', birthDate: '', dateOfHire: '',
+    phoneNumber: '', email: '', address: '', gender: 'Male',
+    nationalityId: '', departmentId: '', positionId: '', employmentStatus: 'Active',
+    emergencyContactName: '', emergencyContactPhone: '', maritalStatus: 'Single',
+    employmentType: 'Full-Time', managerId: '', taxId: '', bankAccountNumber: ''
 });
 
 const EmployeesView = () => {
-    // State hooks
     const [employees, setEmployees] = useState([]);
     const [openForm, setOpenForm] = useState(false);
     const [formData, setFormData] = useState(initialFormData());
-    const [dropdowns, setDropdowns] = useState({
-        nationalities: [],
-        departments: [],
-        positions: []
-    });
+    const [dropdowns, setDropdowns] = useState({ nationalities: [], departments: [], positions: [] });
     const [snackbar, setSnackbar] = useState({ open: false, message: '' });
     const [loading, setLoading] = useState(true);
 
-    // Load data on mount
     useEffect(() => {
         fetchEmployees();
         fetchDropdownData();
     }, []);
 
-    // Fetch employee list
     const fetchEmployees = async () => {
         try {
             const res = await axios.get('/api/employees');
@@ -44,7 +38,6 @@ const EmployeesView = () => {
         }
     };
 
-    // Fetch dropdown options
     const fetchDropdownData = async () => {
         try {
             const [nat, dep, pos] = await Promise.all([
@@ -52,66 +45,55 @@ const EmployeesView = () => {
                 axios.get('/api/departments'),
                 axios.get('/api/positions')
             ]);
-            setDropdowns({
-                nationalities: nat.data,
-                departments: dep.data,
-                positions: pos.data
-            });
+            setDropdowns({ nationalities: nat.data, departments: dep.data, positions: pos.data });
         } catch {
             showSnackbar('Failed to load dropdowns');
         }
     };
 
-    // Snackbar handler
     const showSnackbar = (message) => setSnackbar({ open: true, message });
 
-    // Form input change handler
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Submit form
     const handleSubmit = async () => {
         try {
-            await axios.post('/api/employees', formData);
+            const payload = {
+                ...formData,
+                nationalityId: parseInt(formData.nationalityId) || null,
+                departmentId: parseInt(formData.departmentId) || null,
+                positionId: parseInt(formData.positionId) || null,
+                managerId: formData.managerId ? parseInt(formData.managerId) : null
+            };
+
+            await axios.post('/api/employees', payload);
             showSnackbar('✅ Employee added successfully');
             setOpenForm(false);
             setFormData(initialFormData());
             fetchEmployees();
-        } catch {
-            showSnackbar('❌ Failed to save employee');
+        } catch (error) {
+            const msg = error?.response?.data?.error || '❌ Failed to save employee';
+            showSnackbar(msg);
+            console.error('Submit error:', error?.response?.data || error.message);
         }
     };
 
     return (
         <Container>
-            {/* Header */}
-            <Typography variant="h3" gutterBottom>
-                Employee Directory
-            </Typography>
-
-            <Button
-                variant="contained"
-                onClick={() => setOpenForm(true)}
-                sx={{ mb: 3, fontSize: '1rem', padding: '10px 20px' }}
-            >
-                ➕ Add Employee
-            </Button>
-
-            {/* Loading Indicator */}
-            {loading ? (
-                <CircularProgress />
-            ) : (
+            <Typography variant="h3" gutterBottom>Employee Directory</Typography>
+            <Button variant="contained" onClick={() => setOpenForm(true)} sx={{ mb: 3 }}>➕ Add Employee</Button>
+            {loading ? <CircularProgress /> : (
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell><strong>ID</strong></TableCell>
-                            <TableCell><strong>PIN</strong></TableCell>
-                            <TableCell><strong>Name</strong></TableCell>
-                            <TableCell><strong>Department</strong></TableCell>
-                            <TableCell><strong>Position</strong></TableCell>
-                            <TableCell><strong>Status</strong></TableCell>
+                            <TableCell>ID</TableCell>
+                            <TableCell>PIN</TableCell>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Department</TableCell>
+                            <TableCell>Position</TableCell>
+                            <TableCell>Status</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -121,7 +103,7 @@ const EmployeesView = () => {
                                 <TableCell>{emp.pin}</TableCell>
                                 <TableCell>{emp.firstName} {emp.lastName}</TableCell>
                                 <TableCell>{emp.department?.name}</TableCell>
-                                <TableCell>{emp.position?.title}</TableCell>
+                                <TableCell>{emp.position?.name}</TableCell>
                                 <TableCell>{emp.employmentStatus}</TableCell>
                             </TableRow>
                         ))}
@@ -129,95 +111,49 @@ const EmployeesView = () => {
                 </Table>
             )}
 
-            {/* Dialog Form */}
             <Dialog open={openForm} onClose={() => setOpenForm(false)} maxWidth="md" fullWidth>
                 <DialogTitle>Add New Employee</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
-                        {[
-                            { label: 'PIN', name: 'pin' },
-                            { label: 'First Name', name: 'firstName' },
-                            { label: 'Last Name', name: 'lastName' },
-                            { label: 'Birth Date', name: 'birthDate', type: 'date' },
-                            { label: 'Date of Hire', name: 'dateOfHire', type: 'date' },
-                            { label: 'Phone', name: 'phoneNumber' },
-                            { label: 'Email', name: 'email' },
-                            { label: 'Address', name: 'address' },
-                            { label: 'Emergency Contact Name', name: 'emergencyContactName' },
-                            { label: 'Emergency Contact Phone', name: 'emergencyContactPhone' },
-                            { label: 'Tax ID', name: 'taxId' },
-                            { label: 'Bank Account Number', name: 'bankAccountNumber' }
-                        ].map(({ label, name, type = 'text' }) => (
+                        {[{ label: 'PIN', name: 'pin' }, { label: 'First Name', name: 'firstName' },
+                          { label: 'Last Name', name: 'lastName' }, { label: 'Birth Date', name: 'birthDate', type: 'date' },
+                          { label: 'Date of Hire', name: 'dateOfHire', type: 'date' }, { label: 'Phone', name: 'phoneNumber' },
+                          { label: 'Email', name: 'email' }, { label: 'Address', name: 'address' },
+                          { label: 'Emergency Contact Name', name: 'emergencyContactName' },
+                          { label: 'Emergency Contact Phone', name: 'emergencyContactPhone' },
+                          { label: 'Tax ID', name: 'taxId' }, { label: 'Bank Account Number', name: 'bankAccountNumber' }]
+                          .map(({ label, name, type = 'text' }) => (
                             <Grid item xs={6} key={name}>
                                 <TextField
-                                    label={label}
-                                    name={name}
-                                    type={type}
-                                    fullWidth
-                                    required={label !== 'Bank Account Number'}
-                                    value={formData[name]}
-                                    onChange={handleChange}
+                                    label={label} name={name} type={type} fullWidth required
+                                    value={formData[name] || ''} onChange={handleChange}
                                     InputLabelProps={type === 'date' ? { shrink: true } : {}}
                                 />
                             </Grid>
                         ))}
 
-                        {/* Select dropdowns */}
-                        <Grid item xs={6}>
-                            <TextField select label="Gender" name="gender" fullWidth value={formData.gender} onChange={handleChange}>
-                                {['Male', 'Female', 'Other'].map(opt => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
+                        {[{ name: 'gender', label: 'Gender', options: ['Male', 'Female', 'Other'] },
+                          { name: 'maritalStatus', label: 'Marital Status', options: ['Single', 'Married', 'Divorced', 'Widowed'] },
+                          { name: 'employmentStatus', label: 'Employment Status', options: ['Active', 'On Leave', 'Terminated'] },
+                          { name: 'employmentType', label: 'Employment Type', options: ['Full-Time', 'Part-Time', 'Contractor'] }]
+                          .map(({ name, label, options }) => (
+                            <Grid item xs={6} key={name}>
+                                <TextField select label={label} name={name} fullWidth value={formData[name] || ''} onChange={handleChange}>
+                                    {options.map(opt => <MenuItem key={opt} value={opt}>{opt}</MenuItem>)}
+                                </TextField>
+                            </Grid>
+                        ))}
 
-                        <Grid item xs={6}>
-                            <TextField select label="Marital Status" name="maritalStatus" fullWidth value={formData.maritalStatus} onChange={handleChange}>
-                                {['Single', 'Married', 'Divorced', 'Widowed'].map(opt => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-
-                        <Grid item xs={6}>
-                            <TextField select label="Employment Status" name="employmentStatus" fullWidth value={formData.employmentStatus} onChange={handleChange}>
-                                {['Active', 'On Leave', 'Terminated'].map(opt => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-
-                        <Grid item xs={6}>
-                            <TextField select label="Employment Type" name="employmentType" fullWidth value={formData.employmentType} onChange={handleChange}>
-                                {['Full-Time', 'Part-Time', 'Contractor'].map(opt => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-
-                        <Grid item xs={6}>
-                            <TextField select label="Nationality" name="nationalityId" fullWidth value={formData.nationalityId} onChange={handleChange}>
-                                {dropdowns.nationalities.map(n => (
-                                    <MenuItem key={n.nationalityId} value={n.nationalityId}>{n.name}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-
-                        <Grid item xs={6}>
-                            <TextField select label="Department" name="departmentId" fullWidth value={formData.departmentId} onChange={handleChange}>
-                                {dropdowns.departments.map(d => (
-                                    <MenuItem key={d.departmentId} value={d.departmentId}>{d.name}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-
-                        <Grid item xs={6}>
-                            <TextField select label="Position" name="positionId" fullWidth value={formData.positionId} onChange={handleChange}>
-                                {dropdowns.positions.map(p => (
-                                    <MenuItem key={p.positionId} value={p.positionId}>{p.title}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
+                        {[{ name: 'nationalityId', label: 'Nationality', options: dropdowns.nationalities, idKey: 'nationalityId', labelKey: 'name' },
+                          { name: 'departmentId', label: 'Department', options: dropdowns.departments, idKey: 'departmentId', labelKey: 'name' },
+                          { name: 'positionId', label: 'Position', options: dropdowns.positions, idKey: 'id', labelKey: 'name' }]
+                          .map(({ name, label, options, idKey, labelKey }) => (
+                            <Grid item xs={6} key={name}>
+                                <TextField select label={label} name={name} fullWidth value={formData[name] || ''} onChange={handleChange}>
+                                    {options.map(opt => <MenuItem key={opt[idKey]} value={opt[idKey]}>{opt[labelKey]}</MenuItem>)}
+                                </TextField>
+                            </Grid>
+                        ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
@@ -226,7 +162,6 @@ const EmployeesView = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Snackbar feedback */}
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={3000}
