@@ -1,137 +1,20 @@
-/* Set background color of the entire page to off-white */
-body, .dashboard-page {
-    background-color: #f5f5f5; /* Off-white background */
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-}
-
-/* Layout for the dashboard page */
-.dashboard-page {
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* Sidebar container styles */
-.MuiDrawer-root {
-    width: 240px;
-    flex-shrink: 0;
-}
-
-/* Main content section, making sure it doesn't overlap with Sidebar */
 .dashboard-container {
-    flex-grow: 1;
-    margin-left: 240px; /* Sidebar width */
-    margin-top: 80px; /* Topbar height */
-    padding: 20px;
-    background-color: #f5f5f5; /* Off-white background */
-    min-height: 100vh; /* To cover the full height */
+    padding: 2rem;
+    background-color: #f9f9f9;
+    min-height: 100vh;
 }
 
-/* Header Styling */
-header {
-    background-color: #ffffff;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.dashboard-header {
+    margin-bottom: 2rem;
 }
 
-/* Stat Card */
-.stat-card {
-    padding: 20px;
-    background-color: #f4f4f4;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
+.dashboard-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
 }
 
-/* Customize Tooltip */
-.custom-tooltip {
-    background-color: #fff; /* White background */
-    border-radius: 8px;
-    padding: 10px;
-    border: 1px solid #ccc; /* Light border */
-    font-size: 14px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
-}
-
-/* Customize Legend */
-.custom-legend {
-    font-size: 14px;
-    padding: 10px;
-    color: #555; /* Dark gray text */
-}
-
-.custom-legend .recharts-legend-item {
-    margin-right: 20px; /* Spacing between legend items */
-}
-
-/* Style for attendance line */
-.attendance-line {
-    stroke: #8884d8; /* Blue color */
-    stroke-width: 2;
-}
-
-/* Style for sick leave line */
-.sickLeave-line {
-    stroke: #82ca9d; /* Green color */
-    stroke-width: 2;
-}
-
-/* Overview Box */
-.overview-box {
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-bottom: 30px; /* Adds spacing between sections */
-}
-
-/* Charts Section */
-.charts-section {
-    margin-top: 30px;
-}
-
-/* Individual chart containers */
-.charts-section .MuiGrid-item {
-    padding: 10px;
-    justify-content: center;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Spacing between chart sections */
-.charts-section .MuiGrid-container {
-    margin-bottom: 40px; /* Adds space between chart sections */
-}
-
-/* Table Box Styling for Upcoming Contracts */
-.contracts-table-box {
-    margin-top: 30px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-}
-
-/* Add padding and spacing for charts and tables */
-.dashboard-container .MuiGrid-item {
-    padding: 20px;
-}
-
-/* Style for each section heading */
-h5 {
-    color: #333;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-/* Chart container responsive behavior */
-@media (max-width: 768px) {
-    .MuiGrid-item {
-        padding: 10px;
-    }
+.dashboard-header p {
+    color: #666;
+    margin-top: 0.5rem;
 }

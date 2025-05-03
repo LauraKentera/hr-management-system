@@ -1,50 +1,97 @@
 package hrms.human_resource_system.dto;
 
+import java.util.Map;
+
 public class DashboardDTO {
+    private long totalEmployees;
+    private long activeContracts;
+    private long pendingBenefits;
+    private long employeeAbsencesToday;
+    private double averageSalary;
+    private double employeeRetentionRate;
+    private double benefitsUtilization;
+    private long contractExpirations;
+    private String nextPayCycle;
+    private Map<String, Double> netPayByEmployee;
 
-    private int attendance;
-    private int lateArrivals;
-    private int absents;
-    private int leaveApplied;
-
-    // Constructor, Getters, and Setters
-
-    public DashboardDTO(int attendance, int lateArrivals, int absents, int leaveApplied) {
-        this.attendance = attendance;
-        this.lateArrivals = lateArrivals;
-        this.absents = absents;
-        this.leaveApplied = leaveApplied;
+    public Map<String, Double> getNetPayByEmployee() {
+        return netPayByEmployee;
     }
 
-    public int getAttendance() {
-        return attendance;
+    public void setNetPayByEmployee(Map<String, Double> netPayByEmployee) {
+        this.netPayByEmployee = netPayByEmployee;
     }
 
-    public void setAttendance(int attendance) {
-        this.attendance = attendance;
+    // Getters and Setters
+    public long getTotalEmployees() {
+        return totalEmployees;
     }
 
-    public int getLateArrivals() {
-        return lateArrivals;
+    public void setTotalEmployees(long totalEmployees) {
+        this.totalEmployees = totalEmployees;
     }
 
-    public void setLateArrivals(int lateArrivals) {
-        this.lateArrivals = lateArrivals;
+    public long getActiveContracts() {
+        return activeContracts;
     }
 
-    public int getAbsents() {
-        return absents;
+    public void setActiveContracts(long activeContracts) {
+        this.activeContracts = activeContracts;
     }
 
-    public void setAbsents(int absents) {
-        this.absents = absents;
+    public long getPendingBenefits() {
+        return pendingBenefits;
     }
 
-    public int getLeaveApplied() {
-        return leaveApplied;
+    public void setPendingBenefits(long pendingBenefits) {
+        this.pendingBenefits = pendingBenefits;
     }
 
-    public void setLeaveApplied(int leaveApplied) {
-        this.leaveApplied = leaveApplied;
+    public long getEmployeeAbsencesToday() {
+        return employeeAbsencesToday;
+    }
+
+    public void setEmployeeAbsencesToday(long employeeAbsencesToday) {
+        this.employeeAbsencesToday = employeeAbsencesToday;
+    }
+
+    public double getAverageSalary() {
+        return averageSalary;
+    }
+
+    public void setAverageSalary(double averageSalary) {
+        this.averageSalary = averageSalary;
+    }
+
+    public double getEmployeeRetentionRate() {
+        return employeeRetentionRate;
+    }
+
+    public void setEmployeeRetentionRate(double employeeRetentionRate) {
+        this.employeeRetentionRate = employeeRetentionRate;
+    }
+
+    public double getBenefitsUtilization() {
+        return benefitsUtilization;
+    }
+
+    public void setBenefitsUtilization(double benefitsUtilization) {
+        this.benefitsUtilization = benefitsUtilization;
+    }
+
+    public long getContractExpirations() {
+        return contractExpirations;
+    }
+
+    public void setContractExpirations(long contractExpirations) {
+        this.contractExpirations = contractExpirations;
+    }
+
+    public String getNextPayCycle() {
+        return nextPayCycle;
+    }
+
+    public void setNextPayCycle(String nextPayCycle) {
+        this.nextPayCycle = nextPayCycle;
     }
 }
