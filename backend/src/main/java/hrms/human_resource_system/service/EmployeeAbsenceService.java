@@ -86,4 +86,26 @@ public class EmployeeAbsenceService {
         }
     }
 
+    public void approveOrDenyAbsence(int absenceId, String status, int approvedBy) {
+        wrap(() -> {
+            EmployeeAbsence absence = dao.getById(absenceId);
+            if (absence == null) {
+                throw new IllegalArgumentException("Absence not found with ID: " + absenceId);
+            }
+            
+            if (!"Pending".equals(absence.getStatus())) {
+                throw new IllegalArgumentException("Only pending absences can be modified");
+            }
+            
+            if (!"Approved".equals(status) && !"Rejected".equals(status)) {
+                throw new IllegalArgumentException("Invalid status. Must be 'Approved' or 'Rejected'");
+            }
+            
+            absence.setStatus(status);
+            absence.setApprovedBy(approvedBy);
+            dao.update(absenceId, absence);
+            return null;
+        });
+    }
+
 }
