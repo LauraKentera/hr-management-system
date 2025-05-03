@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import ContractList from '../components/ContractList';
-import ContractFormModal from '../components/ContractFormModal';
+import ContractList from './ContractList';
+import ContractFormModal from '../components/ContractForm';
 import ContractAnnexes from '../components/ContractAnnexes';
 import Sidebar from '../components/Sidebar';  // Import Sidebar component
 import Header from '../components/Topbar';  // Import Header (Topbar) component
 import '../styles/Dashboard.css';  // Ensure Dashboard CSS is applied
 import { Button, Box, Typography } from '@mui/material';
-import '../styles/Contracts.css';
+import '../styles/ContractsList.css';
 
 const ContractsView = () => {
     const [selected, setSelected] = useState(null);

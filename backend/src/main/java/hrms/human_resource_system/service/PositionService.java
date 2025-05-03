@@ -76,4 +76,13 @@ public class PositionService {
         }
         // Add other validations if needed (e.g., checking for circular references in parent-child positions, etc.)
     }
+
+    // Method to fetch position name by ID
+    public String getPositionNameById(int positionId) {
+        Position position = positionDAO.getById(positionId);
+        if (position != null) {
+            return position.getName(); // Return position name
+        }
+        return null;  // Or throw an exception if needed
+    }
 }
