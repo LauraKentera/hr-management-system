@@ -21,10 +21,21 @@ const ApiEndpoints = {
         getAll: `${BASE_URL}/departments`,
         create: `${BASE_URL}/departments`,
     },
+    absenceTypes: {
+        getAll: `${BASE_URL}/api/absence-types`, // Added this missing endpoint
+    },
     absences: {
         getAll: `${BASE_URL}/api/employee-absences`,
         create: `${BASE_URL}/api/employee-absences`,
-    },
+        updateStatus: (id) => `${BASE_URL}/api/employee-absences/${id}/status`,
+        approve: (id) => `${BASE_URL}/api/employee-absences/${id}/approve`,
+        reject: (id) => `${BASE_URL}/api/employee-absences/${id}/reject`
+      },  
+      approvals: {
+        create: `${BASE_URL}/api/approvals`,
+        updateByAbsence: (id) => `${BASE_URL}/api/approvals/by-absence/${id}`,
+        getByAbsence: (id) => `${BASE_URL}/api/approvals/by-absence/${id}`
+      },    
     role: {
         getAll: `${BASE_URL}/api/roles`,
         create: `${BASE_URL}/api/roles`,

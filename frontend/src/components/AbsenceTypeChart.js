@@ -1,55 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import ApiEndpoints from '../api/ApiEndpoints'; // Import API endpoints
-import axios from 'axios'; // Import axios for API calls
+import React from 'react';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Paper, Typography } from '@mui/material';
 
-const AbsenceTypeChart = () => {
-    const [absenceData, setAbsenceData] = useState(null); // Initialize with null to handle loading state
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-    useEffect(() => {
-        // Fetch absence data from the API
-        const fetchAbsenceData = async () => {
-            try {
-                const response = await axios.get(ApiEndpoints.absencses.getAll);
-                const absences = response.data;
+const AbsenceTypeChart = ({ absences }) => {
+    const processData = () => {
+        if (!absences || absences.length === 0) return [];
+        
+        const typeCounts = absences.reduce((acc, absence) => {
+            const type = absence.type || 'Unknown';
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+        }, {});
+        
+        return Object.entries(typeCounts).map(([name, value]) => ({
+            name,
+            value,
+            percentage: (value / absences.length * 100).toFixed(1)
+        }));
+    };
 
-                // Transform the API response to match the chart data structure
-                const transformedData = {
-                    sickLeave: absences.sickLeave || 0,
-                    personalLeave: absences.personalLeave || 0,
-                    vacation: absences.vacation || 0,
-                };
-
-                setAbsenceData(transformedData);
-            } catch (error) {
-                console.error('Error fetching absence data:', error);
-            }
-        };
-
-        fetchAbsenceData();
-    }, []);
-
-    // Handle loading state
-    if (!absenceData) {
-        return <p>Loading...</p>;
-    }
-
-    const data = [
-        { name: 'Sick Leave', value: absenceData.sickLeave },
-        { name: 'Personal Leave', value: absenceData.personalLeave },
-        { name: 'Vacation', value: absenceData.vacation },
-    ];
+    const chartData = processData();
 
     return (
-        <PieChart width={400} height={400}>
-            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={150}>
-                <Cell fill="#8884d8" />
-                <Cell fill="#ff7300" />
-                <Cell fill="#82ca9d" />
-            </Pie>
-            <Tooltip />
-            <Legend />
-        </PieChart>
+        <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>
+                Absence Distribution
+            </Typography>
+            {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                        <Pie
+                            data={chartData}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label={({ name, percentage }) => `${name}: ${percentage}%`}
+                        >
+                            {chartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip 
+                            formatter={(value, name, props) => [
+                                `${value} (${props.payload.percentage}%)`, 
+                                name
+                            ]}
+                        />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            ) : (
+                <Typography variant="body2" color="text.secondary">
+                    No absence data available
+                </Typography>
+            )}
+        </Paper>
     );
 };
 
