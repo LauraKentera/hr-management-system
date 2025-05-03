@@ -61,6 +61,14 @@ const ApiEndpoints = {
         update: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
         delete: (id) => `${BASE_URL}/api/employee-benefits/${id}`,
     },
+    contract: {
+        getAll: `${BASE_URL}/api/contracts`,
+        getById: (id) => `${BASE_URL}/api/contracts/${id}`,
+        create: `${BASE_URL}/api/contracts`,
+        update: (id) => `${BASE_URL}/api/contracts/${id}`,
+        delete: (id) => `${BASE_URL}/api/contracts/${id}`,
+        getAnnexesByContractId: (id) => `${BASE_URL}/api/contracts/${id}/annexes`,
+    },
 };
 
 export default ApiEndpoints;

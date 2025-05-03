@@ -13,9 +13,8 @@ import EmployeeDetailsView from './views/EmployeeDetailsView';
 import PayrollPage from "./views/PayrollPage";
 import BenefitsListPage from "./views/BenefitListPage";
 import DepartmentsView from './views/DepartmentsView';
-
-
-
+import ContractListPage from './views/ContractList';  // Import Contract List page
+import ContractFormPage from './views/ContractFormPage'; // Import Contract Form page
 
 function App() {
     return (
@@ -83,10 +82,43 @@ function App() {
                         }
                     />
 
+                    {/* Contracts Route - Accessible by Admin and HR */}
+                    <Route
+                        path="/contracts"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <ContractListPage /> {/* Contract List page */}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
+                    {/* Create Contract Route - Accessible by Admin and HR */}
+                    <Route
+                        path="/contracts/create"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <ContractFormPage /> {/* Contract Form for creating */}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
-                    {/* Add more routes here as necessary */}
+                    {/* Edit Contract Route - Accessible by Admin and HR */}
+                    <Route
+                        path="/contracts/edit/:id"
+                        element={
+                            <ProtectedRoute allowedRoles={["Admin", "HR"]}>
+                                <Layout>
+                                    <ContractFormPage /> {/* Contract Form for editing */}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
 
+                    {/* Payroll and Benefits routes */}
                     <Route
                         path="/payrolls"
                         element={

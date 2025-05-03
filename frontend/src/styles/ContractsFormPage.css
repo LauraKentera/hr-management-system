@@ -1,0 +1,61 @@
+/* Contract Form Styles */
+.contract-form-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.form-heading {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.contract-form label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.contract-form .form-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.contract-form .submit-btn {
+    background-color: #28a745;
+    color: white;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.contract-form .submit-btn:hover {
+    background-color: #218838;
+}
+
+.contract-form .submit-btn:disabled {
+    background-color: #c6c6c6;
+    cursor: not-allowed;
+}

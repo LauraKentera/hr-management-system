@@ -232,6 +232,18 @@ UPDATE Employee SET user_id = 1 WHERE id = 1;  -- admin_user → Marko
 UPDATE Employee SET user_id = 2 WHERE id = 2;  -- hr_user → Anna
 UPDATE Employee SET user_id = 3 WHERE id = 3;  -- employee_user → Jelena
 
+-- Insert sample positions
+INSERT INTO ContractAnnex (contract_id, change_date, description, document_path)
+VALUES
+    (1, '2023-05-01', 'Contract extension for 6 months', 'path/to/annex1.pdf'),
+    (2, '2022-12-01', 'Salary adjustment', 'path/to/annex2.pdf');
 
-
-
+INSERT INTO Position (name, short_name, education_level_id, requires_licensing)
+VALUES
+    ('Software Developer', 'Dev', 4, FALSE),
+    ('Project Manager', 'PM', 4, TRUE),
+    ('HR Manager', 'HRM', 4, TRUE);
+INSERT INTO EmploymentContract (employee_id, start_date, end_date, position_id, salary, contract_type, signed_date, document_path)
+VALUES
+    (1, '2023-01-01', '2024-01-01', 1, 50000.00, 'Permanent', '2023-01-01', 'path/to/document1.pdf'),
+    (2, '2022-06-01', '2023-06-01', 2, 45000.00, 'Temporary', '2022-06-01', 'path/to/document2.pdf');

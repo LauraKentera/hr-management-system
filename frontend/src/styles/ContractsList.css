@@ -1,0 +1,117 @@
+/* Contract List Styles */
+.contract-list-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+}
+
+table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+th {
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+td {
+    background-color: #fff;
+    color: #666;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+button, a {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+button:hover, a:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #c6c6c6;
+    cursor: not-allowed;
+}
+
+.create-btn {
+    display: inline-block;
+    background-color: #28a745;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    color: white;
+    text-decoration: none;
+}
+
+.create-btn:hover {
+    background-color: #218838;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    margin-right: 10px;
+    text-decoration: none;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
